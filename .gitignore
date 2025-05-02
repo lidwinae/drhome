@@ -28,3 +28,4 @@ Thumbs.db
 *.log
 *.sqlite
 *.sqlite-journal
+vite.config.ts

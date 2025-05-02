@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import AppLayout from '@/layouts/app/AppSidebarLayout.vue';
+import AppLayout from '@/layouts/app/AppHeaderLayout.vue';
+import LandingFooter from '@/components/landing/LandingFooter.vue';
 import type { BreadcrumbItemType } from '@/types';
 
 interface Props {
@@ -14,5 +15,6 @@ withDefaults(defineProps<Props>(), {
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
         <slot />
+    <LandingFooter />
     </AppLayout>
 </template>

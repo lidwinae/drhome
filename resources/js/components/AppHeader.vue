@@ -37,26 +37,28 @@ const isCurrentRoute = computed(() => (url: string) => page.url === url);
 const activeItemStyles = computed(
     () => (url: string) => (isCurrentRoute.value(url) ? 'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100' : ''),
 );
+const isLoggedIn = computed(() => !!auth.value?.user);
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
+        title: 'Home',
+        href: '/',
+        icon: Menu,
+    },
+    {
+        title: 'Build',
+        href: '/build',
         icon: LayoutGrid,
+    },
+    {
+        title: 'Design',
+        href: '/design',
+        icon: BookOpen,
     },
 ];
 
 const rightNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits',
-        icon: BookOpen,
-    },
+
 ];
 </script>
 
@@ -75,7 +77,12 @@ const rightNavItems: NavItem[] = [
                         <SheetContent side="left" class="w-[300px] p-6">
                             <SheetTitle class="sr-only">Navigation Menu</SheetTitle>
                             <SheetHeader class="flex justify-start text-left">
-                                <AppLogoIcon class="size-6 fill-current text-black dark:text-white" />
+                                <Link :href="route('home')">
+                                <AppLogoIcon class="size-6 fill-current text-black dark:text-white mb-2 ml-16" />
+                                <span class="ml-8 mb-0.5 truncate font-bold text-xl leading-none text-[#AE7A42] hover:text-[#c08d5a] transition-colors">
+                                    Dr. Home
+                                </span>
+                                </Link>
                             </SheetHeader>
                             <div class="flex h-full flex-1 flex-col justify-between space-y-4 py-6">
                                 <nav class="-mx-3 space-y-1">
@@ -91,95 +98,84 @@ const rightNavItems: NavItem[] = [
                                     </Link>
                                 </nav>
                                 <div class="flex flex-col space-y-4">
-                                    <a
+                                    <Link
                                         v-for="item in rightNavItems"
                                         :key="item.title"
                                         :href="item.href"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         class="flex items-center space-x-2 text-sm font-medium"
+                                        :class="activeItemStyles(item.href)"
                                     >
                                         <component v-if="item.icon" :is="item.icon" class="h-5 w-5" />
                                         <span>{{ item.title }}</span>
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         </SheetContent>
                     </Sheet>
                 </div>
 
-                <Link :href="route('dashboard')" class="flex items-center gap-x-2">
+                <Link :href="route('home')" class="flex items-center gap-x-2">
                     <AppLogo />
                 </Link>
 
                 <!-- Desktop Menu -->
                 <div class="hidden h-full lg:flex lg:flex-1">
-                    <NavigationMenu class="ml-10 flex h-full items-stretch">
-                        <NavigationMenuList class="flex h-full items-stretch space-x-2">
-                            <NavigationMenuItem v-for="(item, index) in mainNavItems" :key="index" class="relative flex h-full items-center">
-                                <Link :href="item.href">
-                                    <NavigationMenuLink
-                                        :class="[navigationMenuTriggerStyle(), activeItemStyles(item.href), 'h-9 cursor-pointer px-3']"
-                                    >
-                                        <component v-if="item.icon" :is="item.icon" class="mr-2 h-4 w-4" />
-                                        {{ item.title }}
-                                    </NavigationMenuLink>
-                                </Link>
-                                <div
-                                    v-if="isCurrentRoute(item.href)"
-                                    class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"
-                                ></div>
-                            </NavigationMenuItem>
-                        </NavigationMenuList>
-                    </NavigationMenu>
+                    
                 </div>
 
-                <div class="ml-auto flex items-center space-x-2">
-                    <div class="relative flex items-center space-x-1">
-                        <Button variant="ghost" size="icon" class="group h-9 w-9 cursor-pointer">
-                            <Search class="size-5 opacity-80 group-hover:opacity-100" />
-                        </Button>
-
-                        <div class="hidden space-x-1 lg:flex">
-                            <template v-for="item in rightNavItems" :key="item.title">
-                                <TooltipProvider :delay-duration="0">
-                                    <Tooltip>
-                                        <TooltipTrigger>
-                                            <Button variant="ghost" size="icon" as-child class="group h-9 w-9 cursor-pointer">
-                                                <a :href="item.href" target="_blank" rel="noopener noreferrer">
-                                                    <span class="sr-only">{{ item.title }}</span>
-                                                    <component :is="item.icon" class="size-5 opacity-80 group-hover:opacity-100" />
-                                                </a>
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>{{ item.title }}</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            </template>
-                        </div>
-                    </div>
-
-                    <DropdownMenu>
-                        <DropdownMenuTrigger :as-child="true">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                class="relative size-10 w-auto rounded-full p-1 focus-within:ring-2 focus-within:ring-primary"
+                <div class="ml-auto h-full flex items-center space-x-2">
+                    <NavigationMenu class="ml-10 flex hidden h-full items-stretch lg:flex">
+                        <NavigationMenuList class="flex h-full items-stretch space-x-2">
+                        <NavigationMenuItem 
+                            v-for="(item, index) in mainNavItems" 
+                            :key="index" 
+                            class="relative flex h-full items-center"
+                        >
+                            <Link :href="item.href">
+                            <NavigationMenuLink
+                                :class="[navigationMenuTriggerStyle(), activeItemStyles(item.href), 'h-9 cursor-pointer px-3 font-archivo font-medium text-lg flex items-center text-[#AE7A42] hover:text-[#c08d5a]']"
                             >
-                                <Avatar class="size-8 overflow-hidden rounded-full">
-                                    <AvatarImage v-if="auth.user.avatar" :src="auth.user.avatar" :alt="auth.user.name" />
-                                    <AvatarFallback class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white">
-                                        {{ getInitials(auth.user?.name) }}
-                                    </AvatarFallback>
-                                </Avatar>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" class="w-56">
-                            <UserMenuContent :user="auth.user" />
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                                <component v-if="item.icon" :is="item.icon" class="mr-2 h-4 w-15" />
+                                {{ item.title }}
+                            </NavigationMenuLink>
+                            </Link>
+                            <div
+                            v-if="isCurrentRoute(item.href)"
+                            class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-[#AE7A42]"
+                            ></div>
+                        </NavigationMenuItem>
+                        </NavigationMenuList>
+                    </NavigationMenu>   
+  <template v-if="isLoggedIn">
+    <DropdownMenu>
+      <DropdownMenuTrigger :as-child="true">
+        <Button
+          variant="ghost"
+          size="icon"
+          class="relative size-10 ml-4 w-auto rounded-full p-1 focus-within:ring-2 focus-within:ring-primary"
+        >
+          <Avatar class="size-8 overflow-hidden rounded-full">
+            <AvatarImage v-if="auth.user.avatar" :src="auth.user.avatar" :alt="auth.user.name" />
+            <AvatarFallback class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white">
+              {{ getInitials(auth.user?.name) }}
+            </AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" class="w-56">
+        <UserMenuContent :user="auth.user" />
+      </DropdownMenuContent>
+    </DropdownMenu>
+  </template>
+  <template v-else>
+    <div class="flex gap-2">
+      <Button as-child variant="outline" class="rounded-full bg-[#B07D48] px-8 py-2 text-white transition-colors hover:bg-[#95683C]">
+        <Link :href="route('login')">Login</Link>
+      </Button>
+    </div>
+  </template>
                 </div>
             </div>
         </div>

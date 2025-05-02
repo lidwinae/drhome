@@ -21,7 +21,7 @@ defineOptions({
                 <div class="flex flex-col items-center text-center">
                     <h1 class="mb-4 text-5xl font-bold text-white">Dr. Home</h1>
                     <p class="mb-8 text-2xl text-gray-100">Your dream home, in just one click.</p>
-                    <Link href="/order" class="rounded-full bg-[#B07D48] px-8 py-3 text-lg text-white transition-colors hover:bg-[#95683C]">
+                    <Link href="/build" class="rounded-full bg-[#B07D48] px-8 py-3 text-lg text-white transition-colors hover:bg-[#95683C]">
                         Order Dream House
                     </Link>
                 </div>
@@ -60,7 +60,7 @@ defineOptions({
 
                 <div class="mt-12 text-center">
                     <Link
-                        href="/order"
+                        href="/build"
                         class="inline-block rounded-full bg-[#B07D48] px-8 py-3 text-lg text-white transition-colors hover:bg-[#95683C]"
                     >
                         Order Dream House
