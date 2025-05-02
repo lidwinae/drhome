@@ -10,11 +10,17 @@ defineOptions({
 <template>
     <div>
         <!-- Hero Section -->
-        <section class="relative bg-gray-50 py-20">
-            <div class="container mx-auto px-4">
+        <section
+            class="relative mx-20 my-10 rounded-4xl py-20 bg-cover bg-center bg-no-repeat"
+            style="background-image: url('/images/hero-bg-section.png')"
+        >
+            <!-- Overlay for better text readability (optional)
+            <div class="absolute inset-0 bg-black/30"></div> -->
+
+            <div class="container mx-auto px-4 relative z-10">
                 <div class="flex flex-col items-center text-center">
-                    <h1 class="mb-4 text-5xl font-bold text-[#1E3851]">Dr. Home</h1>
-                    <p class="mb-8 text-2xl text-gray-600">Your dream home, in just one click.</p>
+                    <h1 class="mb-4 text-5xl font-bold text-white">Dr. Home</h1>
+                    <p class="mb-8 text-2xl text-gray-100">Your dream home, in just one click.</p>
                     <Link href="/order" class="rounded-full bg-[#B07D48] px-8 py-3 text-lg text-white transition-colors hover:bg-[#95683C]">
                         Order Dream House
                     </Link>

@@ -13,6 +13,7 @@ const form = useForm({
     email: '',
     password: '',
     password_confirmation: '',
+    account_type: '',
 });
 
 const submit = () => {
@@ -38,6 +39,23 @@ const submit = () => {
                     <Label for="email">Email address</Label>
                     <Input id="email" type="email" required :tabindex="2" autocomplete="email" v-model="form.email" placeholder="email@example.com" />
                     <InputError :message="form.errors.email" />
+                </div>
+
+                <div class="grid gap-2">
+                    <Label for="account_type">Account Type</Label>
+                    <select
+                        id="account_type"
+                        required
+                        :tabindex="3"
+                        v-model="form.account_type"
+                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        <option value="" disabled selected>Select account type</option>
+                        <option value="Client">Client</option>
+                        <option value="Designer">Designer</option>
+                        <option value="Contractor">Contractor</option>
+                    </select>
+                    <InputError :message="form.errors.account_type" />
                 </div>
 
                 <div class="grid gap-2">
