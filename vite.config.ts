@@ -11,7 +11,6 @@ export default defineConfig({
             input: ['resources/js/app.ts'],
             ssr: 'resources/js/ssr.ts',
             refresh: true,
-            detectTls: false,
         }),
         tailwindcss(),
         vue({
@@ -23,10 +22,6 @@ export default defineConfig({
             },
         }),
     ],
-    server: {
-        host: 'localhost', 
-        port: 5173,       
-      },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './resources/js'),
