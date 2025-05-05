@@ -17,11 +17,5 @@ Route::get('design', function () {
     return Inertia::render('Design');
 })->middleware(['auth', 'verified'])->name('design');
 
-Route::get('api/designers', [DesignerController::class, 'index']);
-Route::get('api/designers/{id}', [DesignerController::class, 'show']);
-
-Route::get('api/designs', [DesignController::class, 'index']);
-Route::get('api/designs/{id}', [DesignController::class, 'show']);
-
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

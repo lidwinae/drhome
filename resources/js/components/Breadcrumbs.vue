@@ -23,7 +23,7 @@ defineProps<{
                     <template v-for="(item, index) in breadcrumbs" :key="index">
                         <BreadcrumbItem>
                             <template v-if="index === breadcrumbs.length - 1">
-                                <BreadcrumbPage class="breadcrumb-current">Dr.Home</BreadcrumbPage>
+                                <BreadcrumbPage class="breadcrumb-current">Dr.Home Super Admin</BreadcrumbPage>
                             </template>
                             <template v-else>
                                 <BreadcrumbLink as-child>

@@ -13,8 +13,10 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <slot />
-    <LandingFooter />
+  <div class="min-h-screen flex flex-col">
+    <AppLayout :breadcrumbs="breadcrumbs" class="flex-grow">
+      <slot />
     </AppLayout>
+    <LandingFooter />
+  </div>
 </template>
