@@ -148,34 +148,34 @@ const rightNavItems: NavItem[] = [
                         </NavigationMenuItem>
                         </NavigationMenuList>
                     </NavigationMenu>   
-  <template v-if="isLoggedIn">
-    <DropdownMenu>
-      <DropdownMenuTrigger :as-child="true">
-        <Button
-          variant="ghost"
-          size="icon"
-          class="relative size-10 ml-4 w-auto rounded-full p-1 focus-within:ring-2 focus-within:ring-primary"
-        >
-          <Avatar class="size-8 overflow-hidden rounded-full">
-            <AvatarImage v-if="auth.user.avatar" :src="auth.user.avatar" :alt="auth.user.name" />
-            <AvatarFallback class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white">
-              {{ getInitials(auth.user?.name) }}
-            </AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" class="w-56">
-        <UserMenuContent :user="auth.user" />
-      </DropdownMenuContent>
-    </DropdownMenu>
-  </template>
-  <template v-else>
-    <div class="flex gap-2">
-      <Button as-child variant="outline" class="rounded-full bg-[#B07D48] px-8 py-2 text-white transition-colors hover:bg-[#95683C]">
-        <Link :href="route('login')">Login</Link>
-      </Button>
-    </div>
-  </template>
+                <template v-if="isLoggedIn">
+                    <DropdownMenu>
+                    <DropdownMenuTrigger :as-child="true">
+                        <Button
+                        variant="ghost"
+                        size="icon"
+                        class="relative size-10 ml-4 w-auto rounded-full p-1 focus-within:ring-2 focus-within:ring-primary"
+                        >
+                        <Avatar class="size-8 overflow-hidden rounded-full">
+                            <AvatarImage v-if="auth.user.avatar" :src="auth.user.avatar" :alt="auth.user.name" />
+                            <AvatarFallback class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white">
+                            {{ getInitials(auth.user?.name) }}
+                            </AvatarFallback>
+                        </Avatar>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" class="w-56">
+                        <UserMenuContent :user="auth.user" />
+                    </DropdownMenuContent>
+                    </DropdownMenu>
+                </template>
+                <template v-else>
+                    <div class="flex gap-2">
+                    <Button as-child variant="outline" class="rounded-full bg-[#B07D48] px-8 py-2 text-white transition-colors hover:bg-[#95683C]">
+                        <Link :href="route('login')">Login</Link>
+                    </Button>
+                    </div>
+                </template>
                 </div>
             </div>
         </div>
