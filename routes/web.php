@@ -18,7 +18,7 @@ Route::get('design', function () {
 })->middleware(['auth', 'verified'])->name('design');
 
 Route::get('designers/{id}', function ($id) {
-    return Inertia::render('Build/DesignerDetail', [
+    return Inertia::render('DesignerDetail', [
         'designerId' => $id
     ]);
 })->name('designerdetail');
