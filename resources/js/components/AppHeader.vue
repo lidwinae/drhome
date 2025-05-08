@@ -18,7 +18,7 @@ import UserMenuContent from '@/components/UserMenuContent.vue';
 import { getInitials } from '@/composables/useInitials';
 import type { BreadcrumbItem, NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
+import { Blocks, House, LayoutDashboard, Menu, Search, Shield } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 interface Props {
@@ -39,23 +39,35 @@ const activeItemStyles = computed(
 );
 const isLoggedIn = computed(() => !!auth.value?.user);
 
-const mainNavItems: NavItem[] = [
+const mainNavItems = computed(() => {
+  const items: NavItem[] = [
     {
-        title: 'Home',
-        href: '/',
-        icon: Menu,
+      title: 'Home',
+      href: '/',
+      icon: House,
     },
     {
-        title: 'Build',
-        href: '/build',
-        icon: LayoutGrid,
+      title: 'Build',
+      href: '/build',
+      icon: Blocks,
     },
     {
-        title: 'Design',
-        href: '/design',
-        icon: BookOpen,
+      title: 'Design',
+      href: '/design',
+      icon: LayoutDashboard,
     },
-];
+  ];
+
+  if (auth.value?.user?.role === 'admin') {
+    items.push({
+      title: 'Admin',
+      href: '/admin',
+      icon: Shield,
+    });
+  }
+
+  return items;
+});
 
 const rightNavItems: NavItem[] = [
 

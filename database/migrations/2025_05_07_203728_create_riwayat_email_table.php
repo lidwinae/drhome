@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('designs', function (Blueprint $table) {
+        Schema::create('riwayat_email', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);
-            $table->string('country', 50);
-            $table->string('specialty', 50);
-            $table->mediumText('photo')->charset('binary')->nullable();
+            $table->string('recipient');
+            $table->string('subject');
+            $table->text('message');
+            $table->enum('status', ['pending', 'sent', 'failed']);
+            $table->text('error')->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('designs');
+        Schema::dropIfExists('riwayat_email');
     }
 };
