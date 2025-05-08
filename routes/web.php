@@ -17,6 +17,12 @@ Route::get('design', function () {
     return Inertia::render('Design');
 })->middleware(['auth', 'verified'])->name('design');
 
+Route::get('designers/{id}', function ($id) {
+    return Inertia::render('Build/DesignerDetail', [
+        'designerId' => $id
+    ]);
+})->name('designerdetail');
+
 Route::get('api/designers', [DesignerController::class, 'index']);
 Route::get('api/designers/{id}', [DesignerController::class, 'show']);
 

@@ -2,48 +2,92 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import PlaceholderPattern from '../components/PlaceholderPattern.vue';
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { ref } from 'vue';
+// import { ref, onMounted } from 'vue';
+// import axios from 'axios';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Build',
-        href: '/build',
-    },
+  {
+    title: 'Build',
+    href: '/build',
+  },
 ];
 
-const designers = ref([]);
+const designers = ref([
+  {
+    id: "1",
+    name: "Ayu Nabila",
+    country: "Indonesia",
+    origin_city: "Malang",
+    specialty: "UI Designer",
+    photo_url: "https://imagedelivery.net/LBWXYQ-XnKSYxbZ-NuYGqQ/dacfb96d-c3fe-42d4-912d-083418f0f300/avatarhd",
+    description: "Desainer antarmuka berpengalaman dengan fokus pada aksesibilitas dan desain mobile."
+  },
+  {
+    id: "2",
+    name: "Rahmat Hidayat",
+    country: "Indonesia",
+    origin_city: "Surabaya",
+    specialty: "UX Researcher",
+    photo_url: "",
+    description: "Peneliti UX dengan pengalaman dalam usability testing dan user journey mapping."
+  },
+  {
+    id: "3",
+    name: "Rahmat Hidayat",
+    country: "Indonesia",
+    origin_city: "Surabaya",
+    specialty: "UX Researcher",
+    photo_url: "/images/build.jpg",
+    description: "Peneliti UX dengan pengalaman dalam usability testing dan user journey mapping."
+  }
+]);
 
-onMounted(async () => {
-  try {
-    const response = await axios.get('/api/designers');
-    designers.value = response.data.map(d => ({
+//if use api https://script.googleusercontent.com/a/macros/student.ub.ac.id/echo?user_content_key=AehSKLhFqtyCuqkN3PX8ZDVq9VNrNYyp0XkillEmOPjcMSFbuXzUk8ZJ2o-ho2JlHrtcN_tmez9g4MIza-T2whTMiwvsPLLlPie1EdhajQ1k7vDQv-2-P7X2UBx3GezUeSmshFcKkOs1FBGHf3jVKgDP4KQDtyZzrAZP_HMDSxV5fVhXYp4Dzjbmb7mmFjF5c2zCJT9YAX23WKSbJEkstK4gitlYbY6hnAdovn_WNmwJp8ElDV80hARiCR_EA-jeGHej6tGPMdPKfwe8ZYWmU8lX_pWE3BEA6PZdC6ESYyXkQQ-gOhiSXxdLetOjpUD_IA&lib=MY3sxZ67jnVyCQPWapYVsx-JYzTukwziq');
+
+// onMounted(async () => {
+//   try {
+//     const response = await axios.get('');
+//     console.log('API response:', response.data);
+//     designers.value = response.data.data.map(d => ({
+//       ...d,
+//       photo_url: `data:${d.photo_type};base64,${d.photo}`
+//     }));
+//   } catch (error) {
+//     console.error('Error:', error);
+//     designers.value = []; // Fallback
+//   }
+// });
+
+designers.value = designers.value.map(d => {
+  // Jika photo_type dan photo ada
+  if (d.photo_type && d.photo) {
+    return {
       ...d,
       photo_url: `data:${d.photo_type};base64,${d.photo}`
-    }));
-  } catch (error) {
-    console.error('Error:', error);
-    designers.value = []; // Fallback
+    };
   }
+  return d;
 });
+
+
+function handleImageError(event: Event) {
+  const target = event.target as HTMLImageElement;
+  target.src = '/images/default_Avatar.png'; //fallback image
+}
 
 </script>
 
 <template>
-    <Head title="Build" />
-  
-    <AppLayout :breadcrumbs="breadcrumbs">
+
+  <Head title="Build" />
+
+  <AppLayout :breadcrumbs="breadcrumbs">
     <div class="video-container">
       <!-- Video dengan fallback native HTML -->
-      <video
-        autoplay
-        loop
-        muted
-        playsinline
-        class="rounded-video"
-        poster="/images/build.jpg"
-      >
+      <video autoplay loop muted playsinline class="rounded-video" poster="/images/build.jpg">
         <source src="/videos/build.mp4" type="video/mp4">
         <img src="/images/build.jpg" alt="Background" class="fallback-img">
       </video>
@@ -51,54 +95,42 @@ onMounted(async () => {
 
     <!-- Search Bar -->
     <div class="search-container">
-        <div class="search-bar">
-          <button class="filter-button">
-            <img 
-              src="/images/filter.svg" 
-              alt="Filter" 
-              class="icon-30"
-            />
-          </button>
-          <input 
-            type="text" 
-            placeholder="Search your favourite designer..." 
-            class="search-input"
-          >
-          <button class="search-button">
-            <img 
-              src="/images/search.svg" 
-              alt="Search" 
-              class="icon-30"
-            />
-          </button>
-        </div>
+      <div class="search-bar">
+        <button class="filter-button">
+          <img src="/images/filter.svg" alt="Filter" class="icon-30" />
+        </button>
+        <input type="text" placeholder="Search your favourite designer..." class="search-input">
+        <button class="search-button">
+          <img src="/images/search.svg" alt="Search" class="icon-30" />
+        </button>
+      </div>
+    </div>
+
+    <!-- Designers Grid Section -->
+    <div class="designers-container">
+      <h2 class="section-title">Designers</h2>
+
+      <div v-if="designers.length === 0" class="empty-state">
+        <p>Tidak ada desainer yang ditampilkan</p>
       </div>
 
-        <!-- Designers Grid Section -->
-        <div class="designers-container">
-            <h2 class="section-title">Designers</h2>
-            
-            <div v-if="designers.length === 0" class="empty-state">
-                <p>Tidak ada desainer yang ditampilkan</p>
-            </div>
-            
-            <div v-else class="designers-grid">
-                <div v-for="designer in designers" :key="designer.id" class="designer-card">
-                    <img 
-                        :src="designer.photo_url" 
-                        :alt="designer.name"
-                        class="designer-photo"
-                        @error="handleImageError"
-                    >
-                    <div class="designer-info">
-                        <h3>{{ designer.name }}</h3>
-                        <p class="country">{{ designer.country }}</p>
-                        <p class="specialty">{{ designer.specialty }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </AppLayout>
+      <div v-else class="designers-grid">
+        <Link 
+      v-for="designer in designers" 
+      :key="designer.id" 
+      :href="route('designerdetail', { id: designer.id })" 
+      class="designer-card"
+    >
+          <img :src="designer.photo_url" :alt="designer.name" class="designer-photo" @error="handleImageError">
+          <div class="designer-info">
+            <h3>{{ designer.name }}</h3>
+            <p class="country">{{ designer.country }}</p>
+            <p class="specialty">{{ designer.specialty }}</p>
+          </div>
+        </Link>
+      </div>
+    </div>
+  </AppLayout>
 </template>
 
 <style scoped>
@@ -115,13 +147,13 @@ onMounted(async () => {
   border-radius: 20px;
   aspect-ratio: 2.35/1;
   object-fit: cover;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .icon-30 {
   width: 30px;
   height: 30px;
-  display: block; 
+  display: block;
 }
 
 /* Search Bar Styles */
@@ -139,7 +171,7 @@ onMounted(async () => {
   border-radius: 20px;
   height: 50px;
   padding: 0.5rem 1rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 1000px;
 }
@@ -154,7 +186,7 @@ onMounted(async () => {
   background: transparent;
 }
 
-.filter-button, 
+.filter-button,
 .search-button {
   background: transparent;
   border: none;
@@ -180,11 +212,12 @@ onMounted(async () => {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+
   .video-container,
   .search-container {
     padding: 1rem;
   }
-  
+
   .rounded-video,
   .search-bar {
     border-radius: 12px;
@@ -219,7 +252,7 @@ onMounted(async () => {
   background: white;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
 }
 
@@ -253,17 +286,17 @@ onMounted(async () => {
 }
 
 .country {
-    color: #888;
-    font-size: 0.85rem;
-    margin-bottom: 0.5rem;
+  color: #888;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
 }
 
 .empty-state {
-    text-align: center;
-    padding: 2rem;
-    font-weight: 300;
-    font-size: 15px;
-    color: #AE7A42;
+  text-align: center;
+  padding: 2rem;
+  font-weight: 300;
+  font-size: 15px;
+  color: #AE7A42;
 }
 
 /* Responsive Design */
@@ -271,11 +304,11 @@ onMounted(async () => {
   .designers-container {
     padding: 0 1rem 2rem;
   }
-  
+
   .designers-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .designer-photo {
     height: 240px;
   }
