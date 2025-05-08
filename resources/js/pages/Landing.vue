@@ -9,29 +9,27 @@ defineOptions({
 
 <template>
     <div>
-        <!-- Hero Section -->
-        <section
-            class="relative mx-20 my-10 rounded-4xl py-20 bg-cover bg-center bg-no-repeat"
-            style="background-image: url('/images/hero-bg-section.png')"
-        >
-            <!-- Overlay for better text readability (optional)
-            <div class="absolute inset-0 bg-black/30"></div> -->
-
-            <div class="container mx-auto px-4 relative z-10">
-                <div class="flex flex-col items-center text-center">
-                    <h1 class="mb-4 text-5xl font-bold text-white">Dr. Home</h1>
-                    <p class="mb-8 text-2xl text-gray-100">Your dream home, in just one click.</p>
-                    <Link href="/build" class="rounded-full bg-[#B07D48] px-8 py-3 text-lg text-white transition-colors hover:bg-[#95683C]">
-                        Order Dream House
-                    </Link>
+        <div class="flex justify-center px-4 my-5 md:my-10 w-full">
+            <section class="relative w-full max-w-[1000px] rounded-3xl md:rounded-4xl overflow-hidden"
+                style="aspect-ratio: 2.5/1">
+                
+                <!-- Background Image -->
+                <img src="/images/hero-bg-section.png" alt="Hero Background" 
+                    class="absolute inset-0 w-full h-full object-cover" />
+                
+                <!-- Content -->
+                <div class="relative h-full flex items-center justify-center">
+                    <div class="flex flex-col items-center text-center py-8 md:py-20 px-4 w-full">
+                        <h1 class="mb-2 md:mb-4 text-3xl md:text-5xl font-bold text-[#183D55]">Dr. Home</h1>
+                        <p class="mb-4 md:mb-8 text-lg md:text-2xl text-[#183D55] px-2">Your dream home, in just one click.</p>
+                        <Link href="/build" 
+                            class="rounded-full bg-[#B07D48] px-6 py-2 md:px-8 md:py-3 text-base md:text-lg text-white transition-colors hover:bg-[#95683C]">
+                            Order Dream House
+                        </Link>
+                    </div>
                 </div>
-            </div>
-
-            <!-- Decorative elements -->
-            <div class="absolute top-1/2 left-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 transform">
-                <div class="h-96 w-96 rounded-full bg-[#B07D48]/5 blur-3xl"></div>
-            </div>
-        </section>
+            </section>
+        </div>
 
         <!-- How it Works Section -->
         <section class="bg-white py-20">

@@ -32,7 +32,7 @@ onMounted(async () => {
 });
 
 const handleImageError = (e) => {
-  e.target.src = '/images/placeholder-design.jpg'; // Fallback image
+  e.target.src = '/images/design.jpg'; // Fallback image
 };
 </script>
 
