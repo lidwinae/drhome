@@ -20,6 +20,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'status',
     ];
 
     /**
@@ -43,6 +44,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => 'string',
+            'status' => 'string'
         ];
     }
 
@@ -53,5 +55,6 @@ class User extends Authenticatable
      */
     protected $attributes = [
         'role' => 'user',
+        'status' => 'active',
     ];
 }

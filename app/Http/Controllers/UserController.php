@@ -29,4 +29,49 @@ class UserController extends Controller
 
         return back()->with('success', 'User role updated successfully');
     }
+
+    public function index()
+    {
+        $users = User::query()
+            ->select(['id', 'name', 'email', 'role', 'status', 'created_at'])
+            ->where('role', '!=', 'admin')
+            ->latest()
+            ->get();
+    
+        return response()->json($users);
+    }
+    
+    public function ban(User $user)
+    {
+        if ($user->role === 'admin') {
+            return back()->with('error', 'Cannot ban admin users');
+        }
+    
+        $user->update(['status' => 'banned']);
+    
+        return back()->with('success', 'User has been banned');
+    }
+    
+    public function unban(User $user)
+    {
+        if ($user->role === 'admin') {
+            return back()->with('error', 'Cannot unban admin users');
+        }
+    
+        $user->update(['status' => 'active']);
+    
+        return back()->with('success', 'User has been unbanned');
+    }
+    
+    public function destroy(User $user)
+    {
+        if ($user->role === 'admin') {
+            return back()->with('error', 'Cannot delete admin users');
+        }
+        
+        $user->delete();
+        
+        return back()->with('success', 'User has been deleted');
+    }
+
 }

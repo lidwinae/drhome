@@ -24,11 +24,11 @@ const mainNavItems: NavItem[] = [
         href: '/admin/add',
         icon: UserPlus,
     },
-    // {
-    //     title: 'Ban',
-    //     href: '/admin/ban',
-    //     icon: Ban,
-    // },
+    {
+        title: 'Ban',
+        href: '/admin/ban',
+        icon: Ban,
+    },
 ];
 
 const footerNavItems: NavItem[] = [

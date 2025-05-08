@@ -34,5 +34,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('add');
 
     Route::patch('/add', [UserController::class, 'update'])->name('upd');
+
+    Route::get('/ban', function () {
+        return Inertia::render('admin/Ban');
+    })->name('ban');
+    
+    Route::patch('/users/{user}/ban', [UserController::class, 'ban'])->name('users.ban');
+    Route::patch('/users/{user}/unban', [UserController::class, 'unban'])->name('users.unban');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 });
 

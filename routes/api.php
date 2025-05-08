@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\MailsAdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\DesignerController;
 use App\Http\Controllers\Api\DesignController;
+use App\Http\Controllers\UserController;
 
 // Route::middleware(['auth:sanctum'])->group(function () {
 Route::get('designers', [DesignerController::class, 'index']);
@@ -22,4 +23,6 @@ Route::patch('admins/{id}/reply', [MailsAdminController::class, 'update']);
 
 Route::post('email/send', [MailsAdminController::class, 'send']);
 Route::get('email/history', [MailsAdminController::class, 'riwayat']);
+
+Route::get('admin/users', [UserController::class, 'index']);
 // });
