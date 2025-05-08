@@ -23,6 +23,12 @@ Route::get('designers/{id}', function ($id) {
     ]);
 })->name('designerdetail');
 
+Route::get('designers/{id}/request', function ($id) {
+    return Inertia::render('RequestDesign', [
+        'designerId' => $id
+    ]);
+})->name('designer.request');
+
 Route::get('api/designers', [DesignerController::class, 'index']);
 Route::get('api/designers/{id}', [DesignerController::class, 'show']);
 
