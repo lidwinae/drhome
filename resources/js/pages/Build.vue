@@ -15,6 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
+//Placeholder (delete if all is set)
 const designers = ref([
   {
     id: "1",
@@ -24,24 +25,6 @@ const designers = ref([
     specialty: "UI Designer",
     photo_url: "https://imagedelivery.net/LBWXYQ-XnKSYxbZ-NuYGqQ/dacfb96d-c3fe-42d4-912d-083418f0f300/avatarhd",
     description: "Desainer antarmuka berpengalaman dengan fokus pada aksesibilitas dan desain mobile."
-  },
-  {
-    id: "2",
-    name: "Rahmat Hidayat",
-    country: "Indonesia",
-    origin_city: "Surabaya",
-    specialty: "UX Researcher",
-    photo_url: "",
-    description: "Peneliti UX dengan pengalaman dalam usability testing dan user journey mapping."
-  },
-  {
-    id: "3",
-    name: "Rahmat Hidayat",
-    country: "Indonesia",
-    origin_city: "Surabaya",
-    specialty: "UX Researcher",
-    photo_url: "/images/build.jpg",
-    description: "Peneliti UX dengan pengalaman dalam usability testing dan user journey mapping."
   }
 ]);
 
@@ -115,18 +98,14 @@ function handleImageError(event: Event) {
       </div>
 
       <div v-else class="designers-grid">
-        <Link 
-      v-for="designer in designers" 
-      :key="designer.id" 
-      :href="route('designerdetail', { id: designer.id })" 
-      class="designer-card"
-    >
-          <img :src="designer.photo_url" :alt="designer.name" class="designer-photo" @error="handleImageError">
-          <div class="designer-info">
-            <h3>{{ designer.name }}</h3>
-            <p class="country">{{ designer.country }}</p>
-            <p class="specialty">{{ designer.specialty }}</p>
-          </div>
+        <Link v-for="designer in designers" :key="designer.id" :href="route('designerdetail', { id: designer.id })"
+          class="designer-card">
+        <img :src="designer.photo_url" :alt="designer.name" class="designer-photo" @error="handleImageError">
+        <div class="designer-info">
+          <h3>{{ designer.name }}</h3>
+          <p class="country">{{ designer.country }}</p>
+          <p class="specialty">{{ designer.specialty }}</p>
+        </div>
         </Link>
       </div>
     </div>
@@ -297,26 +276,5 @@ function handleImageError(event: Event) {
   font-weight: 300;
   font-size: 15px;
   color: #AE7A42;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .designers-container {
-    padding: 0 1rem 2rem;
-  }
-
-  .designers-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .designer-photo {
-    height: 240px;
-  }
-}
-
-@media (max-width: 200px) {
-  .designers-grid {
-    grid-template-columns: 1fr;
-  }
 }
 </style>

@@ -16,6 +16,13 @@ const goToRequestPage = () => {
   router.visit(route('designer.request', { id: props.designer.id }));
 };
 
+const breadcrumbs: BreadcrumbItem[] = [
+  {
+    title: 'DesignerDetail',
+    href: '/detail',
+  },
+];
+
 // Dummy data structure matching your API
 const dummyData = {
   id: "1",
@@ -121,145 +128,125 @@ function handleImageError(event: Event) {
 
 <template>
   <AppLayout :breadcrumbs="breadcrumbs">
-    <main class="profile-designer">
+    <!-- Main Content -->
+    <div class="main-content">
+      <div v-if="isLoading" class="loading-state">
+        <p>Loading designer profile...</p>
+      </div>
 
-      <!-- Main Content -->
-      <div class="main-content">
-        <div v-if="isLoading" class="loading-state">
-          <p>Loading designer profile...</p>
-        </div>
-
-        <div v-else-if="designer" class="content-grid">
-          <div class="left-column">
-            <!-- Profile Section -->
-            <section class="profile-section">
-              <div class="profile-header">
-                <img
-                  src="https://cdn.builder.io/api/v1/image/assets/TEMP/6f6b2bd1fb346d2b1ae7a3789c1936af4de2b45f?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34"
-                  alt="" class="cover-image" />
-                <h2 class="profile-name">{{ designer.name }}</h2>
+      <div v-else-if="designer" class="content-grid">
+        <div class="left-column">
+          <!-- Profile Section -->
+          <section class="profile-section">
+            <div class="profile-header">
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/6f6b2bd1fb346d2b1ae7a3789c1936af4de2b45f?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34"
+                alt="" class="cover-image" />
+              <h2 class="profile-name">{{ designer.name }}</h2>
+            </div>
+            <div class="profile-content">
+              <div class="profile-info">
+                <img :src="designer.photo_url" alt="" class="profile-picture" @error="handleImageError" />
+                <div class="info-details">
+                  <div class="tags">
+                    <span class="tag">{{ designer.origin_city }}</span>
+                    <span class="tag">{{ designer.specialty }}</span>
+                  </div>
+                  <p class="location">{{ designer.origin_city }}, {{ designer.country }}</p>
+                  <p class="role">{{ designer.specialty }}</p>
+                </div>
+                <Link :href="route('designer.request', { id: designer.id })" class="request-button">
+                Request
+                </Link>
               </div>
-              <div class="profile-content">
-                <div class="profile-info">
-                  <img :src="designer.photo_url" alt="" class="profile-picture" @error="handleImageError" />
-                  <div class="info-details">
-                    <div class="tags">
-                      <span class="tag">{{ designer.origin_city }}</span>
-                      <span class="tag">{{ designer.specialty }}</span>
+            </div>
+            <div class="about-section">
+              <h3 class="about-title">About</h3>
+              <p class="about-text">{{ designer.description }}</p>
+
+              <div class="section-block">
+                <h4>Education</h4>
+                <div v-for="(edu, index) in designer.education" :key="index" class="education-item">
+                  <h5>{{ edu.degree }}</h5>
+                  <p>{{ edu.university }} ({{ edu.year }})</p>
+                </div>
+              </div>
+
+              <div class="section-block">
+                <h4>Experience</h4>
+                <div v-for="(exp, index) in designer.experience" :key="index" class="experience-item">
+                  <h5>{{ exp.position }}</h5>
+                  <p>{{ exp.company }} ({{ exp.period }})</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Portfolio Section -->
+          <section class="portfolio-section">
+            <div class="portfolio-content">
+              <h2 class="portfolio-title">Portofolio</h2>
+
+              <div v-if="designer?.portfolio?.length" class="portfolio-container">
+                <div class="portfolio-grid">
+                  <article v-for="(item, index) in designer.portfolio" :key="index" class="portfolio-card">
+                    <div class="portfolio-image-container">
+                      <img :src="item.image_url" :alt="item.title || 'Portfolio item'" class="portfolio-image"
+                        @error="handleImageError" loading="lazy" />
+                      <div class="portfolio-overlay">
+                        <div class="portfolio-info">
+                          <h3 class="portfolio-item-title">{{ item.title }}</h3>
+                          <div class="portfolio-meta">
+                            <span class="portfolio-location">{{ item.location }}</span>
+                            <span class="portfolio-style">{{ item.style }}</span>
+                          </div>
+                          <p class="portfolio-year">{{ item.year }}</p>
+                          <p class="portfolio-description">{{ item.description }}</p>
+                        </div>
+                      </div>
                     </div>
-                    <p class="location">{{ designer.origin_city }}, {{ designer.country }}</p>
-                    <p class="role">{{ designer.specialty }}</p>
-                  </div>
-                  <!-- <button class="request-button" @click="goToRequestPage">Request</button> -->
-                  <Link :href="route('designer.request', { id: designer.id })" class="request-button">
-                  Request
-                  </Link>
-
+                  </article>
                 </div>
               </div>
-              <div class="about-section">
-                <h3 class="about-title">About</h3>
-                <p class="about-text">{{ designer.description }}</p>
 
-                <div class="section-block">
-                  <h4>Education</h4>
-                  <div v-for="(edu, index) in designer.education" :key="index" class="education-item">
-                    <h5>{{ edu.degree }}</h5>
-                    <p>{{ edu.university }} ({{ edu.year }})</p>
-                  </div>
-                </div>
-
-                <div class="section-block">
-                  <h4>Experience</h4>
-                  <div v-for="(exp, index) in designer.experience" :key="index" class="experience-item">
-                    <h5>{{ exp.position }}</h5>
-                    <p>{{ exp.company }} ({{ exp.period }})</p>
-                  </div>
-                </div>
+              <div v-else class="empty-portfolio">
+                <p>No portfolio items available</p>
               </div>
-            </section>
-          </div>
-
-          <div class="right-column">
-            <!-- Recommendations Sidebar -->
-            <aside class="recommendations-sidebar">
-              <h3 class="recommendations-title">Rekomendasi Untukmu</h3>
-              <div v-for="(user, index) in recommendationsData" :key="index" class="recommendation-card">
-                <img :src="user.imageUrl" :alt="user.name" class="user-avatar" />
-                <div class="user-info">
-                  <h4 class="user-name">{{ user.name }}</h4>
-                  <p class="user-role">{{ user.role }}</p>
-                </div>
-              </div>
-            </aside>
-          </div>
+            </div>
+          </section>
         </div>
 
-        <div v-else class="error-state">
-          <p>Designer not found</p>
+        <!-- Right Column -->
+        <div class="right-column">
+          <aside class="recommendations-sidebar">
+            <h3 class="recommendations-title">Rekomendasi Untukmu</h3>
+            <div v-for="(user, index) in recommendationsData" :key="index" class="recommendation-card">
+              <img :src="user.imageUrl" :alt="user.name" class="user-avatar" />
+              <div class="user-info">
+                <h4 class="user-name">{{ user.name }}</h4>
+                <p class="user-role">{{ user.role }}</p>
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
 
-      <!-- Portfolio Section -->
-      <section class="portfolio-section">
-        <div class="portfolio-content">
-          <h2 class="portfolio-title">Portofolio</h2>
-
-          <div v-if="designer?.portfolio?.length" class="portfolio-container">
-            <div class="portfolio-grid">
-              <article v-for="(item, index) in designer.portfolio" :key="index" class="portfolio-card">
-                <div class="portfolio-image-container">
-                  <img :src="item.image_url" :alt="item.title || 'Portfolio item'" class="portfolio-image"
-                    @error="handleImageError" loading="lazy" />
-                  <div class="portfolio-overlay">
-                    <div class="portfolio-info">
-                      <h3 class="portfolio-item-title">{{ item.title }}</h3>
-                      <div class="portfolio-meta">
-                        <span class="portfolio-location">{{ item.location }}</span>
-                        <span class="portfolio-style">{{ item.style }}</span>
-                      </div>
-                      <p class="portfolio-year">{{ item.year }}</p>
-                      <p class="portfolio-description">{{ item.description }}</p>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </div>
-          </div>
-
-          <div v-else class="empty-portfolio">
-            <p>No portfolio items available</p>
-          </div>
-        </div>
-      </section>
-
-    </main>
+      <div v-else class="error-state">
+        <p>Designer not found</p>
+      </div>
+    </div>
   </AppLayout>
 </template>
 
-<style scoped>
-/* Your provided CSS remains exactly the same */
-.profile-designer {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background-color: #f4efef;
-}
 
+
+<style scoped>
 .brand-title {
   color: #ae7a42;
   font-family: Archivo, -apple-system, Roboto, Helvetica, sans-serif;
   font-size: 51px;
   font-weight: 700;
   margin: 0;
-}
-
-.main-content {
-  align-self: center;
-  margin-top: 58px;
-  width: 100%;
-  max-width: 1334px;
-  padding: 0 20px;
 }
 
 .content-grid {
@@ -474,6 +461,8 @@ function handleImageError(event: Event) {
 .portfolio-section {
   width: 100%;
   padding: 60px 20px;
+  margin-top: 30px;
+  margin-bottom: 30px;
   background-color: #f9f9f9;
 }
 
@@ -498,7 +487,7 @@ function handleImageError(event: Event) {
 
 .portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 30px;
   justify-items: center;
 }
@@ -815,18 +804,6 @@ function handleImageError(event: Event) {
     margin-top: 0;
   }
 
-  .footer {
-    padding: 20px;
-    margin-top: 40px;
-  }
-
-  .footer-content {
-    flex-direction: column;
-  }
-
-  .footer-brand {
-    font-size: 40px;
-  }
 
   .contact-section,
   .news-section {
