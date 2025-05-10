@@ -2,12 +2,14 @@ import { onMounted, ref } from 'vue';
 
 type Appearance = 'light';
 
-export function updateTheme(value: Appearance) {
+export function updateTheme() {
     if (typeof window === 'undefined') {
         return;
     }
 
+    // Selalu set ke mode terang
     document.documentElement.classList.remove('dark');
+    document.documentElement.classList.add('light');
 }
 
 const setCookie = (name: string, value: string, days = 365) => {
@@ -20,41 +22,33 @@ const setCookie = (name: string, value: string, days = 365) => {
     document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
 };
 
-const getStoredAppearance = () => {
-    if (typeof window === 'undefined') {
-        return null;
-    }
-
-    return localStorage.getItem('appearance') as Appearance | null;
-};
-
 export function initializeTheme() {
     if (typeof window === 'undefined') {
         return;
     }
 
-    // Always set light mode
-    updateTheme('light');
+    // Selalu set ke mode terang
+    updateTheme();
 }
 
 export function useAppearance() {
     const appearance = ref<Appearance>('light');
 
     onMounted(() => {
-        // Always set light mode
+        // Selalu set ke mode terang
         appearance.value = 'light';
     });
 
-    function updateAppearance(value: Appearance) {
-        appearance.value = value;
+    function updateAppearance() {
+        appearance.value = 'light';
 
-        // Store in localStorage for client-side persistence...
-        localStorage.setItem('appearance', value);
+        // Simpan di localStorage untuk persistensi client-side
+        localStorage.setItem('appearance', 'light');
 
-        // Store in cookie for SSR...
-        setCookie('appearance', value);
+        // Simpan di cookie untuk SSR
+        setCookie('appearance', 'light');
 
-        updateTheme(value);
+        updateTheme();
     }
 
     return {
