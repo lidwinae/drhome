@@ -1,13 +1,6 @@
 <script setup lang="ts">
 // import { ref, onMounted } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-// eslint-disable-next-line vue/no-export-in-script-setup
-// export default {
-//     name: 'RequestDesign',
-//     setup() {
-//         return {}
-//     }
-// }
 </script>
 
 <template>
@@ -27,17 +20,21 @@ import AppLayout from '@/layouts/AppLayout.vue';
                         </div>
                         <div class="info-inputs">
                             <div class="input-field">
-                                <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/0e6de3ac079e04a06c19a709919467ec03deec0d?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34"
-                                    class="input-icon" alt="Input icon" />
+                                <input type="text" placeholder="Enter Province" class="input-field-text"/>
                             </div>
                             <div class="input-field">
-                                <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/0e6de3ac079e04a06c19a709919467ec03deec0d?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34"
-                                    class="input-icon" alt="Input icon" />
+                                <input type="text" placeholder="Enter City" class="input-field-text"/>
                             </div>
-                            <div class="input-field"></div>
-                            <div class="input-field"></div>
+                            <div class="input-field">
+                                <input type="text" placeholder="Enter Land Size" class="input-field-text"/>
+                            </div>
+                            <div class="input-field">
+                                <input type="text" placeholder="Enter Land Shape" class="input-field-text"/>
+                            </div>
                             <button class="add-btn">+</button>
-                            <div class="input-field"></div>
+                            <div class="input-field">
+                                <input type="text" placeholder="Enter Budget" class="input-field-text"/>
+                            </div>
                         </div>
                     </div>
                     <aside class="request-info">
@@ -63,10 +60,11 @@ import AppLayout from '@/layouts/AppLayout.vue';
                     </div>
                     <div class="arch-inputs">
                         <div class="input-field">
-                            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/0e6de3ac079e04a06c19a709919467ec03deec0d?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34"
-                                class="input-icon" alt="Input icon" />
+                            <input type="text" placeholder="Enter Property Type" class="input-field-text"/>
                         </div>
-                        <div class="input-field"></div>
+                        <div class="input-field">
+                            <input type="text" placeholder="Enter Style" class="input-field-text"/>
+                        </div>
                         <button class="add-btn">+</button>
                     </div>
                 </section>
@@ -78,7 +76,9 @@ import AppLayout from '@/layouts/AppLayout.vue';
                             <p class="layout-subtitle">Facilities</p>
                         </div>
                         <div class="layout-controls">
-                            <div class="input-field"></div>
+                            <div class="input-field">
+                                <input type="text" placeholder="Enter Facility" class="input-field-text"/>
+                            </div>
                             <button class="add-facility-btn">+ Add Facility</button>
                         </div>
                         <div class="counter-controls">
@@ -98,11 +98,14 @@ import AppLayout from '@/layouts/AppLayout.vue';
                     </div>
                     <div class="ambient-inputs">
                         <div class="input-field">
-                            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/0e6de3ac079e04a06c19a709919467ec03deec0d?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34"
-                                class="input-icon" alt="Input icon" />
+                            <input type="text" placeholder="Enter Sun Orientation" class="input-field-text"/>
                         </div>
-                        <div class="input-field"></div>
-                        <div class="text-area-field"></div>
+                        <div class="input-field">
+                            <input type="text" placeholder="Enter Wind Orientation" class="input-field-text"/>
+                        </div>
+                        <div class="text-area-field">
+                            <textarea placeholder="Enter More information" class="input-field-text"></textarea>
+                        </div>
                     </div>
                 </section>
 
@@ -233,6 +236,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
     margin-top: 20px;
     padding: 20px;
     background-color: #fff;
+    width: 67%
 }
 
 .arch-labels {
@@ -415,25 +419,20 @@ import AppLayout from '@/layouts/AppLayout.vue';
 
     .info-labels,
     .arch-labels,
+    .layout-labels,
     .ambient-labels {
         width: 100%;
-        margin-bottom: 15px;
     }
 
-    .info-inputs,
     .arch-inputs,
+    .layout-inputs,
     .ambient-inputs {
         width: 100%;
     }
 
-    .input-field {
-        width: 100%;
-    }
-
-    .layout-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
+    .layout-controls,
+    .timeline-info {
+        display: block;
     }
 }
 </style>
