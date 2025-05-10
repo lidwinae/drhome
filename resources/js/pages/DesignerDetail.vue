@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { router, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
 
 const designer = ref<{
@@ -11,10 +11,6 @@ const designer = ref<{
 
 const isLoading = ref(true);
 
-//route
-const goToRequestPage = () => {
-  router.visit(route('designer.request', { id: props.designer.id }));
-};
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
