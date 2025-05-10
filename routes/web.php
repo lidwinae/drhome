@@ -41,6 +41,5 @@ Route::get('api/designs/{id}', [DesignController::class, 'show']);
     })->name('request');
 });
 
-
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
