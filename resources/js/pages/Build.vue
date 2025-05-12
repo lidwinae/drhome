@@ -67,7 +67,7 @@ function handleImageError(event: Event) {
 
   <Head title="Build" />
 
-  <AppLayout :breadcrumbs="breadcrumbs">
+  <AppLayout :breadcrumbs="breadcrumbs" class="bg-[#F6F6F6]">
     <div class="video-container">
       <!-- Video dengan fallback native HTML -->
       <video autoplay loop muted playsinline class="rounded-video" poster="/images/build.jpg">
