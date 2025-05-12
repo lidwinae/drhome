@@ -4,9 +4,9 @@ import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
 import PlaceholderPattern from '../components/PlaceholderPattern.vue';
-import { ref } from 'vue';
-// import { ref, onMounted } from 'vue';
-// import axios from 'axios';
+// import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -30,19 +30,19 @@ const designers = ref([
 
 //if use api https://script.googleusercontent.com/a/macros/student.ub.ac.id/echo?user_content_key=AehSKLhFqtyCuqkN3PX8ZDVq9VNrNYyp0XkillEmOPjcMSFbuXzUk8ZJ2o-ho2JlHrtcN_tmez9g4MIza-T2whTMiwvsPLLlPie1EdhajQ1k7vDQv-2-P7X2UBx3GezUeSmshFcKkOs1FBGHf3jVKgDP4KQDtyZzrAZP_HMDSxV5fVhXYp4Dzjbmb7mmFjF5c2zCJT9YAX23WKSbJEkstK4gitlYbY6hnAdovn_WNmwJp8ElDV80hARiCR_EA-jeGHej6tGPMdPKfwe8ZYWmU8lX_pWE3BEA6PZdC6ESYyXkQQ-gOhiSXxdLetOjpUD_IA&lib=MY3sxZ67jnVyCQPWapYVsx-JYzTukwziq');
 
-// onMounted(async () => {
-//   try {
-//     const response = await axios.get('');
-//     console.log('API response:', response.data);
-//     designers.value = response.data.data.map(d => ({
-//       ...d,
-//       photo_url: `data:${d.photo_type};base64,${d.photo}`
-//     }));
-//   } catch (error) {
-//     console.error('Error:', error);
-//     designers.value = []; // Fallback
-//   }
-// });
+onMounted(async () => {
+  try {
+    const response = await axios.get('https://script.googleusercontent.com/a/macros/student.ub.ac.id/echo?user_content_key=AehSKLhFqtyCuqkN3PX8ZDVq9VNrNYyp0XkillEmOPjcMSFbuXzUk8ZJ2o-ho2JlHrtcN_tmez9g4MIza-T2whTMiwvsPLLlPie1EdhajQ1k7vDQv-2-P7X2UBx3GezUeSmshFcKkOs1FBGHf3jVKgDP4KQDtyZzrAZP_HMDSxV5fVhXYp4Dzjbmb7mmFjF5c2zCJT9YAX23WKSbJEkstK4gitlYbY6hnAdovn_WNmwJp8ElDV80hARiCR_EA-jeGHej6tGPMdPKfwe8ZYWmU8lX_pWE3BEA6PZdC6ESYyXkQQ-gOhiSXxdLetOjpUD_IA&lib=MY3sxZ67jnVyCQPWapYVsx-JYzTukwziq');
+    console.log('API response:', response.data);
+    designers.value = response.data.data.map(d => ({
+      ...d,
+      photo_url: `data:${d.photo_type};base64,${d.photo}`
+    }));
+  } catch (error) {
+    console.error('Error:', error);
+    designers.value = []; // Fallback
+  }
+});
 
 designers.value = designers.value.map(d => {
   // Jika photo_type dan photo ada
