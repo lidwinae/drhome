@@ -17,7 +17,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Design');
     })->name('design');
 
-
 Route::get('designers/{id}', function ($id) {
     return Inertia::render('DesignerDetail', [
         'designerId' => $id
@@ -29,12 +28,6 @@ Route::get('designers/{id}/request', function ($id) {
         'designerId' => $id
     ]);
 })->name('designer.request');
-
-Route::get('api/designers', [DesignerController::class, 'index']);
-Route::get('api/designers/{id}', [DesignerController::class, 'show']);
-
-Route::get('api/designs', [DesignController::class, 'index']);
-Route::get('api/designs/{id}', [DesignController::class, 'show']);
 
     Route::get('request', function () {
         return Inertia::render('Request');
