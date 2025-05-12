@@ -76,7 +76,7 @@ const rightNavItems: NavItem[] = [
 
 <template>
     <div>
-        <div class="border-b border-sidebar-border/80">
+        <div class="border-b border-sidebar-border/80 bg-white">
             <div class="mx-auto flex h-16 items-center px-4 md:max-w-7xl">
                 <!-- Mobile Menu -->
                 <div class="lg:hidden">
@@ -134,15 +134,15 @@ const rightNavItems: NavItem[] = [
 
                 <!-- Desktop Menu -->
                 <div class="hidden h-full lg:flex lg:flex-1">
-                    
+
                 </div>
 
                 <div class="ml-auto h-full flex items-center space-x-2">
                     <NavigationMenu class="ml-10 flex hidden h-full items-stretch lg:flex">
                         <NavigationMenuList class="flex h-full items-stretch space-x-2">
-                        <NavigationMenuItem 
-                            v-for="(item, index) in mainNavItems" 
-                            :key="index" 
+                        <NavigationMenuItem
+                            v-for="(item, index) in mainNavItems"
+                            :key="index"
                             class="relative flex h-full items-center"
                         >
                             <Link :href="item.href">
@@ -159,7 +159,7 @@ const rightNavItems: NavItem[] = [
                             ></div>
                         </NavigationMenuItem>
                         </NavigationMenuList>
-                    </NavigationMenu>   
+                    </NavigationMenu>
                 <template v-if="isLoggedIn">
                     <DropdownMenu>
                     <DropdownMenuTrigger :as-child="true">

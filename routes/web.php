@@ -17,21 +17,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Design');
     })->name('design');
 
-Route::get('designers/{id}', function ($id) {
-    return Inertia::render('DesignerDetail', [
-        'designerId' => $id
-    ]);
-})->name('designerdetail');
+    Route::get('profile', function () {
+        return Inertia::render('Profile');
+    })->name('profile');
 
-Route::get('designers/{id}/request', function ($id) {
-    return Inertia::render('RequestDesign', [
-        'designerId' => $id
-    ]);
-})->name('designer.request');
+    Route::get('designers/{id}', function ($id) {
+        return Inertia::render('DesignerDetail', [
+            'designerId' => $id
+        ]);
+    })->name('designerdetail');
 
-    Route::get('request', function () {
-        return Inertia::render('Request');
-    })->name('request');
+    Route::get('designers/{id}/request', function ($id) {
+        return Inertia::render('RequestDesign', [
+            'designerId' => $id
+        ]);
+    })->name('designer.request');
+
+        Route::get('request', function () {
+            return Inertia::render('Request');
+        })->name('request');
 });
 
 require __DIR__ . '/settings.php';

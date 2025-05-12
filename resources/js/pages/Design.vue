@@ -38,8 +38,8 @@ const handleImageError = (e) => {
 
 <template>
     <Head title="Design" />
-  
-    <AppLayout :breadcrumbs="breadcrumbs">
+
+    <AppLayout :breadcrumbs="breadcrumbs" class="bg-[#F6F6F6]">
       <div class="image-container">
         <img src="/images/design.jpg" alt="Background" class="rounded-image">
       </div>
@@ -48,21 +48,21 @@ const handleImageError = (e) => {
       <div class="search-container">
         <div class="search-bar">
           <button class="filter-button">
-            <img 
-              src="/images/filter.svg" 
-              alt="Filter" 
+            <img
+              src="/images/filter.svg"
+              alt="Filter"
               class="icon-30"
             />
           </button>
-          <input 
-            type="text" 
-            placeholder="Search your favourite design..." 
+          <input
+            type="text"
+            placeholder="Search your favourite design..."
             class="search-input"
           >
           <button class="search-button">
-            <img 
-              src="/images/search.svg" 
-              alt="Search" 
+            <img
+              src="/images/search.svg"
+              alt="Search"
               class="icon-30"
             />
           </button>
@@ -72,23 +72,23 @@ const handleImageError = (e) => {
       <!-- Designs Grid Section -->
       <div class="designs-container">
         <h2 class="section-title">Designs</h2>
-        
+
         <div v-if="isLoading" class="loading-state">
           <p>Loading designs...</p>
         </div>
-        
+
         <div v-else-if="error" class="error-state">
           <p>{{ error }}</p>
         </div>
-        
+
         <div v-else-if="designs.length === 0" class="empty-state">
           <p>No designs available</p>
         </div>
-        
+
         <div v-else class="designs-grid">
           <div v-for="design in designs" :key="design.id" class="design-card">
-            <img 
-              :src="design.photo_url" 
+            <img
+              :src="design.photo_url"
               :alt="design.name"
               class="design-photo"
               @error="handleImageError"
@@ -123,7 +123,7 @@ const handleImageError = (e) => {
 .icon-30 {
   width: 30px;
   height: 30px;
-  display: block; 
+  display: block;
 }
 
 /* Search Bar Styles */
@@ -156,7 +156,7 @@ const handleImageError = (e) => {
   background: transparent;
 }
 
-.filter-button, 
+.filter-button,
 .search-button {
   background: transparent;
   border: none;
@@ -186,7 +186,7 @@ const handleImageError = (e) => {
   .search-container {
     padding: 1rem;
   }
-  
+
   .rounded-image,
   .search-bar {
     border-radius: 12px;
@@ -273,11 +273,11 @@ const handleImageError = (e) => {
   .designs-container {
     padding: 0 1rem 2rem;
   }
-  
+
   .designs-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .design-photo {
     height: 240px;
   }
