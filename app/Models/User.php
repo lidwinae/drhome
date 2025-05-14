@@ -57,4 +57,8 @@ class User extends Authenticatable
         'role' => 'user',
         'status' => 'active',
     ];
+
+    public function designer(){
+        return $this->hasOne(Designer::class, 'user_id');
+    }
 }

@@ -14,12 +14,19 @@ return new class extends Migration
             $table->enum('status', ['active', 'banned'])
                   ->default('active');
         });
+
+        if (Schema::hasColumn('users', 'account_type')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->dropColumn('account_type');
+            });
+        }
     }
 
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('role');
+            $table->dropColumn('status');
         });
     }
 };

@@ -8,11 +8,15 @@ class Designer extends Model
 {
     protected $fillable = [
         'id',
-        'name', 
+        'name',
         'country',
         'origin_city',
         'specialty',
         'photo',
         'description'
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
