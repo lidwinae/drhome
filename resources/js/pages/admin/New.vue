@@ -10,21 +10,29 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'New', href: '/admin/new' },
 ];
 
-const designers = ref([]);
+const designs = ref([]);
 const showEditModal = ref(false);
 const currentDesign = ref<any>(null);
 const isLoading = ref(false);
+const isFetching = ref(true); // Add this line for loading state
 
 onMounted(async () => {
     await fetchDesigns();
 });
 
 const fetchDesigns = async () => {
-    const response = await axios.get('/api/designs');
-    designers.value = response.data.map(d => ({
-        ...d,
-        photo_url: d.photo ? `data:image/jpeg;base64,${d.photo}` : '/images/design.jpg'
-    }));
+    isFetching.value = true;
+    try {
+        const response = await axios.get('/api/designs');
+        designs.value = response.data.map(d => ({
+            ...d,
+            photo_url: d.photo ? `data:image/jpeg;base64,${d.photo}` : '/images/design.jpg'
+        }));
+    } catch (error) {
+        console.error('Error fetching designs:', error);
+    } finally {
+        isFetching.value = false;
+    }
 };
 
 const openEditModal = (design: any) => {
@@ -94,8 +102,8 @@ const handleImageError = (event: Event) => {
 <template>
     <Head title="Design" />
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex justify-between items-center px-8 my-6">
-            <h2 class="text-2xl font-archivo font-medium text-[#AE7A42]">Designs</h2>
+        <div class="flex justify-between items-center px-10 my-6">
+            <h2 class="text-2xl font-archivo font-semibold text-black">Designs</h2>
             <a href="/admin/new/design" class="bg-[#AE7A42] text-white px-4 py-2 rounded-lg font-medium flex items-center hover:bg-[#8c5e30] transition">
                 <HousePlus :size="18" class="mr-2" />
                 Add New Design
@@ -163,29 +171,37 @@ const handleImageError = (event: Event) => {
         </div>
 
         <!-- Design List -->
-        <div class="max-w-6xl mx-auto px-8 pb-12">
-            <div v-if="designers.length === 0" class="text-center py-8 text-[#AE7A42]">
+        <div class="max-w-6xl mx-auto px-10 pb-12">
+            <!-- Loading State -->
+            <div v-if="isFetching" class="flex flex-col items-center justify-center py-8 text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#AE7A42] mb-4"></div>
+                <p class="text-black mt-2">Loading designs...</p>
+            </div>
+            
+            <!-- Empty State -->
+            <div v-else-if="designs.length === 0 && !isFetching" class="text-center py-8 text-[#AE7A42]">
                 <p>No designs available</p>
             </div>
             
-            <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                <div v-for="designer in designers" :key="designer.id" 
+            <!-- Design Grid -->
+            <div v-else class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <div v-for="design in designs" :key="design.id" 
                      class="bg-white rounded-xl shadow-md overflow-hidden transition-transform hover:-translate-y-6">
-                    <img :src="designer.photo_url" :alt="designer.name"
+                    <img :src="design.photo_url" :alt="design.name"
                          class="w-full h-64 object-cover"
                          @error="handleImageError">
                     <div class="p-3 text-center">
-                        <h3 class="text-lg font-medium">{{ designer.name }}</h3>
-                        <p class="text-gray-500 text-sm">{{ designer.country }}</p>
-                        <p class="text-gray-600">{{ designer.specialty }}</p>
+                        <h3 class="text-lg font-medium">{{ design.name }}</h3>
+                        <p class="text-gray-500 text-sm">{{ design.country }}</p>
+                        <p class="text-gray-600">{{ design.specialty }}</p>
                     </div>
                     <div class="flex justify-between p-3 border-t">
-                        <button @click="openEditModal(designer)"
+                        <button @click="openEditModal(design)"
                                 class="flex items-center gap-1 px-3 py-1 bg-[#AE7A42] text-white rounded text-sm hover:bg-[#8c5e30]">
                             <Pencil :size="18" />
                             Edit
                         </button>
-                        <button @click="handleDelete(designer.id)"
+                        <button @click="handleDelete(design.id)"
                                 class="flex items-center gap-1 px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600">
                             <Trash2 :size="18" />
                             Delete
