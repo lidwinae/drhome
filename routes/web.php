@@ -10,11 +10,11 @@ Route::get('/', function () {
 // user designer kontraktor
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('build', function () {
-        return Inertia::render('Build');
+        return Inertia::render('Build_group/Build');
     })->name('build');
 
     Route::get('design', function () {
-        return Inertia::render('Design');
+        return Inertia::render('Design_group/Design');
     })->name('design');
 
     Route::get('profile', function () {
@@ -22,13 +22,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('profile');
 
     Route::get('designers/{id}', function ($id) {
-        return Inertia::render('DesignerDetail', [
+        return Inertia::render('Build_group/DesignerDetail', [
             'designerId' => $id
         ]);
     })->name('designerdetail');
 
     Route::get('designers/{id}/request', function ($id) {
-        return Inertia::render('RequestDesign', [
+        return Inertia::render('Build_group/RequestDesign', [
             'designerId' => $id
         ]);
     })->name('designer.request');
