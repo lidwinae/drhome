@@ -66,7 +66,7 @@ onMounted(() => {
     <div class="mx-12 mt-10 space-y-10 mb-12">
 
       <!-- Form Section -->
-      <div class="bg-white shadow rounded-lg p-6">
+      <div class="bg-white border border-gray-200 shadow-sm rounded-lg p-6">
         <h1 class="text-2xl font-bold mb-6">Send Email</h1>
 
         <!-- Success Message -->
