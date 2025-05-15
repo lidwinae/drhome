@@ -38,15 +38,42 @@ const fetchMails = async () => {
 };
 
 // Fetch single mail detail dengan axios
+// const openMailDetail = async (mailId: number) => {
+//   try {
+//     const response = await axios.get(`/api/admins/${mailId}`);
+//     selectedMail.value = response.data.data;
+//     replyForm.reply = selectedMail.value.reply || '';
+//     showModal.value = true;
+//   } catch (err) {
+//     console.error('Error loading mail detail:', err);
+//     error.value = 'Gagal memuat detail mail';
+//   }
+// };
+
 const openMailDetail = async (mailId: number) => {
   try {
     const response = await axios.get(`/api/admins/${mailId}`);
     selectedMail.value = response.data.data;
+    
+    // Berikan nilai default jika tanggal null
+    if (!selectedMail.value.created_at) {
+      selectedMail.value.created_at = new Date().toISOString();
+    }
+    if (!selectedMail.value.updated_at && selectedMail.value.reply) {
+      selectedMail.value.updated_at = new Date().toISOString();
+    }
+    
     replyForm.reply = selectedMail.value.reply || '';
     showModal.value = true;
   } catch (err) {
     console.error('Error loading mail detail:', err);
-    error.value = 'Gagal memuat detail mail';
+    if (err.response?.status === 404) {
+      error.value = 'Mail tidak ditemukan';
+    } else if (err.response?.data?.message) {
+      error.value = err.response.data.message;
+    } else {
+      error.value = 'Gagal memuat detail mail';
+    }
   }
 };
 
@@ -84,11 +111,11 @@ onMounted(fetchMails);
   
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="mx-12 mt-10 space-y-6">
-      <h4>Daftar Mails to Admin:</h4>
+      <h2 class="text-2xl font-semibold">Daftar Mails to Admin:</h2>
       <!-- Mail List -->
-      <div v-if="isLoading" class="text-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-        <p class="mt-4 text-gray-600">Loading mails...</p>
+      <div v-if="isLoading" class="flex flex-col items-center justify-center py-8 text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#AE7A42] mb-4"></div>
+        <p class="text-black mt-2">Loading mails...</p>
       </div>
       
       <div v-else-if="error" class="text-center py-12 text-red-500">

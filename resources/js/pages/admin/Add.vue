@@ -32,8 +32,8 @@ const submit = () => {
             <div class="mx-auto max-w-4xl"> <!-- Increased max width -->
                 <div class="bg-white shadow-md sm:rounded-lg sm:mr-4 border-black-400 border-2">
                     <div class="px-4 py-5 sm:p-6">
-                        <h3 class="text-base font-semibold leading-6 text-gray-900">Update User Role</h3>
-                        <div class="mt-2 max-w-xl text-sm text-gray-500">
+                        <h2 class="font-archivo font-semibold text-[20px] text-black">Update User Role</h2>
+                        <div class="mt-2 max-w-xl text-[15px] text-gray-500">
                             <p>Tambahkan designer / kontraktor baru dengan update role user</p>
                         </div>
                         <form @submit.prevent="submit" class="mt-5">
