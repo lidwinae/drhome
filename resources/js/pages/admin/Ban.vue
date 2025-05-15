@@ -72,19 +72,20 @@ onMounted(() => {
 <template>
     <Head title="Ban" />
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="px-4 py-6 sm:px-6 lg:px-8">
+        <div class="mx-12 mt-10 space-y-6">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-archivo font-medium text-[#AE7A42]">User Management</h2>
+                <h2 class="text-2xl font-archivo font-semibold text-black">User Management</h2>
             </div>
 
             <!-- Loading State -->
-            <div v-if="isLoading" class="flex justify-center py-8">
-                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#AE7A42]"></div>
+            <div v-if="isLoading" class="flex flex-col items-center justify-center py-8 text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#AE7A42] mb-4"></div>
+                <p class="text-black mt-2">Loading user list...</p>
             </div>
 
             <!-- User Cards -->
             <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
-                <div v-for="user in users" :key="user.id" class="bg-white rounded-lg shadow p-4">
+                <div v-for="user in users" :key="user.id" class="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">
                             <h3 class="text-lg font-medium text-gray-900">{{ user.name }}</h3>
