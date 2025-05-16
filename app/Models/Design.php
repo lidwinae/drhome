@@ -7,10 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Design extends Model
 {
     protected $fillable = [
-        'name', 
+        'name',
         'country',
         'specialty',
         'photo',
         'description'
     ];
+    public function designer()
+    {
+        return $this->belongsTo(Designer::class);
+    }
 }

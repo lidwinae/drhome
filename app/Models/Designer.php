@@ -19,4 +19,8 @@ class Designer extends Model
     public function user(){
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function designs(){
+        return $this->hasMany(Design::class);
+    }
 }

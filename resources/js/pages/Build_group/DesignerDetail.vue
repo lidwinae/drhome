@@ -1,119 +1,75 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import Icon from '@/components/Icon.vue';
+import { ref, computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
-import { route } from 'ziggy-js';
 
-const designer = ref<{
-  id: string;
-  // Add other properties later for dummy
-} | null>(null);
+const coverImage = ref('https://cdn.builder.io/api/v1/image/assets/TEMP/6f6b2bd1fb346d2b1ae7a3789c1936af4de2b45f?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34');
 
-const isLoading = ref(true);
-
-
-const breadcrumbs: BreadcrumbItem[] = [
-  {
-    title: 'DesignerDetail',
-    href: '/detail',
-  },
-];
-
-// Dummy data structure matching your API
-const dummyData = {
-  id: "1",
-  name: "Ayu Nabila",
-  country: "Indonesia",
-  origin_city: "Malang",
-  specialty: "UI Designer",
-  photo_url: "https://imagedelivery.net/LBWXYQ-XnKSYxbZ-NuYGqQ/dacfb96d-c3fe-42d4-912d-083418f0f300/avatarhd",
-  description: "Desainer antarmuka berpengalaman dengan fokus pada aksesibilitas dan desain mobile.",
+const designer = ref({
+  id: '1',
+  name: 'Ayu Nabila',
+  country: 'Indonesia',
+  origin_city: 'Malang',
+  specialty: 'UI Designer',
+  photo_url: 'https://imagedelivery.net/LBWXYQ-XnKSYxbZ-NuYGqQ/dacfb96d-c3fe-42d4-912d-083418f0f300/avatarhd',
+  description: 'Desainer antarmuka berpengalaman dengan fokus pada aksesibilitas dan desain mobile.',
   portfolio: [
     {
-      title: "Tomaro Inn",
-      location: "Japan",
-      style: "Modern",
-      year: "2022",
-      description: "Desain interior modern untuk hotel boutique di Tokyo",
-      image_url: "https://cdn.builder.io/api/v1/image/assets/TEMP/5da394aedd3987e924387ee0f3b04b74f73c5777?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34"
+      title: 'Tomaro Inn',
+      location: 'Japan',
+      style: 'Modern',
+      year: '2022',
+      description: 'Desain interior modern untuk hotel boutique di Tokyo',
+      image_url: 'https://cdn.builder.io/api/v1/image/assets/TEMP/5da394aedd3987e924387ee0f3b04b74f73c5777?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34',
     },
     {
-      title: "Bamboo House",
-      location: "Bali",
-      style: "Tropical",
-      year: "2021",
-      description: "Rumah ekologis dengan material bambu alami",
-      image_url: "https://cdn.builder.io/api/v1/image/assets/TEMP/032ad442db118aae7b4064a4720559bae03fdb2a?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34"
+      title: 'Bamboo House',
+      location: 'Bali',
+      style: 'Tropical',
+      year: '2021',
+      description: 'Rumah ekologis dengan material bambu alami',
+      image_url: 'https://cdn.builder.io/api/v1/image/assets/TEMP/032ad442db118aae7b4064a4720559bae03fdb2a?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34',
     },
     {
-      title: "Urban Loft",
-      location: "Jakarta",
-      style: "Industrial",
-      year: "2023",
-      description: "Apartemen gaya industrial di kawasan perkotaan",
-      image_url: "https://cdn.builder.io/api/v1/image/assets/TEMP/b5eb1f0fbab2ef0b7a28c9d7171bbd84abfedca7?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34"
-    }
+      title: 'Urban Loft',
+      location: 'Jakarta',
+      style: 'Industrial',
+      year: '2023',
+      description: 'Apartemen gaya industrial di kawasan perkotaan',
+      image_url: 'https://cdn.builder.io/api/v1/image/assets/TEMP/b5eb1f0fbab2ef0b7a28c9d7171bbd84abfedca7?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34',
+    },
   ],
   education: [
     {
-      degree: "Sarjana Desain Interior",
-      university: "Institut Teknologi Bandung",
-      year: "2015-2019"
-    }
+      degree: 'Sarjana Desain Interior',
+      university: 'Institut Teknologi Bandung',
+      year: '2015-2019',
+    },
   ],
   experience: [
     {
-      position: "Lead Designer",
-      company: "HomeSpace Design Studio",
-      period: "2020-Present"
-    }
+      position: 'Lead Designer',
+      company: 'HomeSpace Design Studio',
+      period: '2020-Present',
+    },
   ],
-  contact: {
-    email: "ayu.nabila@design.com",
-    phone: "+62 812-3456-7890",
-    address: "Jl. Design No. 123, Malang, Jawa Timur"
-  },
-  services: [
-    "Desain Interior Rumah",
-    "Konsultasi Ruang Kecil"
-  ],
-  awards: [
-    {
-      name: "Best Residential Design 2022",
-      organization: "Indonesia Design Awards"
-    }
-  ]
-};
-
-// Recommendations data
-const recommendationsData = Array(3).fill({
-  name: "Ali Rohmadanu",
-  role: "Contractor",
-  imageUrl: "https://cdn.builder.io/api/v1/image/assets/TEMP/a985a5b23772e5cb50f72e965d8d1e9b463ff3c2?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34"
 });
 
-// Fetch designer data
-onMounted(async () => {
-  try {
-    // In development, use dummy data
-    if (import.meta.env.DEV) {
-      designer.value = dummyData;
-    } else {
-      const response = await axios.get(`/api/designers/${route.params.id}`);
-      designer.value = {
-        ...response.data,
-        photo_url: response.data.photo
-          ? `data:image/jpeg;base64,${response.data.photo}`
-          : '/images/default_Avatar.png'
-      };
-    }
-  } catch (error) {
-    console.error('Error fetching designer:', error);
-    designer.value = dummyData;
-  } finally {
-    isLoading.value = false;
-  }
-});
+const recommendationsData = ref([
+  { name: 'Ali Rohmadanu', role: 'Contractor', imageUrl: 'https://cdn.builder.io/api/v1/image/assets/TEMP/a985a5b23772e5cb50f72e965d8d1e9b463ff3c2?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34' },
+  { name: 'Ali Rohmadanu', role: 'Contractor', imageUrl: 'https://cdn.builder.io/api/v1/image/assets/TEMP/a985a5b23772e5cb50f72e965d8d1e9b463ff3c2?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34' },
+  { name: 'Ali Rohmadanu', role: 'Contractor', imageUrl: 'https://cdn.builder.io/api/v1/image/assets/TEMP/a985a5b23772e5cb50f72e965d8d1e9b463ff3c2?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34' },
+  { name: 'Ali Rohmadanu', role: 'Contractor', imageUrl: 'https://cdn.builder.io/api/v1/image/assets/TEMP/a985a5b23772e5cb50f72e965d8d1e9b463ff3c2?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34' },
+  { name: 'Ali Rohmadanu', role: 'Contractor', imageUrl: 'https://cdn.builder.io/api/v1/image/assets/TEMP/a985a5b23772e5cb50f72e965d8d1e9b463ff3c2?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34' },
+]);
+
+function designerInitials(name: string) {
+  return name.split(' ').map(n => n[0]).join('');
+}
 
 function handleImageError(event: Event) {
   const target = event.target as HTMLImageElement;
@@ -121,120 +77,109 @@ function handleImageError(event: Event) {
 }
 </script>
 
-
 <template>
-  <AppLayout :breadcrumbs="breadcrumbs">
-    <!-- Main Content -->
-    <div class="main-content">
-      <div v-if="isLoading" class="loading-state">
-        <p>Loading designer profile...</p>
-      </div>
-
-      <div v-else-if="designer" class="content-grid">
-        <div class="left-column">
-          <!-- Profile Section -->
-          <section class="profile-section">
-            <div class="profile-header">
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/6f6b2bd1fb346d2b1ae7a3789c1936af4de2b45f?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34"
-                alt="" class="cover-image" />
-              <h2 class="profile-name">{{ designer.name }}</h2>
-            </div>
-            <div class="profile-content">
-              <div class="profile-info">
-                <img :src="designer.photo_url" alt="" class="profile-picture" @error="handleImageError" />
-                <div class="info-details">
-                  <div class="tags">
-                    <span class="tag">{{ designer.origin_city }}</span>
-                    <span class="tag">{{ designer.specialty }}</span>
-                  </div>
-                  <p class="location">{{ designer.origin_city }}, {{ designer.country }}</p>
-                  <p class="role">{{ designer.specialty }}</p>
+  <AppLayout class="bg-[#F6F6F6]">
+    <div class="min-h-screen flex flex-col bg-[#F6F6F6]">
+      <div class="flex flex-1 gap-6 px-8 py-6 max-w-7xl w-full">
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col gap-6">
+          <!-- Profile Card -->
+            <Card class="py-0 rounded-[30px]">
+                <div class="profile-header">
+                <img
+                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/6f6b2bd1fb346d2b1ae7a3789c1936af4de2b45f?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34"
+                    alt="" class="cover-image" />
                 </div>
-                <Link :href="route('designer.request', { id: designer.id })" class="request-button">
-                Request
-                </Link>
-              </div>
-            </div>
-            <div class="about-section">
-              <h3 class="about-title">About</h3>
-              <p class="about-text">{{ designer.description }}</p>
-
-              <div class="section-block">
-                <h4>Education</h4>
-                <div v-for="(edu, index) in designer.education" :key="index" class="education-item">
-                  <h5>{{ edu.degree }}</h5>
-                  <p>{{ edu.university }} ({{ edu.year }})</p>
-                </div>
-              </div>
-
-              <div class="section-block">
-                <h4>Experience</h4>
-                <div v-for="(exp, index) in designer.experience" :key="index" class="experience-item">
-                  <h5>{{ exp.position }}</h5>
-                  <p>{{ exp.company }} ({{ exp.period }})</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Portfolio Section -->
-          <section class="portfolio-section">
-            <div class="portfolio-content">
-              <h2 class="portfolio-title">Portofolio</h2>
-
-              <div v-if="designer?.portfolio?.length" class="portfolio-container">
-                <div class="portfolio-grid">
-                  <article v-for="(item, index) in designer.portfolio" :key="index" class="portfolio-card">
-                    <div class="portfolio-image-container">
-                      <img :src="item.image_url" :alt="item.title || 'Portfolio item'" class="portfolio-image"
-                        @error="handleImageError" loading="lazy" />
-                      <div class="portfolio-overlay">
-                        <div class="portfolio-info">
-                          <h3 class="portfolio-item-title">{{ item.title }}</h3>
-                          <div class="portfolio-meta">
-                            <span class="portfolio-location">{{ item.location }}</span>
-                            <span class="portfolio-style">{{ item.style }}</span>
-                          </div>
-                          <p class="portfolio-year">{{ item.year }}</p>
-                          <p class="portfolio-description">{{ item.description }}</p>
+                <div class="profile-content">
+                    <div class="profile-info mb-8">
+                        <img :src="designer.photo_url" alt="" class="profile-picture" @error="handleImageError" />
+                        <div class="info-details">
+                            <h2 class="profile-name">{{ designer.name }}</h2>
+                            <div class="tags">
+                                <span class="tag">{{ designer.origin_city }}</span>
+                                <span class="tag">{{ designer.specialty }}</span>
+                            </div>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex flex-col">
+                                        <p class="location">{{ designer.origin_city }}, {{ designer.country }}</p>
+                                        <p class="role">{{ designer.specialty }}</p>
+                                    </div>
+                                    <Link :href="route('designer.request', { id: designer.id })" class="request-button">
+                                        Request
+                                    </Link>
+                                </div>
                         </div>
-                      </div>
                     </div>
-                  </article>
+                </div>
+            </Card>
+          <!-- About Card -->
+          <Card class="bg-[#FAAE5C] text-white">
+            <CardHeader>
+              <CardTitle class="text-white">About</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div class="mb-4">{{ designer.description || '-' }}</div>
+              <div class="mb-4">
+                <div class="font-bold">Education</div>
+                <div v-for="(edu, i) in designer.education || []" :key="i" class="text-sm">{{ edu.degree }} - {{ edu.university }} ({{ edu.year }})</div>
+              </div>
+              <div>
+                <div class="font-bold">Experience</div>
+                <div v-for="(exp, i) in designer.experience || []" :key="i" class="text-sm">{{ exp.position }} - {{ exp.company }} ({{ exp.period }})</div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <!-- Portfolio Card -->
+          <Card class="bg-[#B8864B]/90">
+            <CardHeader>
+              <CardTitle class="text-white">Portofolio</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div v-for="(item, i) in designer.portfolio || []" :key="i" class="bg-white rounded-xl overflow-hidden shadow">
+                  <img :src="item.image_url" :alt="item.title" class="w-full h-40 object-cover" @error="handleImageError" />
+                  <div class="p-3">
+                    <div class="font-bold text-[#714C25]">{{ item.title }}</div>
+                    <div class="flex gap-2 mt-1">
+                      <span class="bg-[#FAAE5C] text-white text-xs rounded-full px-2">{{ item.location }}</span>
+                      <span class="bg-[#FAAE5C] text-white text-xs rounded-full px-2">{{ item.style }}</span>
+                    </div>
+                    <div class="text-xs text-[#714C25] mt-1">{{ item.year }}</div>
+                    <div class="text-xs mt-1 text-[#714C25]">{{ item.description }}</div>
+                  </div>
                 </div>
               </div>
-
-              <div v-else class="empty-portfolio">
-                <p>No portfolio items available</p>
-              </div>
-            </div>
-          </section>
+            </CardContent>
+          </Card>
         </div>
-
-        <!-- Right Column -->
-        <div class="right-column">
-          <aside class="recommendations-sidebar">
-            <h3 class="recommendations-title">Rekomendasi Untukmu</h3>
-            <div v-for="(user, index) in recommendationsData" :key="index" class="recommendation-card">
-              <img :src="user.imageUrl" :alt="user.name" class="user-avatar" />
-              <div class="user-info">
-                <h4 class="user-name">{{ user.name }}</h4>
-                <p class="user-role">{{ user.role }}</p>
+        <!-- Sidebar -->
+        <div class="w-80 flex flex-col gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle class="text-[#714C25]">Rekomendasi Untukmu</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div v-for="designer in recommendationsData" :key="designer.id" class="flex items-center gap-3 mb-4">
+                <Avatar class="w-12 h-12">
+                  <AvatarImage :src="designer.imageUrl" alt="Designer" />
+                  <AvatarFallback>{{ designerInitials(designer.name) }}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <div class="font-semibold" style="color: #714C25">{{ designer.name }}</div>
+                  <div class="text-xs text-muted-foreground">Designer</div>
+                </div>
               </div>
-            </div>
-          </aside>
+            </CardContent>
+          </Card>
+          <Button class="fixed bottom-8 right-8 shadow-lg rounded-full p-4" size="icon" variant="secondary">
+            <Icon name="chat" />
+          </Button>
         </div>
-      </div>
-
-      <div v-else class="error-state">
-        <p>Designer not found</p>
       </div>
     </div>
   </AppLayout>
 </template>
-
-
 
 <style scoped>
 .brand-title {
@@ -288,8 +233,9 @@ function handleImageError(event: Event) {
   color: #fff;
   font-family: Archivo, sans-serif;
   font-size: 51px;
+  text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.8); /* X offset, Y offset, blur radius, color */
   font-weight: 700;
-  padding: 0 70px 40px;
+  padding: 0;
   margin: 0;
 }
 
@@ -310,11 +256,14 @@ function handleImageError(event: Event) {
   aspect-ratio: 1;
   border-radius: 50%;
   object-fit: contain;
+
+  /* width: 100%; */
+  max-width: 200px;
 }
 
 .info-details {
   flex: 1;
-  margin-top: 145px;
+  margin-top: 0cm;
 }
 
 .tags {
@@ -353,7 +302,7 @@ function handleImageError(event: Event) {
   font-family: Archivo, sans-serif;
   font-size: 20px;
   font-weight: 800;
-  margin-top: 187px;
+  margin-top: auto;
   cursor: pointer;
 }
 
@@ -753,16 +702,11 @@ function handleImageError(event: Event) {
 
   .profile-name {
     font-size: 40px;
-    padding: 0 20px 40px;
+    padding: 0px;
   }
 
   .profile-info {
     flex-direction: column;
-  }
-
-  .profile-picture {
-    width: 100%;
-    max-width: 300px;
   }
 
   .info-details {
