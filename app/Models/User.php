@@ -10,55 +10,43 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'role',
-        'status',
+        // 'role' dan 'status' dihapus dari sini
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'role' => 'string',
-            'status' => 'string'
         ];
     }
 
-    /**
-     * The model's default values for attributes.
-     *
-     * @var array<string, string>
-     */
     protected $attributes = [
         'role' => 'user',
         'status' => 'active',
     ];
 
-    public function designer(){
+    // Method khusus untuk update oleh admin
+    public function updateByAdmin(array $attributes)
+    {
+        // Field yang boleh diupdate admin
+        $allowed = ['role', 'status'];
+        $filtered = array_intersect_key($attributes, array_flip($allowed));
+        
+        return $this->forceFill($filtered)->save();
+    }
+
+    public function designer()
+    {
         return $this->hasOne(Designer::class, 'user_id');
     }
 }
