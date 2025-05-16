@@ -49,4 +49,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Designer::class, 'user_id');
     }
+
+     public function contractor()
+    {
+        return $this->hasOne(Contractor::class, 'user_id');
+    }
 }

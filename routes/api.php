@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ContractorController;
 use App\Http\Controllers\Api\MailsAdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\DesignerController;
@@ -13,7 +14,6 @@ Route::get('designers/{id}', [DesignerController::class, 'show']);
 Route::prefix('designs')->group(function () {
     Route::get('/', [DesignController::class, 'index']);
     Route::get('/{id}', [DesignController::class, 'show']);
-    Route::patch('/{id}', [DesignController::class, 'update']);
     Route::delete('/{id}', [DesignController::class, 'destroy']);
 });
 
@@ -25,4 +25,6 @@ Route::post('email/send', [MailsAdminController::class, 'send']);
 Route::get('email/history', [MailsAdminController::class, 'riwayat']);
 
 Route::get('admin/users', [UserController::class, 'index']);
+
+Route::get('contractors', [ContractorController::class, 'index']);
 // });
