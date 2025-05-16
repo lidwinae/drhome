@@ -78,7 +78,7 @@ class UsersTableSeeder extends Seeder
         Designer::create([
             'user_id' => $user->id,
             'specialty' => 'oriental / traditional',
-            'description' => 'Specialist in medieval-style construction and restoration based in Munich, Germany.',
+            'description' => 'Specialist in oriental-style house in Japan.',
             'portfolio' => file_get_contents(public_path('portfolio/Portfolio.pdf')),
         ]);
     }
