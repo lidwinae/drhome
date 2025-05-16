@@ -15,6 +15,20 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
+        // admin
+        User::create([
+            'name' => 'ADMIN',
+            'email' => 'admin@test.com',
+            'password' => Hash::make('rahasia1'),
+            'role' => 'admin',
+            'status' => 'active',
+            'country' => 'Indonesia',
+            'origin_city' => 'Jakarta',
+            'photo' => file_get_contents(public_path('designers/lidwinae.jpg')),
+            'background_image' => file_get_contents(public_path('designs/pantheon.jpg')),
+        ]);
+
+        
         // client
         User::create([
             'name' => 'Klien',
@@ -44,6 +58,26 @@ class UsersTableSeeder extends Seeder
         Contractor::create([
             'user_id' => $user->id,
             'specialty' => 'medieval',
+            'description' => 'Specialist in medieval-style construction and restoration based in Munich, Germany.',
+            'portfolio' => file_get_contents(public_path('portfolio/Portfolio.pdf')),
+        ]);
+
+        // designer
+        $user = User::create([
+            'name' => 'Hayao Miyazaki',
+            'email' => 'hayaomiyazaki@example.com',
+            'password' => Hash::make('rahasia1'),
+            'role' => 'designer',
+            'status' => 'active',
+            'country' => 'Japan',
+            'origin_city' => 'Kyoto',
+            'photo' => file_get_contents(public_path('designers/hayao.jpg')),
+            'background_image' => file_get_contents(public_path('designs/pantheon.jpg')),
+        ]);
+
+        Designer::create([
+            'user_id' => $user->id,
+            'specialty' => 'oriental / traditional',
             'description' => 'Specialist in medieval-style construction and restoration based in Munich, Germany.',
             'portfolio' => file_get_contents(public_path('portfolio/Portfolio.pdf')),
         ]);
