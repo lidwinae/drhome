@@ -7,7 +7,7 @@ import Icon from '@/components/Icon.vue';
 import { ref, computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
 
-const coverImage = ref('https://cdn.builder.io/api/v1/image/assets/TEMP/6f6b2bd1fb346d2b1ae7a3789c1936af4de2b45f?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34');
+// const coverImage = ref('https://cdn.builder.io/api/v1/image/assets/TEMP/6f6b2bd1fb346d2b1ae7a3789c1936af4de2b45f?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34');
 
 const designer = ref({
   id: '1',
