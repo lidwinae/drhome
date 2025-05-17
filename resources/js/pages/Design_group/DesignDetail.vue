@@ -4,60 +4,17 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import Icon from '@/components/Icon.vue';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { Link } from '@inertiajs/vue3';
+import axios from 'axios';
 
-const coverImage = ref('https://cdn.builder.io/api/v1/image/assets/TEMP/6f6b2bd1fb346d2b1ae7a3789c1936af4de2b45f?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34');
+const props = defineProps<{
+  designId: number
+}>();
 
-const designer = ref({
-  id: '1',
-  name: 'Ayu Nabila',
-  country: 'Indonesia',
-  origin_city: 'Malang',
-  specialty: 'UI Designer',
-  photo_url: 'https://imagedelivery.net/LBWXYQ-XnKSYxbZ-NuYGqQ/dacfb96d-c3fe-42d4-912d-083418f0f300/avatarhd',
-  description: 'Desainer antarmuka berpengalaman dengan fokus pada aksesibilitas dan desain mobile.',
-  portfolio: [
-    {
-      title: 'Tomaro Inn',
-      location: 'Japan',
-      style: 'Modern',
-      year: '2022',
-      description: 'Desain interior modern untuk hotel boutique di Tokyo',
-      image_url: 'https://cdn.builder.io/api/v1/image/assets/TEMP/5da394aedd3987e924387ee0f3b04b74f73c5777?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34',
-    },
-    {
-      title: 'Bamboo House',
-      location: 'Bali',
-      style: 'Tropical',
-      year: '2021',
-      description: 'Rumah ekologis dengan material bambu alami',
-      image_url: 'https://cdn.builder.io/api/v1/image/assets/TEMP/032ad442db118aae7b4064a4720559bae03fdb2a?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34',
-    },
-    {
-      title: 'Urban Loft',
-      location: 'Jakarta',
-      style: 'Industrial',
-      year: '2023',
-      description: 'Apartemen gaya industrial di kawasan perkotaan',
-      image_url: 'https://cdn.builder.io/api/v1/image/assets/TEMP/b5eb1f0fbab2ef0b7a28c9d7171bbd84abfedca7?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34',
-    },
-  ],
-  education: [
-    {
-      degree: 'Sarjana Desain Interior',
-      university: 'Institut Teknologi Bandung',
-      year: '2015-2019',
-    },
-  ],
-  experience: [
-    {
-      position: 'Lead Designer',
-      company: 'HomeSpace Design Studio',
-      period: '2020-Present',
-    },
-  ],
-});
+const design = ref<any>(null);
+const loading = ref(true);
+const error = ref<string | null>(null);
 
 const recommendationsData = ref([
   { name: 'Ali Rohmadanu', role: 'Contractor', imageUrl: 'https://cdn.builder.io/api/v1/image/assets/TEMP/a985a5b23772e5cb50f72e965d8d1e9b463ff3c2?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34' },
@@ -67,7 +24,7 @@ const recommendationsData = ref([
   { name: 'Ali Rohmadanu', role: 'Contractor', imageUrl: 'https://cdn.builder.io/api/v1/image/assets/TEMP/a985a5b23772e5cb50f72e965d8d1e9b463ff3c2?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34' },
 ]);
 
-function designerInitials(name: string) {
+function designInitials(name: string) {
   return name.split(' ').map(n => n[0]).join('');
 }
 
@@ -75,84 +32,82 @@ function handleImageError(event: Event) {
   const target = event.target as HTMLImageElement;
   target.src = '/images/default_Avatar.png';
 }
+
+onMounted(async () => {
+  try {
+    const response = await axios.get(`/api/designs/${props.designId}`);
+    design.value = response.data;
+    loading.value = false;
+  } catch (err) {
+    error.value = 'Failed to load design details';
+    loading.value = false;
+  }
+});
 </script>
 
 <template>
   <AppLayout class="bg-[#F6F6F6]">
     <div class="min-h-screen flex flex-col bg-[#F6F6F6]">
-      <div class="flex flex-1 gap-6 px-8 py-6 max-w-7xl w-full">
+      <div v-if="loading" class="flex items-center justify-center min-h-screen">
+        <div class="text-[#714C25] text-xl">Loading...</div>
+      </div>
+
+      <div v-else-if="error" class="flex items-center justify-center min-h-screen">
+        <div class="text-red-500 text-xl">{{ error }}</div>
+      </div>
+
+      <div v-else class="flex flex-1 gap-6 px-8 py-6 max-w-7xl w-full">
         <!-- Main Content -->
         <div class="flex-1 flex flex-col gap-6">
           <!-- Profile Card -->
-            <Card class="py-0 rounded-[30px]">
-                <div class="profile-header">
-                <img
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/6f6b2bd1fb346d2b1ae7a3789c1936af4de2b45f?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34"
-                    alt="" class="cover-image" />
+          <Card class="py-0 rounded-[30px]">
+            <div class="profile-header">
+              <img
+                :src="design.photo ? `data:image/jpeg;base64,${design.photo}` : '/images/default_Avatar.png'"
+                alt="Design Cover"
+                class="cover-image"
+                @error="handleImageError"
+              />
+            </div>
+            <div class="profile-content">
+              <div class="profile-info mb-8 mt-20">
+                <!-- <img
+                  :src="design.photo ? `data:image/jpeg;base64,${design.photo}` : '/images/default_Avatar.png'"
+                  alt="Design Photo"
+                  class="profile-picture"
+                  @error="handleImageError"
+                /> -->
+                <div class="info-details">
+                  <h2 class="profile-name">{{ design.name }}</h2>
+                  <!-- <div class="tags">
+                    <span class="tag">{{ design.country }}</span>
+                    <span class="tag">{{ design.specialty }}</span>
+                  </div> -->
+                  <div class="flex justify-between items-center">
+                  <div class="tags">
+                    <span class="tag">{{ design.country }}</span>
+                    <span class="tag">{{ design.specialty }}</span>
+                  </div>
+                    <Link :href="route('designer.request', { id: design.id })" class="request-button">
+                      Request
+                    </Link>
+                  </div>
                 </div>
-                <div class="profile-content">
-                    <div class="profile-info mb-8">
-                        <img :src="designer.photo_url" alt="" class="profile-picture" @error="handleImageError" />
-                        <div class="info-details">
-                            <h2 class="profile-name">{{ designer.name }}</h2>
-                            <div class="tags">
-                                <span class="tag">{{ designer.origin_city }}</span>
-                                <span class="tag">{{ designer.specialty }}</span>
-                            </div>
-                                <div class="flex justify-between items-center">
-                                    <div class="flex flex-col">
-                                        <p class="location">{{ designer.origin_city }}, {{ designer.country }}</p>
-                                        <p class="role">{{ designer.specialty }}</p>
-                                    </div>
-                                    <Link :href="route('designer.request', { id: designer.id })" class="request-button">
-                                        Request
-                                    </Link>
-                                </div>
-                        </div>
-                    </div>
-                </div>
-            </Card>
+              </div>
+            </div>
+          </Card>
+
           <!-- About Card -->
-          <Card class="bg-[#FAAE5C] text-white">
+          <!-- <Card class="bg-[#FAAE5C] text-white">
             <CardHeader>
               <CardTitle class="text-white">About</CardTitle>
             </CardHeader>
             <CardContent>
-              <div class="mb-4">{{ designer.description || '-' }}</div>
-              <div class="mb-4">
-                <div class="font-bold">Education</div>
-                <div v-for="(edu, i) in designer.education || []" :key="i" class="text-sm">{{ edu.degree }} - {{ edu.university }} ({{ edu.year }})</div>
-              </div>
-              <div>
-                <div class="font-bold">Experience</div>
-                <div v-for="(exp, i) in designer.experience || []" :key="i" class="text-sm">{{ exp.position }} - {{ exp.company }} ({{ exp.period }})</div>
-              </div>
+              <div class="mb-4">{{ design.description || '-' }}</div>
             </CardContent>
-          </Card>
-
-          <!-- Portfolio Card -->
-          <Card class="bg-[#B8864B]/90">
-            <CardHeader>
-              <CardTitle class="text-white">Portofolio</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <div v-for="(item, i) in designer.portfolio || []" :key="i" class="bg-white rounded-xl overflow-hidden shadow">
-                  <img :src="item.image_url" :alt="item.title" class="w-full h-40 object-cover" @error="handleImageError" />
-                  <div class="p-3">
-                    <div class="font-bold text-[#714C25]">{{ item.title }}</div>
-                    <div class="flex gap-2 mt-1">
-                      <span class="bg-[#FAAE5C] text-white text-xs rounded-full px-2">{{ item.location }}</span>
-                      <span class="bg-[#FAAE5C] text-white text-xs rounded-full px-2">{{ item.style }}</span>
-                    </div>
-                    <div class="text-xs text-[#714C25] mt-1">{{ item.year }}</div>
-                    <div class="text-xs mt-1 text-[#714C25]">{{ item.description }}</div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          </Card> -->
         </div>
+
         <!-- Sidebar -->
         <div class="w-80 flex flex-col gap-6">
           <Card>
@@ -163,11 +118,11 @@ function handleImageError(event: Event) {
               <div v-for="designer in recommendationsData" :key="designer.name" class="flex items-center gap-3 mb-4">
                 <Avatar class="w-12 h-12">
                   <AvatarImage :src="designer.imageUrl" alt="Designer" />
-                  <AvatarFallback>{{ designerInitials(designer.name) }}</AvatarFallback>
+                  <AvatarFallback>{{ designInitials(designer.name) }}</AvatarFallback>
                 </Avatar>
                 <div>
                   <div class="font-semibold" style="color: #714C25">{{ designer.name }}</div>
-                  <div class="text-xs text-muted-foreground">Designer</div>
+                  <div class="text-xs text-muted-foreground">{{ designer.role }}</div>
                 </div>
               </div>
             </CardContent>
@@ -230,10 +185,10 @@ function handleImageError(event: Event) {
 
 .profile-name {
   position: relative;
-  color: #fff;
+  color: #ae7a42;
   font-family: Archivo, sans-serif;
   font-size: 51px;
-  text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.8); /* X offset, Y offset, blur radius, color */
+  /* text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.8); X offset, Y offset, blur radius, color */
   font-weight: 700;
   padding: 0;
   margin: 0;

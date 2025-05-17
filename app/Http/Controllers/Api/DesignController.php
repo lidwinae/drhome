@@ -35,7 +35,7 @@ class DesignController extends Controller
     {
         try {
             $data = $request->validated();
-            
+
             // Handle file upload
             if ($request->hasFile('photo')) {
                 $photo = $request->file('photo');
@@ -43,10 +43,10 @@ class DesignController extends Controller
             }
 
             Design::create($data);
-            
+
             return redirect()->route('newd')
                 ->with('success', 'Design berhasil dibuat!');
-                
+
         } catch (\Exception $e) {
             return back()
                 ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])
@@ -76,26 +76,26 @@ class DesignController extends Controller
     public function update(Request $request, $id)
     {
         $design = Design::findOrFail($id);
-    
+
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'country' => 'required|string|max:50',
             'specialty' => 'required|string|max:50',
             'photo' => 'nullable|image|max:16384',
         ]);
-    
+
         $updateData = [
             'name' => $validated['name'],
             'country' => $validated['country'],
             'specialty' => $validated['specialty'],
         ];
-    
+
         if ($request->hasFile('photo')) {
             $updateData['photo'] = file_get_contents($request->file('photo')->getRealPath());
         }
-    
+
         $design->update($updateData);
-    
+
         return response()->json([
             'success' => true,
             'design' => $design,

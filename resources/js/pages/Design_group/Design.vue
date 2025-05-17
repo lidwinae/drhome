@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
+import { Link } from '@inertiajs/vue3';
 import axios from 'axios';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -86,7 +87,8 @@ const handleImageError = (e) => {
         </div>
 
         <div v-else class="designs-grid">
-          <div v-for="design in designs" :key="design.id" class="design-card">
+          <Link v-for="design in designs" :key="design.id" :href="route('designdetail', { id: design.id })"
+          class="design-card">
             <img
               :src="design.photo_url"
               :alt="design.name"
@@ -98,7 +100,7 @@ const handleImageError = (e) => {
               <p class="country">{{ design.country }}</p>
               <p class="specialty">{{ design.specialty }}</p>
             </div>
-          </div>
+        </Link>
         </div>
       </div>
     </AppLayout>

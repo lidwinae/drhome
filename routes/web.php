@@ -17,6 +17,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Design_group/Design');
     })->name('design');
 
+    Route::get('design/{id}', function ($id) {
+        return Inertia::render('Design_group/DesignDetail', [
+            'designId' => $id
+        ]);
+    })->name('designdetail');
+
     Route::get('profile', function () {
         return Inertia::render('Profile');
     })->name('profile');
@@ -33,9 +39,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->name('designer.request');
 
-        Route::get('request', function () {
-            return Inertia::render('Request');
-        })->name('request');
+    Route::get('request', function () {
+        return Inertia::render('Request');
+    })->name('request');
 });
 
 require __DIR__ . '/settings.php';
