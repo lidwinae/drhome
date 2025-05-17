@@ -9,17 +9,11 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('role', ['user', 'designer', 'kontraktor', 'admin'])
-                  ->default('user');
+            $table->enum('role', ['client', 'designer', 'contractor', 'admin'])
+                  ->default('client');
             $table->enum('status', ['active', 'banned'])
                   ->default('active');
         });
-
-        if (Schema::hasColumn('users', 'account_type')) {
-            Schema::table('users', function (Blueprint $table) {
-                $table->dropColumn('account_type');
-            });
-        }
     }
 
     public function down()

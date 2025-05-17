@@ -31,7 +31,7 @@ class User extends Authenticatable
     }
 
     protected $attributes = [
-        'role' => 'user',
+        'role' => 'client',
         'status' => 'active',
     ];
 
@@ -48,5 +48,10 @@ class User extends Authenticatable
     public function designer()
     {
         return $this->hasOne(Designer::class, 'user_id');
+    }
+
+     public function contractor()
+    {
+        return $this->hasOne(Contractor::class, 'user_id');
     }
 }

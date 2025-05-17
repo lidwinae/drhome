@@ -9,17 +9,16 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('designers', function (Blueprint $table) {
-            $table->id();
-            $table->string('name', 100);
-            $table->string('country', 50);
-            $table->string('origin_city', 50);
-            $table->string('specialty', 50);
-            $table->binary('photo')->nullable();;
+            $table->unsignedBigInteger('user_id')->primary(); // ini sekaligus PK & FK
+            $table->string('specialty', 50)->nullable();
             $table->text('description')->nullable();
+            $table->mediumText('portfolio')->charset('binary')->nullable();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
