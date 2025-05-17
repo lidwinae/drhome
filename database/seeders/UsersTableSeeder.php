@@ -24,10 +24,9 @@ class UsersTableSeeder extends Seeder
             'status' => 'active',
             'country' => 'Indonesia',
             'origin_city' => 'Jakarta',
-            'photo' => file_get_contents(public_path('designers/lidwinae.jpg')),
-            'background_image' => file_get_contents(public_path('designs/pantheon.jpg')),
+            'photo' => null,
+            'background_image' => null,
         ]);
-
         
         // client
         User::create([
@@ -36,10 +35,10 @@ class UsersTableSeeder extends Seeder
             'password' => Hash::make('rahasia1'),
             'role' => 'client',
             'status' => 'active',
-            'country' => 'Germany',
-            'origin_city' => 'Munich',
-            'photo' => file_get_contents(public_path('designers/lidwinae.jpg')),
-            'background_image' => file_get_contents(public_path('designs/pantheon.jpg')),
+            'country' => 'Malaysia',
+            'origin_city' => 'Kuala Lumpur',
+            'photo' => null,
+            'background_image' => null,
         ]);
 
         // kontraktor
@@ -51,8 +50,8 @@ class UsersTableSeeder extends Seeder
             'status' => 'active',
             'country' => 'Germany',
             'origin_city' => 'Munich',
-            'photo' => file_get_contents(public_path('designers/lidwinae.jpg')),
-            'background_image' => file_get_contents(public_path('designs/pantheon.jpg')),
+            'photo' => null,
+            'background_image' => null,
         ]);
 
         Contractor::create([
@@ -71,8 +70,8 @@ class UsersTableSeeder extends Seeder
             'status' => 'active',
             'country' => 'Japan',
             'origin_city' => 'Kyoto',
-            'photo' => file_get_contents(public_path('designers/hayao.jpg')),
-            'background_image' => file_get_contents(public_path('designs/pantheon.jpg')),
+            'photo' => null,
+            'background_image' => null,
         ]);
 
         Designer::create([
