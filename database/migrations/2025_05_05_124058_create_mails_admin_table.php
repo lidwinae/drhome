@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->enum('judul', ['Feedback', 'Request menjadi designer', 'Request menjadi kontraktor'])->default('Feedback');
-            $table->enum('role', ['user', 'designer', 'kontraktor'])->default('user');
+            $table->enum('role', ['client', 'designer', 'contractor'])->default('client');
             $table->text('message');
             $table->mediumText('portfolio')->charset('binary')->nullable();
             $table->timestamps();
