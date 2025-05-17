@@ -7,16 +7,20 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    // halaman utama admin menampilkan mails to admin (pekerjaan utama admin)
     Route::get('/', function () {
         return Inertia::render('admin/Admin');
     })->name('admin');
 
+    // bagian reply mails oleh admin
     Route::patch('/mails/{mail}/reply', [MailsAdminController::class, 'update']);
 
+    // halaman email (aplikasi eksternal dengan google mail)
     Route::get('/email', function () {
         return Inertia::render('admin/Mail');
     })->name('email');
 
+    // halaman new untuk manajemen design
     Route::prefix('new')->group(function () {
         Route::get('/', function () {
             return Inertia::render('admin/New');
@@ -34,10 +38,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('add');
 
     Route::patch('/add', [UserController::class, 'update'])->name('upd');
-    Route::patch('/add/{id}', [UserController::class, 'up']);
-    //Route::match(['post', 'put', 'patch'], '/add', 'UserController@storeOrUpdate')->name('contractors.create');;
-    //Route::post('/add', [UserController::class, 'storeOrUpdate'])->name('contractors.create');
-    //Route::post('/add', [UserController::class, 'updateRoleAndPortfolio'])->name('upd');
 
     Route::get('/ban', function () {
         return Inertia::render('admin/Ban');

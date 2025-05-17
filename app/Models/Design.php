@@ -13,8 +13,4 @@ class Design extends Model
         'photo',
         'description'
     ];
-    public function designer()
-    {
-        return $this->belongsTo(Designer::class);
-    }
 }

@@ -40,46 +40,6 @@ class UserController extends Controller
         return back()->with('success', 'User role updated successfully');
     }
 
-public function up(Request $request, $id) // Tambahkan parameter $id
-{
-    $validated = $request->validate([
-        // Hapus validasi user_id karena sudah dari route parameter
-        'specialty' => 'sometimes|string|max:50',
-        'portfolio' => 'sometimes|file|mimes:pdf|max:16384' // 16MB, optional
-    ]);
-
-    $user = User::findOrFail($id); // Gunakan $id dari route parameter
-
-    try {
-        $data = ['specialty' => $validated['specialty'] ?? null];
-        
-        if ($request->hasFile('portfolio')) {
-            $data['portfolio'] = file_get_contents($request->file('portfolio')->getRealPath());
-        }
-
-        if ($user->role === 'contractor') {
-            Contractor::updateOrCreate(
-                ['user_id' => $id], // Gunakan $id
-                $data
-            );
-        } 
-        elseif ($user->role === 'designer') {
-            Designer::updateOrCreate(
-                ['user_id' => $id], // Gunakan $id
-                $data
-            );
-        }
-        else {
-            return response()->json(['error' => 'Hanya contractor atau designer yang bisa diupdate'], 400);
-        }
-
-        return response()->json(['success' => 'Data berhasil diupdate']);
-
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Gagal mengupdate data: ' . $e->getMessage()], 500);
-    }
-}
-
     public function index()
     {
         $users = User::query()
@@ -89,6 +49,16 @@ public function up(Request $request, $id) // Tambahkan parameter $id
             ->get();
     
         return response()->json($users);
+    }
+
+    public function getClients()
+    {
+        $clients = User::where('role', 'client')
+            ->select(['id', 'name', 'email'])
+            ->orderBy('name')
+            ->get();
+        
+        return response()->json($clients);
     }
     
     public function ban(User $user)

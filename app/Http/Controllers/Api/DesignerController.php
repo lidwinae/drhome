@@ -11,25 +11,25 @@ class DesignerController extends Controller
      * Display a listing of the resource.
      */
     // butuh penyesuaian di fungsi show, fungsi index sudah sama dengan contractor
-    // public function index()
-    // {
-    //     $designers = Designer::with(['user' => function($query) {
-    //             $query->select('id', 'name', 'country', 'photo');
-    //         }])
-    //         ->select('user_id', 'specialty')
-    //         ->get()
-    //         ->map(function ($designer) {
-    //             return [
-    //                 'id' => $designer->user->id,
-    //                 'name' => $designer->user->name,
-    //                 'country' => $designer->user->country,
-    //                 'specialty' => $designer->specialty,
-    //                 'photo' => $designer->user->photo ? base64_encode($designer->user->photo) : null
-    //             ];
-    //         });
+    public function index()
+    {
+        $designers = Designer::with(['user' => function($query) {
+                $query->select('id', 'name', 'country', 'photo');
+            }])
+            ->select('user_id', 'specialty')
+            ->get()
+            ->map(function ($designer) {
+                return [
+                    'id' => $designer->user->id,
+                    'name' => $designer->user->name,
+                    'country' => $designer->user->country,
+                    'specialty' => $designer->specialty,
+                    'photo' => $designer->user->photo ? base64_encode($designer->user->photo) : null
+                ];
+            });
 
-    //     return response()->json($designers);
-    // }
+        return response()->json($designers);
+    }
     /**
      * Store a newly created resource in storage.
      */

@@ -50,8 +50,13 @@ class User extends Authenticatable
         return $this->hasOne(Designer::class, 'user_id');
     }
 
-     public function contractor()
+    public function contractor()
     {
         return $this->hasOne(Contractor::class, 'user_id');
+    }
+
+    public function mails()
+    {
+        return $this->hasMany(MailsAdmin::class, 'user_id');
     }
 }

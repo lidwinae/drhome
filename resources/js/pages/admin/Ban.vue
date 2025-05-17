@@ -74,7 +74,7 @@ onMounted(() => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="mx-12 mt-10 space-y-6">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-archivo font-semibold text-black">User Management</h2>
+                <h2 class="text-2xl font-archivo font-semibold">User Management</h2>
             </div>
 
             <!-- Loading State -->

@@ -103,7 +103,7 @@ const handleImageError = (event: Event) => {
     <Head title="Design" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex justify-between items-center px-10 my-6">
-            <h2 class="text-2xl font-archivo font-semibold text-black">Designs</h2>
+            <h2 class="text-2xl font-archivo font-semibold">Designs</h2>
             <a href="/admin/new/design" class="bg-[#AE7A42] text-white px-4 py-2 rounded-lg font-medium flex items-center hover:bg-[#8c5e30] transition">
                 <HousePlus :size="18" class="mr-2" />
                 Add New Design
