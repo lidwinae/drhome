@@ -38,8 +38,8 @@ onMounted(async () => {
     const response = await axios.get(`/api/designs/${props.designId}`);
     design.value = response.data;
     loading.value = false;
-  } catch (err) {
-    error.value = 'Failed to load design details';
+  } catch (err: any) { // Tambahkan tipe any atau AxiosError jika diimpor
+    error.value = err.response?.data?.message || 'Failed to load design details';
     loading.value = false;
   }
 });
