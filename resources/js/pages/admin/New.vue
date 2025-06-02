@@ -186,26 +186,48 @@ const handleImageError = (event: Event) => {
             <!-- Design Grid -->
             <div v-else class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6">
                 <div v-for="design in designs" :key="design.id" 
-                     class="bg-white rounded-xl shadow-md overflow-hidden transition-transform hover:-translate-y-6">
+                     class="bg-white rounded-xl shadow-md overflow-hidden transition-transform hover:-translate-y-4">
                     <img :src="design.photo_url" :alt="design.name"
                          class="w-full h-64 object-cover"
                          @error="handleImageError">
-                    <div class="p-3 text-center">
-                        <h3 class="text-lg font-medium">{{ design.name }}</h3>
-                        <p class="text-gray-500 text-sm">{{ design.country }}</p>
-                        <p class="text-gray-600">{{ design.specialty }}</p>
+                    <div class="p-3 text-center space-y-2">
+                    <!-- Design Name -->
+                    <h3 class="m-0 mb-3 text-[22px] font-medium text-gray-800 transition-colors duration-200 hover:text-[#AE7A42]">
+                        {{ design.name }}
+                    </h3>
+
+                    <!-- Country -->
+                    <div class="flex justify-center">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#FAE5CC] text-[#714C25]">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        {{ design.country }}
+                        </span>
                     </div>
-                    <div class="flex justify-between p-3 border-t">
-                        <button @click="openEditModal(design)"
-                                class="flex items-center gap-1 px-3 py-1 bg-[#AE7A42] text-white rounded text-sm hover:bg-[#8c5e30]">
-                            <Pencil :size="18" />
-                            Edit
-                        </button>
-                        <button @click="handleDelete(design.id)"
-                                class="flex items-center gap-1 px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600">
-                            <Trash2 :size="18" />
-                            Delete
-                        </button>
+
+                    <!-- Specialty -->
+                    <div class="flex justify-center">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        {{ design.specialty }}
+                        </span>
+                    </div>
+                    </div>
+                    <div class="flex justify-between p-3 border-t gap-2">
+                    <button @click="openEditModal(design)"
+                            class="w-[48%] flex flex-col items-center justify-center gap-1 px-2 py-2 bg-[#AE7A42] text-white rounded text-sm hover:bg-[#8c5e30] transition-colors">
+                        <Pencil :size="18" />
+                        <span class="text-[14px]">Edit</span>
+                    </button>
+                    <button @click="handleDelete(design.id)"
+                            class="w-[48%] flex flex-col items-center justify-center gap-1 px-2 py-2 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors">
+                        <Trash2 :size="18" />
+                        <span class="text-[14px]">Delete</span>
+                    </button>
                     </div>
                 </div>
             </div>

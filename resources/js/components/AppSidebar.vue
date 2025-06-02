@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { Ban, UserPlus, Mails, HousePlus, Blocks, Send, LayoutDashboard } from 'lucide-vue-next';
+import { Ban, UserPlus, Mails, HousePlus, Blocks, Send, LayoutDashboard, PencilRuler, Hammer } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -20,9 +20,14 @@ const mainNavItems: NavItem[] = [
         icon: HousePlus,
     },
     {
-        title: 'Add Role Users',
-        href: '/admin/add',
-        icon: UserPlus,
+        title: 'Add Designer',
+        href: '/admin/add/designer',
+        icon: PencilRuler, // Icon khusus untuk designer
+    },
+    {
+        title: 'Add Contractor',
+        href: '/admin/add/contractor',
+        icon: Hammer, // Icon khusus untuk contractor
     },
     {
         title: 'Ban',
@@ -42,11 +47,6 @@ const footerNavItems: NavItem[] = [
         href: '/design',
         icon: LayoutDashboard,
     },
-    // {
-    //     title: 'Request',
-    //     href: '/request',
-    //     icon: Send,
-    // },
 ];
 </script>
 

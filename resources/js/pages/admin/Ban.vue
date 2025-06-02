@@ -103,8 +103,18 @@ onMounted(() => {
                         <p class="text-sm text-gray-500">{{ user.email }}</p>
                         
                         <div class="flex items-center justify-between">
-                            <div class="flex space-x-2">
-                                <p class="text-sm text-gray-800">Role : {{ user.role }}</p>
+                            <div class="flex space-x-2 items-center">
+                                <span 
+                                    :class="{
+                                        'bg-blue-100 text-blue-800': user.role === 'client',
+                                        'bg-purple-100 text-purple-800': user.role === 'designer',
+                                        'bg-orange-100 text-orange-800': user.role === 'contractor',
+                                        'bg-gray-100 text-gray-800': !['client', 'designer', 'contractor'].includes(user.role)
+                                    }"
+                                    class="px-2 py-1 text-xs font-semibold rounded-full"
+                                >
+                                    {{ user.role }}
+                                </span>
                             </div>
                             
                             <div class="flex space-x-2">

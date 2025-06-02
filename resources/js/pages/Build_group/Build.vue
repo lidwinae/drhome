@@ -3,7 +3,6 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
-// import { ref } from 'vue';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
@@ -67,12 +66,16 @@ function handleImageError(event: Event) {
   <Head title="Build" />
 
   <AppLayout :breadcrumbs="breadcrumbs" class="bg-[#F6F6F6]">
-    <div class="video-container">
-      <!-- Video dengan fallback native HTML -->
-      <video autoplay loop muted playsinline class="rounded-video" poster="/images/build.jpg">
+    <div class="relative flex justify-center items-center p-8 w-full">
+      <video autoplay loop muted playsinline class="w-full max-w-[1000px] rounded-[20px] aspect-[2.35/1] object-cover shadow-[0_4px_20px_rgba(0,0,0,0.1)]" poster="/images/build.jpg">
         <source src="/videos/build.mp4" type="video/mp4">
-        <img src="/images/build.jpg" alt="Background" class="fallback-img">
+        <img src="/images/build.jpg" alt="Background" class="w-full max-w-[1000px] rounded-[20px] aspect-[2.35/1] object-cover shadow-[0_4px_20px_rgba(0,0,0,0.1)]">
       </video>
+      
+      <div class="absolute top-[42%] left-7/10 -translate-x-1/2 -translate-y-1/2 text-center w-[80%] max-w-[500px] px-8 z-[2] font-['Archivo']">
+        <h1 class="text-[#183D55] font-bold mb-1 text-shadow-[0_2px_4px_rgba(255,255,255,0.5)] leading-[1.2] text-[clamp(0.9rem,3.1vw,2.4rem)]">Bangun rumah sesuai</h1>
+        <p class="text-[#183D55] font-bold mb-1 text-shadow-[0_2px_4px_rgba(255,255,255,0.5)] leading-[1.2] text-[clamp(0.9rem,3.1vw,2.4rem)]">design Anda</p>
+      </div>
     </div>
 
     <!-- Search Bar -->

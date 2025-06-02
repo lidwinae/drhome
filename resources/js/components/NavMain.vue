@@ -14,17 +14,49 @@ const page = usePage<SharedData>();
     <SidebarGroup class="px-2 py-0">
         <SidebarGroupLabel>Halaman</SidebarGroupLabel>
         <SidebarMenu>
-            <SidebarMenuItem v-for="item in items" :key="item.title">
-                <SidebarMenuButton 
-                    as-child :is-active="item.href === page.url"
-                    :tooltip="item.title"
-                >
-                    <Link :href="item.href">
-                        <component :is="item.icon" />
-                        <span>{{ item.title }}</span>
-                    </Link>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
+            <template v-for="item in items" :key="item.title">
+                <!-- Parent Item -->
+                <!-- Parent Item -->
+<SidebarMenuItem>
+  <SidebarMenuButton 
+    v-if="!item.children"
+    as-child
+    :is-active="item.href === page.url"
+    :tooltip="item.title"
+  >
+    <Link :href="item.href">
+      <component :is="item.icon" />
+      <span>{{ item.title }}</span>
+    </Link>
+  </SidebarMenuButton>
+
+  <SidebarMenuButton 
+    v-else
+    :is-active="item.children.some(child => child.href === page.url)"
+    :tooltip="item.title"
+  >
+    <component :is="item.icon" />
+    <span>{{ item.title }}</span>
+  </SidebarMenuButton>
+</SidebarMenuItem>
+
+
+                <!-- Children Items (always visible) -->
+                <template v-if="item.children">
+                    <SidebarMenuItem v-for="child in item.children" :key="child.title" class="pl-8">
+                        <SidebarMenuButton 
+                            as-child
+                            :is-active="child.href === page.url"
+                            :tooltip="child.title"
+                        >
+                            <Link :href="child.href">
+                                <component :is="child.icon || item.icon" /> <!-- Fallback ke parent icon -->
+                                <span>{{ child.title }}</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </template>
+            </template>
         </SidebarMenu>
     </SidebarGroup>
 </template>

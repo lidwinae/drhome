@@ -26,6 +26,7 @@ Route::get('email/history', [MailsAdminController::class, 'riwayat']);
 
 Route::get('admin/users', [UserController::class, 'index']);
 Route::get('admin/clients', [UserController::class, 'getClients']);
+Route::get('admin/contractors', [ContractorController::class, 'showPreviewPortfolio']);
 
 Route::get('contractors', [ContractorController::class, 'index']);
 // });

@@ -4,6 +4,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { type BreadcrumbItem } from '@/types';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import VuePdfEmbed from 'vue-pdf-embed'
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -19,15 +20,22 @@ const form = useForm({
 
 const clients = ref([]);
 const loadingClients = ref(true);
+const contractors = ref([]);
+const loadingContractors = ref(true);
 
 onMounted(async () => {
     try {
-        const response = await axios.get('/api/admin/clients');
-        clients.value = response.data;
+        const [clientsResponse, contractorsResponse] = await Promise.all([
+            axios.get('/api/admin/clients'),
+            axios.get('/api/admin/contractors')
+        ]);
+        clients.value = clientsResponse.data;
+        contractors.value = contractorsResponse.data;
     } catch (error) {
-        console.error('Failed to fetch clients:', error);
+        console.error('Failed to fetch data:', error);
     } finally {
         loadingClients.value = false;
+        loadingContractors.value = false;
     }
 });
 
@@ -49,22 +57,18 @@ const submit = () => {
             <!-- Card container - lebar penuh di mobile, lebih lebar di desktop -->
             <div class="mx-auto w-full max-w-6xl">
                 <div class="flex justify-between items-center mb-6 mt-2 ml-1">
-                <h2 class="text-2xl font-archivo font-semibold">Role Management</h2>
-            </div>
-                <!-- Card dengan shadow dan border yang lebih halus -->
-                <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
-                    <!-- Padding yang lebih responsif -->
+                    <h2 class="text-2xl font-archivo font-semibold">Role Management</h2>
+                </div>
+                
+                <!-- Card Update Role -->
+                <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden mb-8">
                     <div class="px-5 py-6 sm:p-8">
-                        <!-- Deskripsi dengan ukuran 18px (text-[18px]) -->
                         <div class="mt-2 max-w-3xl text-[17px] sm:text-[17px] text-gray-600">
                             <p>Tambahkan designer atau kontraktor baru dengan mengupdate role user</p>
                         </div>
                         
-                        <!-- Form dengan layout responsif -->
                         <form @submit.prevent="submit" class="mt-6">
-                            <!-- Grid layout yang beradaptasi dengan layar -->
                             <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-                                <!-- Email dropdown - mengambil 2 kolom di md+ -->
                                 <div class="md:col-span-2">
                                     <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
                                         Email Client
@@ -90,7 +94,6 @@ const submit = () => {
                                     </p>
                                 </div>
 
-                                <!-- Role select -->
                                 <div>
                                     <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
                                         Role Baru
@@ -106,7 +109,6 @@ const submit = () => {
                                 </div>
                             </div>
 
-                            <!-- Submit button dengan margin yang lebih baik -->
                             <div class="mt-8 sm:mt-10 flex justify-end">
                                 <button
                                     type="submit"
@@ -119,7 +121,6 @@ const submit = () => {
                             </div>
                         </form>
 
-                        <!-- Status messages dengan animasi -->
                         <transition name="fade">
                             <div v-if="form.recentlySuccessful" class="mt-6 p-4 bg-green-50 text-green-700 rounded-lg text-sm border border-green-100">
                                 ✓ Role berhasil diupdate!
@@ -133,13 +134,67 @@ const submit = () => {
                         </transition>
                     </div>
                 </div>
+
+                <!-- Card Contractors List -->
+<div class="mb-8">
+    <h2 class="text-xl font-archivo font-semibold mb-6 px-2">Contractors List</h2>
+    
+    <div v-if="loadingContractors" class="text-center py-8">
+        <p class="text-gray-500">Memuat data contractors...</p>
+    </div>
+    
+    <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div 
+            v-for="contractor in contractors" 
+            :key="contractor.id"
+            class="bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow flex flex-col lg:flex-row"
+        >
+            <!-- Bagian Kiri (Portfolio) -->
+            <div v-if="contractor.portfolio" class="lg:w-1/3 mb-4 lg:mb-0 lg:pr-4">
+                <p class="font-semibold text-sm mb-2 lg:hidden">Portfolio:</p>
+                <div class="border border-gray-300 rounded-md overflow-hidden h-48 lg:h-full">
+                    <vue-pdf-embed
+                        :source="`data:application/pdf;base64,${contractor.portfolio}`"
+                        class="h-full w-full"
+                        :page="1"
+                    />
+                </div>
+            </div>
+            <div v-else class="lg:w-1/3 mr-4 mb-4 lg:mb-0 lg:pr-4 flex items-center justify-center bg-gray-100 rounded-md">
+                <p class="text-sm text-gray-500 p-4">Tidak ada portfolio</p>
+            </div>
+                        <!-- Kolom 2/3: Label + Data -->
+            <div class="lg:w-2/3 flex">
+                <!-- Kolom 1/3: Label -->
+                <div class="w-1/2 lg:w-1/3 pr-2">
+                    <div class="space-y-3 text-left font-semibold text-gray-900">
+                        <p>Name</p>
+                        <p>Email</p>
+                        <p>Specialty</p>
+                    </div>
+                </div>
+                
+                <!-- Kolom 1/3: Data -->
+                <div class="w-1/2 lg:w-2/3">
+                    <div class="space-y-3 text-gray-600">
+                        <p>: {{ contractor.name }}</p>
+                        <p>: {{ contractor.email }}</p>
+                        <p>: {{ contractor.specialty }}</p>
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+</div>
+
             </div>
         </div>
     </AppLayout>
 </template>
 
 <style scoped>
-/* Animasi untuk status messages */
 .fade-enter-active, .fade-leave-active {
     transition: opacity 0.3s ease;
 }
@@ -147,7 +202,6 @@ const submit = () => {
     opacity: 0;
 }
 
-/* Perbaikan responsivitas untuk select */
 select {
     appearance: none;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -156,11 +210,23 @@ select {
     background-size: 1.2em;
 }
 
-/* Padding lebih baik di mobile */
 @media (max-width: 640px) {
     .px-5 {
         padding-left: 1.25rem;
         padding-right: 1.25rem;
+    }
+}
+
+.pdf-viewer {
+    height: 100%;
+    width: 300px;
+    border: none;
+}
+
+/* Untuk mobile */
+@media (max-width: 640px) {
+    .pdf-viewer {
+        height: 150px;
     }
 }
 </style>

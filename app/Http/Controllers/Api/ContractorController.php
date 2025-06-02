@@ -29,6 +29,26 @@ class ContractorController extends Controller
 
         return response()->json($contractors);
     }
+
+    public function showPreviewPortfolio()
+    {
+        $contractors = Contractor::with(['user' => function($query) {
+                $query->select('id', 'name', 'email');
+            }])
+            ->select('user_id', 'specialty', 'portfolio')
+            ->get()
+            ->map(function ($contractor) {
+                return [
+                    'id' => $contractor->user->id,
+                    'name' => $contractor->user->name,
+                    'email' => $contractor->user->email,
+                    'specialty' => $contractor->specialty,
+                    'portfolio' => $contractor->portfolio ? base64_encode($contractor->portfolio) : null
+                ];
+            });
+
+        return response()->json($contractors);
+    }
     /**
      * Store a newly created resource in storage.
      */
