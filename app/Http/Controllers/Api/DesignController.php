@@ -1,19 +1,17 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+
 use App\Http\Requests\StoreDesignRequest;
 use App\Models\Design;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
 class DesignController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $designs = Design::all()->map(function ($design) {
@@ -22,42 +20,62 @@ class DesignController extends Controller
                 'name' => $design->name,
                 'country' => $design->country,
                 'specialty' => $design->specialty,
-                'photo' => base64_encode($design->photo)
+                'description' => $design->description,
+                'photo_url' => $design->photo_path ? Storage::url($design->photo_path) : null,
+                'preview_url' => $design->preview_path ? Storage::url($design->preview_path) : null
             ];
         });
 
         return response()->json($designs);
     }
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreDesignRequest $request)
+
+    public function store(Request $request)
     {
         try {
-            $data = $request->validated();
+            $validated = $request->validate([
+                'name' => 'required|string|max:100',
+                'country' => 'required|string|max:50',
+                'specialty' => 'required|string|max:50',
+                'description' => 'nullable|string',
+                'photo' => 'nullable|image|max:16384', // Max 16MB
+                'preview' => 'nullable|mimetypes:video/mp4,video/quicktime|max:51200', // Max 50MB
+            ]);
 
-            // Handle file upload
+            $data = [
+                'name' => $validated['name'],
+                'country' => $validated['country'],
+                'specialty' => $validated['specialty'],
+                'description' => $validated['description'] ?? null,
+            ];
+
+            // Handle photo upload
             if ($request->hasFile('photo')) {
-                $photo = $request->file('photo');
-                $data['photo'] = file_get_contents($photo->getRealPath());
+                $path = $request->file('photo')->store('designs/photos', 'public');
+                $data['photo_path'] = $path;
             }
 
-            Design::create($data);
+            // Handle preview video upload
+            if ($request->hasFile('preview')) {
+                $path = $request->file('preview')->store('designs/previews', 'public');
+                $data['preview_path'] = $path;
+            }
 
-            return redirect()->route('newd')
-                ->with('success', 'Design berhasil dibuat!');
+            $design = Design::create($data);
+
+            return response()->json([
+                'success' => true,
+                'design' => $design,
+                'message' => 'Design created successfully'
+            ]);
 
         } catch (\Exception $e) {
-            return back()
-                ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])
-                ->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error creating design: ' . $e->getMessage()
+            ], 500);
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    // GET /api/designs/{id}
     public function show($id)
     {
         $design = Design::findOrFail($id);
@@ -66,56 +84,90 @@ class DesignController extends Controller
             'name' => $design->name,
             'country' => $design->country,
             'specialty' => $design->specialty,
-            'photo' => base64_encode($design->photo)
+            'description' => $design->description,
+            'photo_url' => $design->photo_path ? Storage::url($design->photo_path) : null,
+            'preview_url' => $design->preview_path ? Storage::url($design->preview_path) : null
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
-        $design = Design::findOrFail($id);
+        try {
+            $design = Design::findOrFail($id);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:100',
-            'country' => 'required|string|max:50',
-            'specialty' => 'required|string|max:50',
-            'photo' => 'nullable|image|max:16384',
-        ]);
+            $validated = $request->validate([
+                'name' => 'required|string|max:100',
+                'country' => 'required|string|max:50',
+                'specialty' => 'required|string|max:50',
+                'description' => 'nullable|string',
+                'photo' => 'nullable|image|max:16384',
+                'preview' => 'nullable|mimetypes:video/mp4,video/quicktime|max:51200',
+            ]);
 
-        $updateData = [
-            'name' => $validated['name'],
-            'country' => $validated['country'],
-            'specialty' => $validated['specialty'],
-        ];
+            $updateData = [
+                'name' => $validated['name'],
+                'country' => $validated['country'],
+                'specialty' => $validated['specialty'],
+                'description' => $validated['description'] ?? $design->description,
+            ];
 
-        if ($request->hasFile('photo')) {
-            $updateData['photo'] = file_get_contents($request->file('photo')->getRealPath());
+            // Handle photo update
+            if ($request->hasFile('photo')) {
+                // Delete old photo if exists
+                if ($design->photo_path) {
+                    Storage::disk('public')->delete($design->photo_path);
+                }
+                
+                $path = $request->file('photo')->store('designs/photos', 'public');
+                $updateData['photo_path'] = $path;
+            }
+
+            // Handle preview update
+            if ($request->hasFile('preview')) {
+                // Delete old preview if exists
+                if ($design->preview_path) {
+                    Storage::disk('public')->delete($design->preview_path);
+                }
+                
+                $path = $request->file('preview')->store('designs/previews', 'public');
+                $updateData['preview_path'] = $path;
+            }
+
+            $design->update($updateData);
+
+            return response()->json([
+                'success' => true,
+                'design' => $design,
+                'message' => 'Design updated successfully'
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating design: ' . $e->getMessage()
+            ], 500);
         }
-
-        $design->update($updateData);
-
-        return response()->json([
-            'success' => true,
-            'design' => $design,
-            'message' => 'Updated design'
-        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         try {
             $design = Design::findOrFail($id);
+            
+            // Delete associated files
+            if ($design->photo_path) {
+                Storage::disk('public')->delete($design->photo_path);
+            }
+            if ($design->preview_path) {
+                Storage::disk('public')->delete($design->preview_path);
+            }
+            
             $design->delete();
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete design'
+                'message' => 'Failed to delete design: ' . $e->getMessage()
             ], 500);
         }
     }

@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('name', 100);
             $table->string('country', 50);
             $table->string('specialty', 50);
-            $table->mediumText('photo')->charset('binary')->nullable();
+            $table->text('description')->nullable();
+            $table->string('photo_path')->nullable();
+            $table->string('preview_path')->nullable();
             $table->timestamps();
         });
     }

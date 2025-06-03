@@ -4,13 +4,13 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import Icon from '@/components/Icon.vue';
-import { ref, computed, onMounted } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { ref, onMounted } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 
-const props = defineProps<{
-  designId: number
-}>();
+// Ambil id dari route params atau props
+const page = usePage();
+const designId = page.props.designId ?? null;
 
 const design = ref<any>(null);
 const loading = ref(true);
@@ -30,12 +30,18 @@ function designInitials(name: string) {
 
 function handleImageError(event: Event) {
   const target = event.target as HTMLImageElement;
-  target.src = '/images/default_Avatar.png';
+  target.src = '/images/design.jpg';
 }
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`/api/designs/${props.designId}`);
+    const id = designId ?? (typeof window !== 'undefined' ? Number(new URLSearchParams(window.location.search).get('id')) : null);
+    if (!id) {
+      error.value = 'Design ID not found';
+      loading.value = false;
+      return;
+    }
+    const response = await axios.get(`/api/designs/${id}`);
     design.value = response.data;
     loading.value = false;
   } catch (err: any) {
@@ -69,7 +75,7 @@ onMounted(async () => {
               <!-- Cover Image -->
               <div class="relative h-64 md:h-80 lg:h-96 w-full">
                 <img
-                  :src="design.photo ? `data:image/jpeg;base64,${design.photo}` : '/images/default_Avatar.png'"
+                  :src="design.photo_url || '/images/design.jpg'"
                   alt="Design Cover"
                   class="w-full h-full object-cover rounded-t-3xl"
                   @error="handleImageError"
@@ -104,15 +110,28 @@ onMounted(async () => {
               </div>
             </div>
 
-            <!-- About Section (jika diperlukan) -->
+            <!-- About Section -->
             <div class="bg-[#FAAE5C] text-white rounded-3xl p-6 shadow-sm">
               <h3 class="text-2xl font-bold mb-4">About</h3>
               <p class="mb-4">{{ design.description || '-' }}</p>
             </div>
 
+            <!-- Preview Section (Video) -->
             <div class="bg-[#DEDEDE] text-black rounded-3xl p-6 shadow-sm mb-6">
               <h3 class="text-2xl font-bold mb-4">Preview</h3>
-              <p class="mb-4">{{ design.description || '-' }}</p>
+              <div v-if="design.preview_url">
+                <video
+                  :src="design.preview_url"
+                  controls
+                  class="w-full rounded-xl bg-black"
+                  style="max-height:400px"
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+              <div v-else>
+                <p class="mb-4">-</p>
+              </div>
             </div>
           </div>
 
@@ -140,7 +159,6 @@ onMounted(async () => {
           </div>
         </div>
       </div>
-      
     </div>
   </AppLayout>
 </template>

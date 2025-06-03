@@ -14,12 +14,10 @@ return new class extends Migration
         Schema::create('requests', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('client_id')->nullable();
-            $table->unsignedBigInteger('designer_id')->nullable();
             $table->unsignedBigInteger('contractor_id')->nullable();
             $table->timestamps();
 
             $table->foreign('client_id')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('designer_id')->references('id')->on('users')->onDelete('set null');
             $table->foreign('contractor_id')->references('id')->on('users')->onDelete('set null');
         });
     }

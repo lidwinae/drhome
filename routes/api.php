@@ -14,6 +14,8 @@ Route::get('designers/{id}', [DesignerController::class, 'show']);
 Route::prefix('designs')->group(function () {
     Route::get('/', [DesignController::class, 'index']);
     Route::get('/{id}', [DesignController::class, 'show']);
+    Route::post('/', [DesignController::class, 'store']);
+    Route::patch('/{id}', [DesignController::class, 'update']);
     Route::delete('/{id}', [DesignController::class, 'destroy']);
 });
 
@@ -29,4 +31,8 @@ Route::get('admin/clients', [UserController::class, 'getClients']);
 Route::get('admin/contractors', [ContractorController::class, 'showPreviewPortfolio']);
 
 Route::get('contractors', [ContractorController::class, 'index']);
+
+Route::get('/customerservice', [MailsAdminController::class, 'userHistory']);
+Route::get('/customerservice/{id}', [MailsAdminController::class, 'show']);
+Route::post('/customerservice', [MailsAdminController::class, 'store'])->name('customerservice.store');
 // });

@@ -46,6 +46,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('request', function () {
         return Inertia::render('Request');
     })->name('request');
+
+    Route::get('/customerservice', function () {
+        return Inertia::render('CustomerService');
+    })->name('customerservice');
 });
 
 require __DIR__ . '/settings.php';

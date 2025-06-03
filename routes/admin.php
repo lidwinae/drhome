@@ -29,8 +29,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/design', function () {
             return Inertia::render('admin/NewDesign');
         })->name('newd');
-
-        Route::post('/design', [DesignController::class, 'store'])->name('news');
     });
 
     Route::prefix('add')->group(function () {

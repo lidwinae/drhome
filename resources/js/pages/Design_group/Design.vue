@@ -15,15 +15,12 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const designs = ref<Array<any>>([]);
 const isLoading = ref(true);
-const error = ref(null);
+const error = ref<string | null>(null);
 
 onMounted(async () => {
   try {
     const response = await axios.get('/api/designs');
-    designs.value = response.data.map(d => ({
-      ...d,
-      photo_url: `data:image/jpeg;base64,${d.photo}`
-    }));
+    designs.value = response.data;
   } catch (err) {
     console.error('Error fetching designs:', err);
     error.value = 'Failed to load designs';
@@ -97,7 +94,7 @@ const handleImageError = (e: Event) => {
           class="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-transform duration-300 ease-in-out hover:-translate-y-[5px]"
         >
           <img
-            :src="design.photo_url"
+            :src="design.photo_url || '/images/design.jpg'"
             :alt="design.name"
             class="w-full h-[260px] object-cover rounded-t-[20px]"
             @error="handleImageError"

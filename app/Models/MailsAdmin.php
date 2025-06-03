@@ -14,7 +14,7 @@ class MailsAdmin extends Model
         'judul',
         'role',
         'message',
-        'portfolio',
+        'portfolio_path',
         'reply'
     ];
 
