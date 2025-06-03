@@ -10,7 +10,9 @@ use App\Http\Controllers\UserController;
 // Route::middleware(['auth:sanctum'])->group(function () {
 Route::get('designers', [DesignerController::class, 'index']);
 Route::get('designers/{id}', [DesignerController::class, 'show']);
-Route::patch('designers/{id}', [DesignerController::class, 'patchUpdate']);
+
+Route::get('contractors', [ContractorController::class, 'index']);
+Route::get('contractors/{id}', [ContractorController::class, 'show']);
 
 Route::prefix('designs')->group(function () {
     Route::get('/', [DesignController::class, 'index']);
@@ -30,8 +32,6 @@ Route::get('email/history', [MailsAdminController::class, 'riwayat']);
 Route::get('admin/users', [UserController::class, 'index']);
 Route::get('admin/clients', [UserController::class, 'getClients']);
 Route::get('admin/contractors', [ContractorController::class, 'showPreviewPortfolio']);
-
-Route::get('contractors', [ContractorController::class, 'index']);
 
 Route::get('/customerservice', [MailsAdminController::class, 'userHistory']);
 Route::get('/customerservice/{id}', [MailsAdminController::class, 'show']);

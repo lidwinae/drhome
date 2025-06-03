@@ -435,14 +435,30 @@ const userInitials = computed(() => user.value.name.split(' ').map(n => n[0]).jo
 const canEditAbout = computed(() => user.value.role === 'designer' || user.value.role === 'contractor');
 
 async function fetchDesignerData() {
-  if (user.value.role === 'designer' || user.value.role === 'contractor') {
+  let endpoint = '';
+  if (user.value.role === 'designer') {
+    endpoint = `/api/designers/${user.value.id}`;
+  } else if (user.value.role === 'contractor') {
+    endpoint = `/api/contractors/${user.value.id}`;
+  }
+
+  if (endpoint) {
     try {
-      const res = await axios.get(`/api/designers/${user.value.id}`);
-      designerData.value = res.data.data;
+      const res = await axios.get(endpoint);
+      // Normalisasi agar field sama
+      const data = res.data.data;
+      designerData.value = {
+        specialty: data.specialty ?? '-',
+        description: data.description ?? '-',
+        portfolio: data.portfolio ?? null,
+        created_at: data.created_at ?? null,
+        updated_at: data.updated_at ?? null,
+      };
+      // Rekomendasi designer tetap sama
       const resRekom = await axios.get('/api/designers');
       designers.value = resRekom.data.data
-        .filter((d: any) => d.id !== designerId)
-        .slice(0, 5); // Batasi hanya 5
+        .filter((d: any) => d.id !== user.value.id)
+        .slice(0, 5);
     } catch (e) {
       designerData.value = null;
     }

@@ -87,35 +87,6 @@ public function show($id)
         //
     }
 
-    // Update About and Specialty
-public function patchUpdate(Request $request, $id)
-{
-    $designer = Designer::findOrFail($id);
-
-    // Optional: pastikan hanya owner yang bisa update
-    if ($designer->user_id !== Auth::id()) {
-        return response()->json(['error' => 'Unauthorized'], 403);
-    }
-
-    $validated = $request->validate([
-        'specialty' => 'sometimes|string|max:50',
-        'description' => 'sometimes|string|max:1000',
-    ]);
-
-    if ($request->has('specialty')) {
-        $designer->specialty = $request->specialty;
-    }
-    if ($request->has('description')) {
-        $designer->description = $request->description;
-    }
-    $designer->save();
-
-    return response()->json([
-        'success' => true,
-        'data' => $designer,
-    ]);
-}
-
     /**
      * Remove the specified resource from storage.
      */
