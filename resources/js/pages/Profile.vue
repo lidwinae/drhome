@@ -1,4 +1,5 @@
 <template>
+  <Head title="Profile" />
   <AppLayout class="bg-[#F6F6F6]">
     <!-- Avatar Upload Modal -->
     <Dialog :open="isAvatarModalOpen" @update:open="val => isAvatarModalOpen = val">
@@ -120,74 +121,143 @@
       </DialogContent>
     </Dialog>
 
+        <!-- Edit Profile Modal -->
+    <Dialog :open="isEditModalOpen" @update:open="val => isEditModalOpen = val">
+      <DialogContent class="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle class="text-[#AE7A42]">Edit Profil</DialogTitle>
+        </DialogHeader>
+        <form @submit.prevent="updateProfile">
+          <div class="flex flex-col gap-4 py-4">
+            <div>
+              <label class="block mb-1 text-[#AE7A42] font-semibold">Nama</label>
+              <input v-model="editForm.name" type="text" class="w-full border rounded px-3 py-2" required />
+            </div>
+            <div>
+              <label class="block mb-1 text-[#AE7A42] font-semibold">Kota Asal</label>
+              <input v-model="editForm.origin_city" type="text" class="w-full border rounded px-3 py-2" required />
+            </div>
+            <div>
+              <label class="block mb-1 text-[#AE7A42] font-semibold">Negara</label>
+              <input v-model="editForm.country" type="text" class="w-full border rounded px-3 py-2" required />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" @click="isEditModalOpen = false" type="button">Batal</Button>
+            <Button type="submit" class="bg-[#AE7A42] hover:bg-[#95683C] text-white">Simpan</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+
+    <!-- Edit About Modal -->
+    <Dialog :open="isAboutModalOpen" @update:open="val => isAboutModalOpen = val">
+      <DialogContent class="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle class="text-[#AE7A42]">Edit About</DialogTitle>
+        </DialogHeader>
+        <form @submit.prevent="updateAbout">
+          <div class="flex flex-col gap-4 py-4">
+            <textarea v-model="aboutForm.description" rows="4" class="w-full border rounded px-3 py-2" required />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" @click="isAboutModalOpen = false" type="button">Batal</Button>
+            <Button type="submit" class="bg-[#AE7A42] hover:bg-[#95683C] text-white">Simpan</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+
+    <!-- Edit Specialty Modal -->
+    <Dialog :open="isSpecialtyModalOpen" @update:open="val => isSpecialtyModalOpen = val">
+      <DialogContent class="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle class="text-[#AE7A42]">Edit Specialty</DialogTitle>
+        </DialogHeader>
+        <form @submit.prevent="updateSpecialty">
+          <div class="flex flex-col gap-4 py-4">
+            <input v-model="specialtyForm.specialty" type="text" class="w-full border rounded px-3 py-2" required />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" @click="isSpecialtyModalOpen = false" type="button">Batal</Button>
+            <Button type="submit" class="bg-[#AE7A42] hover:bg-[#95683C] text-white">Simpan</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+
     <!-- Main Content -->
     <div class="min-h-screen flex flex-col bg-[#F6F6F6]">
       <div class="flex flex-1 flex-col lg:flex-row gap-6 px-4 sm:px-8 py-6 max-w-7xl w-full mx-auto">
         <!-- Main Content -->
         <div class="flex-1 flex flex-col gap-6 order-1 lg:order-1">
           <!-- Profile Card -->
-             <Card class="relative overflow-hidden">
-    <!-- Background Image Section -->
-    <div 
-      class="h-48 w-full bg-cover bg-center relative"
-      :style="{ 
-        backgroundImage: `url(${user.background || '/images/design.jpg'})`,
-        backgroundPosition: 'center center'
-      }"
-    >
-      <Button 
-        class="absolute top-4 right-4 bg-[#AE7A42] hover:bg-[#95683C] text-white opacity-0 hover:opacity-100 transition-opacity"
-        size="sm"
-        @click="openBgModal"
-      >
-        <Icon name="camera" class="mr-1" />
-        Ubah
-      </Button>
-    </div>
-
-    <!-- Content Section with White Background -->
-    <div class="bg-white px-6 pb-6 rounded-b-xl">
-      <div class="flex flex-col sm:flex-row gap-4 -mt-12">
-        <!-- Avatar Positioned to Left -->
-        <div class="relative flex-shrink-0">
-          <div class="group relative w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-lg cursor-pointer">
-            <Avatar class="w-full h-full" @click="openAvatarModal">
-              <AvatarImage :src="user.avatar" alt="Profile" />
-              <AvatarFallback>{{ userInitials }}</AvatarFallback>
-            </Avatar>
+          <Card class="relative overflow-hidden">
+            <!-- Background Image Section -->
             <div 
-              class="absolute inset-0 bg-[#AE7A42]/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-              @click="openAvatarModal"
+              class="h-80 w-full bg-cover bg-center relative"
+              :style="{ 
+                backgroundImage: `url(${user.background || '/images/design.jpg'})`,
+                backgroundPosition: 'center center'
+              }"
             >
-              <Icon name="camera" class="text-white w-6 h-6" />
+              <Button 
+                class="absolute top-4 right-4 bg-[#AE7A42] hover:bg-[#95683C] text-white opacity-0 hover:opacity-100 transition-opacity"
+                size="sm"
+                @click="openBgModal"
+              >
+                <Icon name="camera" class="mr-1" />
+                Ubah
+              </Button>
             </div>
-          </div>
-        </div>
-        
-        <!-- User Info on Right Side -->
-<div class="flex-1 lg:ml-2">
-  <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
-    <div>
-      <h2 class="text-2xl sm:text-3xl font-bold text-[#714C25] lg:mt-12">{{ user.name }}</h2>
-      <div class="font-semibold flex items-center gap-2" style="color: #714C25">
-        {{ user.origin }} <span class="text-[15px] font-normal">{{ user.role }}</span>
-      </div>
-      <div class="text-[14px] mt-1" style="color: #714C25">Bergabung sejak {{ user.joined }}</div>
-    </div>
-    
-    <Button 
-      variant="destructive" 
-      @click="signOut" 
-      class="w-30 sm:w-auto mt-2 sm:mt-0"
-      size="sm"
-    >
-      Sign Out
-    </Button>
-  </div>
+            <!-- Content Section with White Background -->
+            <div class="bg-white px-6 pb-6 rounded-b-xl">
+              <div class="flex flex-col sm:flex-row gap-4 -mt-12">
+                <!-- Avatar Positioned to Left -->
+                <div class="relative flex-shrink-0">
+                  <div class="group relative w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-lg cursor-pointer">
+                    <Avatar class="w-full h-full" @click="openAvatarModal">
+                      <AvatarImage :src="user.avatar" alt="Profile" />
+                      <AvatarFallback>{{ userInitials }}</AvatarFallback>
+                    </Avatar>
+                    <div 
+                      class="absolute inset-0 bg-[#AE7A42]/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      @click="openAvatarModal"
+                    >
+                      <Icon name="camera" class="text-white w-6 h-6" />
+                    </div>
+                  </div>
+                </div>
+                <!-- User Info on Right Side -->
+                <div class="flex-1 lg:ml-2">
+                  <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+                    <div>
+                      <h2 class="text-2xl sm:text-3xl font-bold text-[#714C25] sm:mt-12 lg:mt-12">{{ user.name }}</h2>
+                      <div class="font-semibold flex items-center gap-2" style="color: #714C25">
+                        {{ user.origin_city }}, {{ user.country }} <span class="text-[15px] font-normal">{{ user.role }}</span>
+                      </div>
+                      <div class="text-[14px] mt-1" style="color: #714C25">Bergabung sejak {{ user.joined }}</div>
+<!-- Tambahkan specialty di bawah sini -->
+<div v-if="user.role === 'designer' || user.role === 'contractor'" class="flex items-center gap-2 mt-1">
+  <span class="font-semibold text-[#714C25]">Specialty:</span>
+  <span>{{ specialty }}</span>
+  <Button v-if="canEditAbout" size="sm" class="bg-white text-[#AE7A42] hover:bg-[#F6F6F6]" @click="openSpecialtyModal">
+    <PencilLine class="w-10 h-10" />
+  </Button>
 </div>
-      </div>
-    </div>
-  </Card>
+                    </div>
+                    <Button 
+                      class="bg-[#AE7A42] hover:bg-[#95683C] text-white w-30 sm:w-auto mt-2 sm:mt-0"
+                      size="sm"
+                      @click="openEditModal"
+                    >
+                      Edit
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
 
           <!-- My Request Card -->
           <Card class="bg-[#B8864B] text-white py-6">
@@ -205,18 +275,69 @@
               <Button variant="secondary" class="bg-[#AE7A42] hover:bg-[#95683C] text-white w-full sm:w-auto mt-4 sm:mt-0" @click="cekRequest">Cek</Button>
             </CardContent>
           </Card>
+
+          <!-- About & Portfolio (for designer/contractor) -->
+          <template v-if="user.role === 'designer' || user.role === 'contractor'">
+  <!-- About Section -->
+  <div class="bg-[#FAAE5C] text-white rounded-3xl p-6 shadow-sm">
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="text-2xl font-bold">About</h3>
+    <Button v-if="canEditAbout" size="sm" class="bg-white text-[#AE7A42] hover:bg-[#F6F6F6]" @click="openAboutModal">
+      Edit
+    </Button>
+  </div>
+  <p class="mb-4">{{ description }}</p>
+</div>
+
+  <!-- Portfolio Card -->
+<div class="rounded-3xl p-6 mb-4 shadow-sm" style="background-color: #AE7A42;">
+  <div class="font-semibold text-2xl mb-4 text-white">Portfolio</div>
+  <div v-if="portfolio && portfolio.url" class="flex flex-col gap-4">
+    <template v-if="/\.(jpg|jpeg|png|gif)$/i.test(portfolio.url)">
+      <img :src="portfolio.url" alt="Portfolio" class="max-w-xs rounded shadow mx-auto" />
+    </template>
+    <template v-else-if="/\.pdf$/i.test(portfolio.url)">
+      <iframe
+        :src="portfolio.url"
+        class="w-full rounded shadow"
+        style="min-height: 600px; background: white;"
+        frameborder="0"
+        allowfullscreen
+      ></iframe>
+    </template>
+    <template v-else>
+      <div class="text-white">File tidak dapat dipreview.</div>
+    </template>
+  </div>
+  <div v-else class="text-white opacity-70">Tidak ada portfolio</div>
+  <div class="mt-4 text-xs text-white opacity-80">
+    <div>Created: {{ createdAt ? new Date(createdAt).toLocaleString('id-ID', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }): '-' }}</div>
+    <div>Updated: {{ updatedAt ? new Date(updatedAt).toLocaleString('id-ID', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }) : '-' }}</div>
+  </div>
+</div>
+</template>
         </div>
         
         <!-- Sidebar -->
         <div class="w-full lg:w-80 flex flex-col gap-6 order-2 lg:order-2">
           <Card class="py-6">
             <CardHeader>
-              <CardTitle style="color: #714C25">Rekomendasi Designer</CardTitle>
+              <CardTitle style="color: #714C25">Rekomendasi Untukmu</CardTitle>
             </CardHeader>
             <CardContent>
-              <div v-for="designer in designers" :key="designer.id" class="flex items-center gap-3 mb-4">
+              <div v-for="designer in designers" :key="designer.id"
+                class="flex items-center gap-3 mb-4 cursor-pointer hover:bg-gray-100 rounded px-2 py-1 transition"
+                @click="goToDesigner(designer.id)">
                 <Avatar class="w-12 h-12">
-                  <AvatarImage :src="designer.avatar" alt="Designer" />
+                  <AvatarImage :src="designer.avatar_url" alt="Designer" />
                   <AvatarFallback>{{ designerInitials(designer.name) }}</AvatarFallback>
                 </Avatar>
                 <div>
@@ -249,10 +370,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import Icon from '@/components/Icon.vue';
-import { ref } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import axios from 'axios';
-import { usePage } from '@inertiajs/vue3';
-import { router } from '@inertiajs/vue3';
+import { usePage, Head, router as inertiaRouter } from '@inertiajs/vue3';
+import { PencilLine } from 'lucide-vue-next';
 
 // Modal state
 const isAvatarModalOpen = ref(false);
@@ -267,10 +388,19 @@ const selectedBgFile = ref<File | null>(null);
 const bgPreview = ref<string | null>(null);
 const bgFileInput = ref<HTMLInputElement | null>(null);
 
-// User data
+const isEditModalOpen = ref(false);
+const isAboutModalOpen = ref(false);
+const isSpecialtyModalOpen = ref(false);
+const designers = ref<any[]>([]);
+
+// User data (from Inertia)
 const page = usePage();
+const designerId = page.props.designerId;
 const user = ref({
+  id: page.props.auth.user.id,
   name: page.props.auth.user.name,
+  origin_city: page.props.auth.user.origin_city || '',
+  country: page.props.auth.user.country || '',
   avatar: page.props.auth.user.avatar
     ? page.props.auth.user.avatar.startsWith('http')
       ? page.props.auth.user.avatar
@@ -281,7 +411,6 @@ const user = ref({
       ? page.props.auth.user.background
       : `/storage/${page.props.auth.user.background}`
     : null,
-  origin: `${page.props.auth.user.origin_city || 'Unknown City'}, ${page.props.auth.user.country || 'Indonesia'}`,
   joined: page.props.auth.user.created_at
     ? new Date(page.props.auth.user.created_at).toLocaleDateString('id-ID', {
         year: 'numeric',
@@ -292,7 +421,99 @@ const user = ref({
   role: page.props.auth.user.role || 'User',
 });
 
-const userInitials = user.value.name.split(' ').map(n => n[0]).join('');
+// Data dari API designer
+const designerData = ref<{ specialty?: string; description?: string; portfolio?: any } | null>(null);
+
+// Helper computed agar selalu ambil dari designerData jika ada
+const specialty = computed(() => designerData.value?.specialty ?? '-');
+const description = computed(() => designerData.value?.description ?? '-');
+const portfolio = computed(() => designerData.value?.portfolio ?? null);
+const createdAt = computed(() => designerData.value?.created_at ?? null);
+const updatedAt = computed(() => designerData.value?.updated_at ?? null);
+
+const userInitials = computed(() => user.value.name.split(' ').map(n => n[0]).join(''));
+const canEditAbout = computed(() => user.value.role === 'designer' || user.value.role === 'contractor');
+
+async function fetchDesignerData() {
+  if (user.value.role === 'designer' || user.value.role === 'contractor') {
+    try {
+      const res = await axios.get(`/api/designers/${user.value.id}`);
+      designerData.value = res.data.data;
+      const resRekom = await axios.get('/api/designers');
+      designers.value = resRekom.data.data
+        .filter((d: any) => d.id !== designerId)
+        .slice(0, 5); // Batasi hanya 5
+    } catch (e) {
+      designerData.value = null;
+    }
+  }
+}
+
+// Edit Profile Modal
+const editForm = ref({
+  name: user.value.name,
+  origin_city: user.value.origin_city,
+  country: user.value.country,
+});
+function openEditModal() {
+  editForm.value = {
+    name: user.value.name,
+    origin_city: user.value.origin_city,
+    country: user.value.country,
+  };
+  isEditModalOpen.value = true;
+}
+async function updateProfile() {
+  try {
+    const res = await axios.post('/profile/update', editForm.value);
+    user.value.name = res.data.name;
+    user.value.origin_city = res.data.origin_city;
+    user.value.country = res.data.country;
+    isEditModalOpen.value = false;
+    alert('Profil berhasil diperbarui!');
+  } catch (e) {
+    alert('Gagal memperbarui profil');
+  }
+}
+
+// Edit About Modal
+const aboutForm = ref({
+  description: '',
+});
+function openAboutModal() {
+  aboutForm.value.description = designerData.value?.description || '';
+  isAboutModalOpen.value = true;
+}
+async function updateAbout() {
+  try {
+    const res = await axios.post('/profile/update-about', aboutForm.value);
+    // Update designerData agar tampilan langsung berubah
+    if (designerData.value) designerData.value.description = res.data.description;
+    isAboutModalOpen.value = false;
+    alert('About berhasil diperbarui!');
+  } catch (e) {
+    alert('Gagal memperbarui about');
+  }
+}
+
+// Edit Specialty Modal
+const specialtyForm = ref({
+  specialty: '',
+});
+function openSpecialtyModal() {
+  specialtyForm.value.specialty = designerData.value?.specialty || '';
+  isSpecialtyModalOpen.value = true;
+}
+async function updateSpecialty() {
+  try {
+    const res = await axios.post('/profile/update-specialty', specialtyForm.value);
+    if (designerData.value) designerData.value.specialty = res.data.specialty;
+    isSpecialtyModalOpen.value = false;
+    alert('Specialty berhasil diperbarui!');
+  } catch (e) {
+    alert('Gagal memperbarui specialty');
+  }
+}
 
 // Sample data
 const request = ref({
@@ -303,157 +524,17 @@ const request = ref({
   image: '/img/rumah-jepang.jpg',
 });
 
-const designers = ref([
-  { id: 1, name: 'Ali Rohmadanu', avatar: '/img/designer1.jpg' },
-  { id: 2, name: 'Ali Rohmadanu', avatar: '/img/designer1.jpg' },
-  { id: 3, name: 'Ali Rohmadanu', avatar: '/img/designer1.jpg' },
-  { id: 4, name: 'Ali Rohmadanu', avatar: '/img/designer1.jpg' },
-  { id: 5, name: 'Ali Rohmadanu', avatar: '/img/designer1.jpg' },
-]);
-
-// Avatar modal functions
-const openAvatarModal = () => {
-  isAvatarModalOpen.value = true;
-  selectedFile.value = null;
-  avatarPreview.value = null;
-};
-
-const handleFileChange = (e: Event) => {
-  const target = e.target as HTMLInputElement;
-  const file = target.files?.[0];
-  
-  if (!file) return;
-
-  // Validate file type and size
-  if (!file.type.match('image.*')) {
-    alert('Hanya file gambar yang diperbolehkan');
-    return;
-  }
-
-  if (file.size > 16 * 1024 * 1024) {
-    alert('Ukuran file maksimal 16MB');
-    return;
-  }
-
-  selectedFile.value = file;
-  
-  // Create preview
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    avatarPreview.value = e.target?.result as string;
-  };
-  reader.readAsDataURL(file);
-};
-
-const uploadAvatar = async () => {
-  if (!selectedFile.value) return;
-
-  isUploading.value = true;
-  
-  const formData = new FormData();
-  formData.append('avatar', selectedFile.value);
-
-  try {
-    const response = await axios.post('/profile', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-
-    // Update the user's avatar with the new URL
-    user.value.avatar = response.data.avatar_url;
-    isAvatarModalOpen.value = false;
-    
-    // Show success message (you can use a toast library)
-    alert('Foto profil berhasil diperbarui!');
-  } catch (error) {
-    console.error('Upload failed:', error);
-    alert('Gagal mengunggah foto profil');
-  } finally {
-    isUploading.value = false;
-  }
-};
-
-// Background modal functions
-const openBgModal = () => {
-  isBgModalOpen.value = true;
-  selectedBgFile.value = null;
-  bgPreview.value = null;
-};
-
-const handleBgFileChange = (e: Event) => {
-  const target = e.target as HTMLInputElement;
-  const file = target.files?.[0];
-  
-  if (!file) return;
-
-  // Validate file type and size
-  if (!file.type.match('image.*')) {
-    alert('Hanya file gambar yang diperbolehkan');
-    return;
-  }
-
-  if (file.size > 16 * 1024 * 1024) {
-    alert('Ukuran file maksimal 16MB');
-    return;
-  }
-
-  selectedBgFile.value = file;
-  
-  // Create preview
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    bgPreview.value = e.target?.result as string;
-  };
-  reader.readAsDataURL(file);
-};
-
-const uploadBackground = async () => {
-  if (!selectedBgFile.value) return;
-
-  isBgUploading.value = true;
-  
-  const formData = new FormData();
-  formData.append('background', selectedBgFile.value);
-
-  try {
-    const response = await axios.post('/profile/background', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-
-    // Update the user's background with the new URL
-    user.value.background = response.data.background_url;
-    isBgModalOpen.value = false;
-    
-    // Show success message
-    alert('Background profil berhasil diperbarui!');
-  } catch (error) {
-    console.error('Upload failed:', error);
-    alert('Gagal mengunggah background profil');
-  } finally {
-    isBgUploading.value = false;
-  }
-};
-
-// Other functions
 function designerInitials(name: string) {
   return name.split(' ').map(n => n[0]).join('');
 }
+function cekRequest() {}
 
-function signOut() {
-  router.post('/logout');
+function goToDesigner(id: number) {
+  inertiaRouter.visit(`/designers/${id}`);
 }
 
-function editProfile() {
-  // Implement edit logic
-  // Could open a modal or navigate to edit page
-}
-
-function cekRequest() {
-  // Implement check request logic
-}
+onMounted(fetchDesignerData);
+watch(() => user.value.role, fetchDesignerData);
 </script>
 
 <style scoped>

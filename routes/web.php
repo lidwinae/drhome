@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\DesignerController;
 use App\Http\Controllers\AvatarController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -30,6 +31,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/profile', [AvatarController::class, 'updateAvatar']);
     Route::post('/profile/background', [AvatarController::class, 'updateBackground']);
+    Route::post('/profile/update', [AvatarController::class, 'updateProfile']);
+    Route::post('/profile/update-specialty', [AvatarController::class, 'updateSpecialty']);
+    Route::post('/profile/update-about', [AvatarController::class, 'updateAbout']);
 
     Route::get('designers/{id}', function ($id) {
         return Inertia::render('Build_group/DesignerDetail', [

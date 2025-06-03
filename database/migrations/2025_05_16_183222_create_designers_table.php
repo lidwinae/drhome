@@ -15,7 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->primary(); // ini sekaligus PK & FK
             $table->string('specialty', 50)->nullable();
             $table->text('description')->nullable();
-            $table->mediumText('portfolio')->charset('binary')->nullable();
+            $table->string('portfolio_path')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

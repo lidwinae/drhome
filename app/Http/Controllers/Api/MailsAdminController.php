@@ -67,7 +67,6 @@ public function store(Request $request)
     }
 }
 
-
 public function show($id)
 {
     $mail = MailsAdmin::with('user:id,name,email')->findOrFail($id);

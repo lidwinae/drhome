@@ -10,6 +10,7 @@ use App\Http\Controllers\UserController;
 // Route::middleware(['auth:sanctum'])->group(function () {
 Route::get('designers', [DesignerController::class, 'index']);
 Route::get('designers/{id}', [DesignerController::class, 'show']);
+Route::patch('designers/{id}', [DesignerController::class, 'patchUpdate']);
 
 Route::prefix('designs')->group(function () {
     Route::get('/', [DesignController::class, 'index']);

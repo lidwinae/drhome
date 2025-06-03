@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Contractor;
 use App\Models\Designer;
@@ -15,62 +16,261 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
-        // admin
+        // Setup storage directories if they don't exist
+        $directories = ['public/avatars', 'public/backgrounds', 'public/portfolios'];
+        foreach ($directories as $directory) {
+            if (!Storage::exists($directory)) {
+                Storage::makeDirectory($directory);
+            }
+        }
+
+        // Copy sample files to storage
+        $this->copySampleFiles();
+
+        // Background images available
+        $backgrounds = ['bg1.png', 'bg2.png', 'bg3.png', 'bg4.png', 'bg5.png'];
+
+        // Admin
         User::create([
-            'name' => 'ADMIN',
-            'email' => 'admin@test.com',
+            'name' => 'Admin',
+            'email' => 'admin@gmail.com',
             'password' => Hash::make('rahasia1'),
             'role' => 'admin',
             'status' => 'active',
             'country' => 'Indonesia',
             'origin_city' => 'Jakarta',
+            'avatar' => 'avatars/lidwinae.jpg',
+            'background' => 'backgrounds/bg1.png',
         ]);
         
-        // client
+        // Clients
         User::create([
-            'name' => 'Klien',
-            'email' => 'klien@example.com',
+            'name' => 'Client One',
+            'email' => 'client1@gmail.com',
             'password' => Hash::make('rahasia1'),
             'role' => 'client',
             'status' => 'active',
-            'country' => 'Malaysia',
-            'origin_city' => 'Kuala Lumpur',
+            'country' => 'United States',
+            'origin_city' => 'New York',
+            'avatar' => null,
+            'background' => null,
         ]);
 
-        // kontraktor
-        $user = User::create([
-            'name' => 'Lidwina',
-            'email' => 'lidwina@example.com',
+        User::create([
+            'name' => 'Client Two',
+            'email' => 'client2@gmail.com',
             'password' => Hash::make('rahasia1'),
-            'role' => 'contractor',
+            'role' => 'client',
             'status' => 'active',
-            'country' => 'Germany',
-            'origin_city' => 'Munich',
+            'country' => 'United Kingdom',
+            'origin_city' => 'London',
+            'avatar' => null,
+            'background' => null,
         ]);
 
-        Contractor::create([
-            'user_id' => $user->id,
-            'specialty' => 'medieval',
-            'description' => 'Specialist in medieval-style construction and restoration based in Munich, Germany.',
-            'portfolio' => file_get_contents(public_path('portfolio/Portfolio.pdf')),
-        ]);
+        // Contractors
+        $contractors = [
+            [
+                'name' => 'Lidwina Contractor',
+                'email' => 'lidwina.contractor@gmail.com',
+                'country' => 'Germany',
+                'city' => 'Munich',
+                'avatar' => 'lidwinae.jpg',
+                'specialty' => 'medieval',
+                'description' => 'Specialist in medieval-style construction and restoration.',
+                'portfolio' => 'portfolio.pdf',
+                'background' => 'backgrounds/bg2.png'
+            ],
+            [
+                'name' => 'Argenta Builder',
+                'email' => 'argenta.builder@gmail.com',
+                'country' => 'Italy',
+                'city' => 'Rome',
+                'avatar' => 'argenta.jpg',
+                'specialty' => 'classical',
+                'description' => 'Expert in classical Roman architecture and construction.',
+                'portfolio' => 'portfolio1.pdf',
+                'background' => 'backgrounds/bg3.png'
+            ],
+            [
+                'name' => 'Steve Construct',
+                'email' => 'steve.construct@gmail.com',
+                'country' => 'USA',
+                'city' => 'Chicago',
+                'avatar' => 'steve.png',
+                'specialty' => 'modern',
+                'description' => 'Modern construction specialist with 15 years experience.',
+                'portfolio' => 'portfolio2.pdf',
+                'background' => 'backgrounds/bg4.png'
+            ]
+        ];
 
-        // designer
-        $user = User::create([
-            'name' => 'Hayao Miyazaki',
-            'email' => 'hayaomiyazaki@example.com',
-            'password' => Hash::make('rahasia1'),
-            'role' => 'designer',
-            'status' => 'active',
-            'country' => 'Japan',
-            'origin_city' => 'Kyoto',
-        ]);
+        foreach ($contractors as $contractor) {
+            $user = User::create([
+                'name' => $contractor['name'],
+                'email' => $contractor['email'],
+                'password' => Hash::make('rahasia1'),
+                'role' => 'contractor',
+                'status' => 'active',
+                'country' => $contractor['country'],
+                'origin_city' => $contractor['city'],
+                'avatar' => 'avatars/' . $contractor['avatar'],
+                'background' => $contractor['background'],
+            ]);
 
-        Designer::create([
-            'user_id' => $user->id,
-            'specialty' => 'oriental / traditional',
-            'description' => 'Specialist in oriental-style house in Japan.',
-            'portfolio' => file_get_contents(public_path('portfolio/Portfolio.pdf')),
-        ]);
+            Contractor::create([
+                'user_id' => $user->id,
+                'specialty' => $contractor['specialty'],
+                'description' => $contractor['description'],
+                'portfolio_path' => 'portfolios/' . $contractor['portfolio'],
+            ]);
+        }
+
+        // Designers
+        $designers = [
+            [
+                'name' => 'Hayao Miyazaki',
+                'email' => 'hayao.design@gmail.com',
+                'country' => 'Japan',
+                'city' => 'Tokyo',
+                'avatar' => 'hayao.png',
+                'specialty' => 'oriental',
+                'description' => 'Master of traditional Japanese architecture and design.',
+                'portfolio' => 'portfolio3.pdf',
+                'background' => 'backgrounds/bg1.png'
+            ],
+            [
+                'name' => 'Cherry Blossom',
+                'email' => 'cherry.design@gmail.com',
+                'country' => 'Japan',
+                'city' => 'Kyoto',
+                'avatar' => 'cherry.png',
+                'specialty' => 'minimalist',
+                'description' => 'Minimalist Japanese design with natural elements.',
+                'portfolio' => 'portfolio4.pdf',
+                'background' => 'backgrounds/bg2.png'
+            ],
+            [
+                'name' => 'Dr. Strange Designs',
+                'email' => 'strange.design@gmail.com',
+                'country' => 'USA',
+                'city' => 'New York',
+                'avatar' => 'drstrange.png',
+                'specialty' => 'futuristic',
+                'description' => 'Futuristic and avant-garde architectural designs.',
+                'portfolio' => 'portfolio.pdf',
+                'background' => 'backgrounds/bg3.png'
+            ],
+            [
+                'name' => 'Samoyed Interiors',
+                'email' => 'samoyed.design@gmail.com',
+                'country' => 'Russia',
+                'city' => 'Moscow',
+                'avatar' => 'samoyed.png',
+                'specialty' => 'luxury',
+                'description' => 'Luxury interior designs with a cozy touch.',
+                'portfolio' => 'portfolio1.pdf',
+                'background' => 'backgrounds/bg4.png'
+            ],
+            [
+                'name' => 'Corgi Architecture',
+                'email' => 'corgi.design@gmail.com',
+                'country' => 'UK',
+                'city' => 'London',
+                'avatar' => 'corgi.png',
+                'specialty' => 'traditional',
+                'description' => 'Traditional British architecture with modern comforts.',
+                'portfolio' => 'portfolio2.pdf',
+                'background' => 'backgrounds/bg5.png'
+            ],
+            [
+                'name' => 'Malamute Structures',
+                'email' => 'malamute.design@gmail.com',
+                'country' => 'Canada',
+                'city' => 'Vancouver',
+                'avatar' => 'malamute.png',
+                'specialty' => 'sustainable',
+                'description' => 'Eco-friendly and sustainable building designs.',
+                'portfolio' => 'portfolio3.pdf',
+                'background' => 'backgrounds/bg1.png'
+            ],
+            [
+                'name' => 'Hatsune Virtual',
+                'email' => 'hatsune.design@gmail.com',
+                'country' => 'Japan',
+                'city' => 'Sapporo',
+                'avatar' => 'hatsune.png',
+                'specialty' => 'virtual',
+                'description' => 'Virtual and augmented reality architectural visualization.',
+                'portfolio' => 'portfolio4.pdf',
+                'background' => 'backgrounds/bg2.png'
+            ]
+        ];
+
+        foreach ($designers as $designer) {
+            $user = User::create([
+                'name' => $designer['name'],
+                'email' => $designer['email'],
+                'password' => Hash::make('rahasia1'),
+                'role' => 'designer',
+                'status' => 'active',
+                'country' => $designer['country'],
+                'origin_city' => $designer['city'],
+                'avatar' => 'avatars/' . $designer['avatar'],
+                'background' => $designer['background'],
+            ]);
+
+            Designer::create([
+                'user_id' => $user->id,
+                'specialty' => $designer['specialty'],
+                'description' => $designer['description'],
+                'portfolio_path' => 'portfolios/' . $designer['portfolio'],
+            ]);
+        }
+    }
+
+    /**
+     * Copy sample files from public to storage
+     */
+    protected function copySampleFiles(): void
+    {
+        // Copy avatar images
+        $avatarFiles = [
+            'lidwinae.jpg', 'hayao.png', 'argenta.jpg', 'cherry.png', 
+            'steve.png', 'drstrange.png', 'samoyed.png', 'corgi.png', 
+            'malamute.png', 'hatsune.png'
+        ];
+
+        foreach ($avatarFiles as $file) {
+            $src = public_path("designers/{$file}");
+            $dst = storage_path("app/public/avatars/{$file}");
+            if (file_exists($src) && !file_exists($dst)) {
+                copy($src, $dst);
+            }
+        }
+
+        // Copy background images
+        $backgroundFiles = ['bg1.png', 'bg2.png', 'bg3.png', 'bg4.png', 'bg5.png'];
+        foreach ($backgroundFiles as $file) {
+            $src = public_path("background/{$file}");
+            $dst = storage_path("app/public/backgrounds/{$file}");
+            if (file_exists($src) && !file_exists($dst)) {
+                copy($src, $dst);
+            }
+        }
+
+        // Copy portfolio files
+        $portfolioFiles = [
+            'Portfolio.pdf', 'portfolio1.pdf', 'portfolio2.pdf', 
+            'portfolio3.pdf', 'portfolio4.pdf'
+        ];
+
+        foreach ($portfolioFiles as $file) {
+            $src = public_path("portfolio/{$file}");
+            $dst = storage_path("app/public/portfolios/{$file}");
+            if (file_exists($src) && !file_exists($dst)) {
+                copy($src, $dst);
+            }
+        }
     }
 }

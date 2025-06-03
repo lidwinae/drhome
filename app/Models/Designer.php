@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Designer extends Model
 {
+    protected $primaryKey = 'user_id';
+    public $incrementing = false; // Karena user_id bukan auto increment
+    protected $keyType = 'int';
     protected $fillable = [
-        'id',
-        'name',
-        'country',
-        'origin_city',
+        'user_id',
         'specialty',
-        'photo',
-        'description'
+        'description',
+        'portfolio_path',
     ];
 
     public function user()

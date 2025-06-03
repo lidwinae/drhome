@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import Icon from '@/components/Icon.vue';
+import { Head } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
@@ -52,6 +53,7 @@ onMounted(async () => {
 </script>
 
 <template>
+  <Head title="Design Detail" />
   <AppLayout class="bg-gray-50">
     <div class="min-h-screen bg-gray-50">
       <!-- Loading State -->
