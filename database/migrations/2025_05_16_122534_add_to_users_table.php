@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('country', 50)->nullable()->after('email');
-            $table->string('origin_city', 50)->nullable()->after('country');
-            $table->mediumText('photo')->charset('binary')->nullable()->after('origin_city');
-            $table->mediumText('background_image')->charset('binary')->nullable()->after('photo');
+            $table->string('country', 50)->default('Indonesia')->after('email');
+            $table->string('origin_city', 50)->default('Jakarta')->after('country');
+            $table->string('avatar')->nullable()->after('origin_city');
+            $table->string('background')->nullable()->after('avatar');
         });
     }
 

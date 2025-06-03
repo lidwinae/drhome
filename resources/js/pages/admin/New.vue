@@ -221,12 +221,12 @@ const handleImageError = (event: Event) => {
                     <button @click="openEditModal(design)"
                             class="w-[48%] flex flex-col items-center justify-center gap-1 px-2 py-2 bg-[#AE7A42] text-white rounded text-sm hover:bg-[#8c5e30] transition-colors">
                         <Pencil :size="18" />
-                        <span class="text-[14px]">Edit</span>
+                        <span class="text-[15px]">Edit</span>
                     </button>
                     <button @click="handleDelete(design.id)"
                             class="w-[48%] flex flex-col items-center justify-center gap-1 px-2 py-2 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors">
                         <Trash2 :size="18" />
-                        <span class="text-[14px]">Delete</span>
+                        <span class="text-[15px]">Delete</span>
                     </button>
                     </div>
                 </div>

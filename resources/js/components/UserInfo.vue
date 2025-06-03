@@ -15,15 +15,22 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { getInitials } = useInitials();
 
-// Compute whether we should show the avatar image
-const showAvatar = computed(() => props.user.avatar && props.user.avatar !== '');
+const avatarUrl = computed(() => {
+  if (!props.user.avatar) return null;
+  // Generate full URL dari path relatif di database
+  return `/storage/${props.user.avatar}`;
+});
 </script>
 
 <template>
     <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
-        <AvatarImage v-if="showAvatar" :src="user.avatar" :alt="user.name" />
+        <AvatarImage 
+            v-if="avatarUrl" 
+            :src="avatarUrl" 
+            :alt="props.user.name" 
+        />
         <AvatarFallback class="rounded-lg text-black dark:text-white">
-            {{ getInitials(user.name) }}
+            {{ getInitials(props.user.name) }}
         </AvatarFallback>
     </Avatar>
 

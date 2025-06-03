@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AvatarController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -26,6 +27,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('profile', function () {
         return Inertia::render('Profile');
     })->name('profile');
+
+    Route::post('/profile', [AvatarController::class, 'updateAvatar']);
+    Route::post('/profile/background', [AvatarController::class, 'updateBackground']);
 
     Route::get('designers/{id}', function ($id) {
         return Inertia::render('Build_group/DesignerDetail', [

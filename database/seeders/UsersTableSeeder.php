@@ -24,8 +24,6 @@ class UsersTableSeeder extends Seeder
             'status' => 'active',
             'country' => 'Indonesia',
             'origin_city' => 'Jakarta',
-            'photo' => null,
-            'background_image' => null,
         ]);
         
         // client
@@ -37,8 +35,6 @@ class UsersTableSeeder extends Seeder
             'status' => 'active',
             'country' => 'Malaysia',
             'origin_city' => 'Kuala Lumpur',
-            'photo' => null,
-            'background_image' => null,
         ]);
 
         // kontraktor
@@ -50,8 +46,6 @@ class UsersTableSeeder extends Seeder
             'status' => 'active',
             'country' => 'Germany',
             'origin_city' => 'Munich',
-            'photo' => null,
-            'background_image' => null,
         ]);
 
         Contractor::create([
@@ -70,8 +64,6 @@ class UsersTableSeeder extends Seeder
             'status' => 'active',
             'country' => 'Japan',
             'origin_city' => 'Kyoto',
-            'photo' => null,
-            'background_image' => null,
         ]);
 
         Designer::create([
