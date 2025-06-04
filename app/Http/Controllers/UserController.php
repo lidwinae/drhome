@@ -28,13 +28,13 @@ class UserController extends Controller
         if ($request->role === 'contractor') {
             Contractor::updateOrCreate(
             ['user_id' => $user->id],
-            ['specialty' => null, 'portfolio' => null]);
+            ['specialty' => null]);
         }
 
         if ($request->role === 'designer') {
             Designer::updateOrCreate(
             ['user_id' => $user->id],
-            ['specialty' => null, 'portfolio' => null]);
+            ['specialty' => null]);
         }
 
         return back()->with('success', 'User role updated successfully');

@@ -60,4 +60,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(MailsAdmin::class, 'user_id');
     }
+
+    public function purchaseddesigns()
+    {
+        return $this->hasMany(PurchasedDesign::class, 'user_id');
+    }
 }

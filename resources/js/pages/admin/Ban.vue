@@ -84,7 +84,7 @@ onMounted(() => {
             </div>
 
             <!-- User Cards -->
-            <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
+            <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2 mb-16">
                 <div v-for="user in users" :key="user.id" class="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">

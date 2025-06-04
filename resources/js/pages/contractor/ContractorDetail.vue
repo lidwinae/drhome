@@ -27,7 +27,7 @@ onMounted(async () => {
   isLoading.value = true;
   try {
     // Ambil data designer detail
-    const response = await axios.get(`/api/designers/${designerId}`);
+    const response = await axios.get(`/api/contractors/${designerId}`);
     designer.value = response.data.data;
     error.value = null;
 
@@ -126,7 +126,7 @@ const isOwnProfile = computed(() => {
     </div>
     <template v-if="!isOwnProfile">
       <Link
-        :href="`/designers/${designer.id}/request`"
+        :href="`/contractors/${designer.id}/request`"
         class="ml-4 px-5 py-2 rounded-full bg-[#AE7A42] text-white font-medium text-[18px] shadow hover:bg-[#95683C] transition"
         style="white-space: nowrap;"
       >

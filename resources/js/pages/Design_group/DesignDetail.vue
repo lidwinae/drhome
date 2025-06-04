@@ -6,33 +6,33 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import Icon from '@/components/Icon.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, usePage, router as inertiaRouter } from '@inertiajs/vue3';
 import axios from 'axios';
 
 // Ambil id dari route params atau props
 const page = usePage();
 const designId = page.props.designId ?? null;
+const authUserId = page.props.auth?.user?.id ?? null;
 
 const design = ref<any>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
+const designers = ref<any[]>([]); // Untuk rekomendasi designer
 
-const recommendationsData = ref([
-  { name: 'Ali Rohmadanu', role: 'Contractor', imageUrl: 'https://cdn.builder.io/api/v1/image/assets/TEMP/a985a5b23772e5cb50f72e965d8d1e9b463ff3c2?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34' },
-  { name: 'Ali Rohmadanu', role: 'Contractor', imageUrl: 'https://cdn.builder.io/api/v1/image/assets/TEMP/a985a5b23772e5cb50f72e965d8d1e9b463ff3c2?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34' },
-  { name: 'Ali Rohmadanu', role: 'Contractor', imageUrl: 'https://cdn.builder.io/api/v1/image/assets/TEMP/a985a5b23772e5cb50f72e965d8d1e9b463ff3c2?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34' },
-  { name: 'Ali Rohmadanu', role: 'Contractor', imageUrl: 'https://cdn.builder.io/api/v1/image/assets/TEMP/a985a5b23772e5cb50f72e965d8d1e9b463ff3c2?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34' },
-  { name: 'Ali Rohmadanu', role: 'Contractor', imageUrl: 'https://cdn.builder.io/api/v1/image/assets/TEMP/a985a5b23772e5cb50f72e965d8d1e9b463ff3c2?placeholderIfAbsent=true&apiKey=99ac6e2e518047159e4604b0a27afb34' },
-]);
-
-function designInitials(name: string) {
-  return name.split(' ').map(n => n[0]).join('');
+function designerInitials(name: string) {
+  return name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '';
 }
 
 function handleImageError(event: Event) {
   const target = event.target as HTMLImageElement;
-  target.src = '/images/design.jpg';
+  target.src = '/images/default_Avatar.png';
 }
+
+function goToDesigner(id: number) {
+  inertiaRouter.visit(`/designers/${id}`);
+}
+
+const isPurchased = ref(false);
 
 onMounted(async () => {
   try {
@@ -42,8 +42,27 @@ onMounted(async () => {
       loading.value = false;
       return;
     }
+    
+    // Ambil data design detail
     const response = await axios.get(`/api/designs/${id}`);
     design.value = response.data;
+    
+    // Cek apakah sudah purchased
+    if (authUserId) {
+      const purchasedRes = await axios.get(`/design/${id}/is-purchased`);
+      isPurchased.value = purchasedRes.data.purchased;
+    }
+
+    // Ambil data rekomendasi designer
+    try {
+      const resRekom = await axios.get('/api/designers');
+      if (resRekom.data && Array.isArray(resRekom.data.data)) {
+        designers.value = resRekom.data.data.filter((d: any) => d.id !== authUserId).slice(0, 5);
+      }
+    } catch (rekomError) {
+      console.error('Failed to load designer recommendations:', rekomError);
+    }
+    
     loading.value = false;
   } catch (err: any) {
     error.value = err.response?.data?.message || 'Failed to load design details';
@@ -72,7 +91,7 @@ onMounted(async () => {
         <div class="flex flex-col lg:flex-row gap-6">
           <!-- Main Content -->
           <div class="flex-1 flex flex-col gap-6">
-            <!-- Profile Card -->
+            <!-- Design Card -->
             <div class="bg-white rounded-3xl shadow-sm overflow-hidden">
               <!-- Cover Image -->
               <div class="relative h-64 md:h-80 lg:h-96 w-full">
@@ -100,14 +119,24 @@ onMounted(async () => {
                       </span>
                     </div>
                   </div>
+                  
                   <div class="md:self-end">
-                    <Link 
-                      :href="route('designer.request', { id: design.id })" 
-                      class="inline-block bg-[#AE7A42] hover:bg-[#8e6536] text-white font-bold py-3 px-6 rounded-full text-[16px] transition-colors duration-200 whitespace-nowrap"
-                    >
-                      Request
-                    </Link>
-                  </div>
+  <template v-if="!isPurchased">
+    <Link 
+      :href="route('purchase.design', { id: design.id })" 
+      class="inline-block bg-[#AE7A42] hover:bg-[#8e6536] text-white font-bold py-3 px-6 rounded-full text-[16px] transition-colors duration-200 whitespace-nowrap"
+    >
+      Purchase
+    </Link>
+  </template>
+  <template v-else>
+    <span class="inline-flex items-center bg-green-100 text-green-700 px-6 py-3 rounded-full font-bold">
+      <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+      Purchased
+    </span>
+  </template>
+</div>
+
                 </div>
               </div>
             </div>
@@ -137,27 +166,30 @@ onMounted(async () => {
             </div>
           </div>
 
-          <!-- Sidebar - Rekomendasi -->
+          <!-- Sidebar - Rekomendasi Designer -->
           <div class="w-full lg:w-80 flex flex-col gap-6">
-            <div class="bg-white rounded-3xl shadow-sm p-6">
-              <h3 class="text-xl font-bold text-[#714C25] mb-4">Rekomendasi Untukmu</h3>
-              <div class="space-y-4">
-                <div 
-                  v-for="designer in recommendationsData" 
-                  :key="designer.name" 
-                  class="flex items-center gap-3"
+            <Card class="py-6">
+              <CardHeader>
+                <CardTitle style="color: #714C25">Rekomendasi Untukmu</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div
+                  v-for="designer in designers"
+                  :key="designer.id"
+                  class="flex items-center gap-3 mb-4 cursor-pointer hover:bg-gray-100 rounded px-2 py-1 transition"
+                  @click="goToDesigner(designer.id)"
                 >
                   <Avatar class="w-12 h-12">
-                    <AvatarImage :src="designer.imageUrl" alt="Designer" />
-                    <AvatarFallback>{{ designInitials(designer.name) }}</AvatarFallback>
+                    <AvatarImage :src="designer.avatar_url || '/images/default_Avatar.png'" alt="Designer" @error="handleImageError" />
+                    <AvatarFallback>{{ designerInitials(designer.name) }}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <div class="font-semibold text-[#714C25]">{{ designer.name }}</div>
-                    <div class="text-xs text-gray-500">{{ designer.role }}</div>
+                    <div class="font-semibold" style="color: #714C25">{{ designer.name }}</div>
+                    <div class="text-xs text-muted-foreground">{{ designer.role || 'Designer' }}</div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

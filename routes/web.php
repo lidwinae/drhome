@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\DesignerController;
 use App\Http\Controllers\AvatarController;
+use App\Http\Controllers\PurchasedDesignController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -14,6 +15,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('build', function () {
         return Inertia::render('Build_group/Build');
     })->name('build');
+
+    Route::get('/build/contractor', function () {
+        return Inertia::render('contractor/BuildContractor');
+    })->name('buildcontractor');
 
     Route::get('design', function () {
         return Inertia::render('Design_group/Design');
@@ -41,11 +46,34 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->name('designerdetail');
 
+    Route::get('contractors/{id}', function ($id) {
+        return Inertia::render('contractor/ContractorDetail', [
+            'designerId' => $id
+        ]);
+    })->name('contractordetail');
+
     Route::get('designers/{id}/request', function ($id) {
         return Inertia::render('Build_group/RequestDesign', [
             'designerId' => $id
         ]);
     })->name('designer.request');
+
+    Route::get('contractors/{id}/request', function ($id) {
+        return Inertia::render('contractor/RequestContractor', [
+            'designerId' => $id
+        ]);
+    })->name('contractor.request');
+
+    Route::get('design/{id}/purchase', function ($id) {
+        return Inertia::render('PurchaseDesign', [
+            'designId' => $id
+        ]);
+    })->name('purchase.design');
+
+    Route::post('/purchase', [PurchasedDesignController::class, 'store'])
+        ->name('purchase.post');
+    Route::get('/design/{id}/is-purchased', [PurchasedDesignController::class, 'isPurchased'])
+        ->name('design.isPurchased');
 
     Route::get('request', function () {
         return Inertia::render('Request');

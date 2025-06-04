@@ -35,24 +35,28 @@ class ContractorController extends Controller
 }
 
     public function showPreviewPortfolio()
-    {
-        $contractors = Contractor::with(['user' => function($query) {
-                $query->select('id', 'name', 'email');
-            }])
-            ->select('user_id', 'specialty', 'portfolio')
-            ->get()
-            ->map(function ($contractor) {
-                return [
-                    'id' => $contractor->user->id,
-                    'name' => $contractor->user->name,
-                    'email' => $contractor->user->email,
-                    'specialty' => $contractor->specialty,
-                    'portfolio' => $contractor->portfolio ? base64_encode($contractor->portfolio) : null
-                ];
-            });
+{
+    $contractors = Contractor::with(['user' => function($query) {
+            $query->select('id', 'name', 'email');
+        }])
+        ->select('user_id', 'specialty', 'portfolio_path')
+        ->get()
+        ->map(function ($contractor) {
+            return [
+                'id' => $contractor->user->id,
+                'name' => $contractor->user->name,
+                'email' => $contractor->user->email,
+                'specialty' => $contractor->specialty,
+                'portfolio_url' => $contractor->portfolio_path ? asset('storage/' . $contractor->portfolio_path) : null,
+                'portfolio_filename' => $contractor->portfolio_path ? basename($contractor->portfolio_path) : null,
+            ];
+        });
 
-        return response()->json($contractors);
-    }
+    return response()->json([
+        'success' => true,
+        'data' => $contractors
+    ]);
+}
     /**
      * Store a newly created resource in storage.
      */

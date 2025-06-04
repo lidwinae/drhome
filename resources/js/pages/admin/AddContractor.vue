@@ -30,7 +30,8 @@ onMounted(async () => {
             axios.get('/api/admin/contractors')
         ]);
         clients.value = clientsResponse.data;
-        contractors.value = contractorsResponse.data;
+        // Ambil data dari contractorsResponse.data.data (lihat response showPreviewPortfolio)
+        contractors.value = contractorsResponse.data.data ?? contractorsResponse.data;
     } catch (error) {
         console.error('Failed to fetch data:', error);
     } finally {
@@ -145,15 +146,26 @@ const submit = () => {
                             v-for="contractor in contractors" 
                             :key="contractor.id"
                             class="bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow flex flex-row"
+                            style="border-width: 1.5px;"
                         >
                             <!-- Bagian Kiri (Portfolio) -->
-                            <div v-if="contractor.portfolio" class="w-1/3 mr-4 flex-shrink-0">
+                            <div v-if="contractor.portfolio_url" class="w-1/3 mr-4 flex-shrink-0">
                                 <div class="border border-gray-300 rounded-md overflow-hidden h-48 lg:h-full">
-                                    <vue-pdf-embed
-                                        :source="`data:application/pdf;base64,${contractor.portfolio}`"
-                                        class="h-full w-full"
-                                        :page="1"
-                                    />
+                                    <template v-if="/\.pdf$/i.test(contractor.portfolio_filename)">
+                                        <vue-pdf-embed
+                                            :source="contractor.portfolio_url"
+                                            class="h-full w-full"
+                                            :page="1"
+                                        />
+                                    </template>
+                                    <template v-else-if="/\.(jpg|jpeg|png|png)$/i.test(contractor.portfolio_filename)">
+                                        <img :src="contractor.portfolio_url" class="h-full w-full object-contain" alt="Portfolio" />
+                                    </template>
+                                    <template v-else>
+                                        <div class="flex items-center justify-center h-full text-gray-400 text-sm">
+                                            File tidak dapat dipreview
+                                        </div>
+                                    </template>
                                 </div>
                             </div>
                             <div v-else class="w-1/3 mr-4 flex items-center justify-center bg-gray-100 rounded-md flex-shrink-0">

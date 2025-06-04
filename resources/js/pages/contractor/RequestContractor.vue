@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 
 const statuses = [
     { id: 'design_submitted', label: 'Design Submitted' },
@@ -12,6 +12,9 @@ const statuses = [
 ];
 
 const currentStatus = ref('design_submitted');
+const page = usePage();
+const purchasedDesigns = page.props.purchasedDesigns as Array<{ id: number, design_id: number, design_path: string, design?: { name: string } }>;
+const selectedDesign = ref('');
 </script>
 
 <template>
@@ -25,7 +28,7 @@ const currentStatus = ref('design_submitted');
                         <div class="space-y-6">
                             <h2 class="text-2xl font-bold text-gray-800 border-b pb-3">Request Contractor</h2>
                             <div class="mb-4 text-sm text-[#AE7A42] bg-[#FFF7ED] border border-[#AE7A42] rounded-lg px-4 py-3">
-                                <span class="font-semibold">*</span> Anda harus sudah memiliki file design terlampir jika ingin request contractor.
+                                <span class="font-semibold">*</span> Anda harus sudah memiliki design yang sudah dibeli jika ingin request contractor.
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="space-y-1">
@@ -55,14 +58,15 @@ const currentStatus = ref('design_submitted');
                                 <div class="space-y-1 md:col-span-2">
                                     <label class="block text-sm font-medium text-gray-700">Design File</label>
                                     <div class="flex items-center gap-3">
-                                        <input type="file" class="hidden" id="preview-picture">
-                                        <label for="preview-picture" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg cursor-pointer transition">
-                                            Choose File
-                                        </label>
-                                        <span class="text-sm text-gray-500">No file chosen</span>
+                                    <select v-model="selectedDesign" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition">
+                                        <option value="">Pilih Design yang sudah dibeli</option>
+                                        <option v-for="item in purchasedDesigns" :key="item.id" :value="item.id">
+                                            {{ item.design?.name || `Design #${item.design_id}` }}
+                                        </option>
+                                    </select>    
                                     </div>
                                 </div>
-                                <div class="space-y-1 md:col-span-2">
+                                <div class="space-y-1 md:col-span-2 mb-2">
                                     <label class="block text-sm font-medium text-gray-700">Budget (IDR)</label>
                                     <input type="text" placeholder="Enter Budget"
                                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition">

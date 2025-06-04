@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('purchased_designs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('design_id');
-
+            $table->unsignedBigInteger('design_id')->nullable();
+            $table->string('design_path');
+            $table->decimal('price', 16, 2);
+            
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('design_id')->references('id')->on('designs')->onDelete('cascade');
+            $table->foreign('design_id')->references('id')->on('designs')->onDelete('set null');
             $table->timestamps();
         });
     }

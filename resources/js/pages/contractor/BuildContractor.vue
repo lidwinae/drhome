@@ -6,7 +6,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Build', href: '/build' },
+  { title: 'Build Contractor', href: '/build/contractor' },
 ];
 
 const designers = ref<Array<any>>([]);
@@ -16,7 +16,7 @@ const error = ref<string | null>(null);
 onMounted(async () => {
   isLoading.value = true;
   try {
-    const response = await axios.get('/api/designers');
+    const response = await axios.get('/api/contractors');
     designers.value = response.data.data || [];
     error.value = null;
   } catch (err: any) {
@@ -34,7 +34,7 @@ function handleImageError(event: Event) {
 </script>
 
 <template>
-  <Head title="Build" />
+  <Head title="Build Contractor" />
 
   <AppLayout :breadcrumbs="breadcrumbs" class="bg-[#F6F6F6]">
     <div class="relative flex justify-center items-center p-8 w-full">
@@ -64,18 +64,17 @@ function handleImageError(event: Event) {
 
     <!-- Designers Grid Section -->
     <div class="w-full max-w-[1100px] mx-auto px-8 pb-12 relative">
-      <h2 class="text-center mb-8 font-['Archivo'] font-medium text-[#AE7A42] text-[1.8rem]">Designers</h2>
-
-      <Link
-        href="/build/contractor"
-        class="absolute top-0 right-0 flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#F6F6F6] transition"
-        style="transform: translateY(10%);"
-        aria-label="Go to Contractor"
-      >
-        <svg class="w-7 h-7 text-[#AE7A42]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-        </svg>
-      </Link>
+    <Link
+      href="/build"
+      class="absolute top-0 left-0 flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#F6F6F6] transition"
+      style="transform: translateY(10%);"
+      aria-label="Back to Build"
+    >
+      <svg class="w-7 h-7 text-[#AE7A42]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+      </svg>
+    </Link>
+    <h2 class="text-center mb-8 font-['Archivo'] font-medium text-[#AE7A42] text-[1.8rem]">Contractors</h2>
 
       <div v-if="isLoading" class="flex flex-col items-center justify-center py-8 text-center">
         <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#AE7A42] mb-4"></div>
@@ -87,14 +86,14 @@ function handleImageError(event: Event) {
       </div>
 
       <div v-else-if="designers.length === 0" class="text-center py-8 font-light text-sm text-[#AE7A42]">
-        <p>No designers available</p>
+        <p>No contractors available</p>
       </div>
 
       <div v-else class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <Link 
           v-for="designer in designers" 
           :key="designer.id" 
-          :href="route('designerdetail', { id: designer.id })"
+          :href="route('contractordetail', { id: designer.id })"
           class="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-transform duration-300 ease-in-out hover:-translate-y-[5px]"
         >
           <img
