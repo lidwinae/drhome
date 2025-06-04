@@ -237,14 +237,14 @@
                         {{ user.origin_city }}, {{ user.country }} <span class="text-[15px] font-normal">{{ user.role }}</span>
                       </div>
                       <div class="text-[14px] mt-1" style="color: #714C25">Bergabung sejak {{ user.joined }}</div>
-<!-- Tambahkan specialty di bawah sini -->
-<div v-if="user.role === 'designer' || user.role === 'contractor'" class="flex items-center gap-2 mt-1">
-  <span class="font-semibold text-[#714C25]">Specialty:</span>
-  <span>{{ specialty }}</span>
-  <Button v-if="canEditAbout" size="sm" class="bg-white text-[#AE7A42] hover:bg-[#F6F6F6]" @click="openSpecialtyModal">
-    <PencilLine class="w-10 h-10" />
-  </Button>
-</div>
+                      <!-- Tambahkan specialty di bawah sini -->
+                      <div v-if="user.role === 'designer' || user.role === 'contractor'" class="flex items-center gap-2 mt-1">
+                        <span class="font-semibold text-[#714C25]">Specialty:</span>
+                        <span>{{ specialty }}</span>
+                        <Button v-if="canEditAbout" size="sm" class="bg-white text-[#AE7A42] hover:bg-[#F6F6F6]" @click="openSpecialtyModal">
+                          <PencilLine class="w-10 h-10" />
+                        </Button>
+                      </div>
                     </div>
                     <Button 
                       class="bg-[#AE7A42] hover:bg-[#95683C] text-white w-30 sm:w-auto mt-2 sm:mt-0"
@@ -260,21 +260,29 @@
           </Card>
 
           <!-- My Request Card -->
-          <Card class="bg-[#B8864B] text-white py-6">
-            <CardHeader>
-              <CardTitle style="color: white">My Request</CardTitle>
-            </CardHeader>
-            <CardContent class="flex flex-col sm:flex-row items-center gap-4">
-              <img :src="request.image" alt="Request" class="w-full sm:w-32 h-24 object-cover rounded-lg" />
-              <div class="flex-1" style="color: white">
-                <div>Nama : {{ request.name }}</div>
-                <div>Type : {{ request.type }}</div>
-                <div>ID : {{ request.id }}</div>
-                <div>Request Date : {{ request.date }}</div>
-              </div>
-              <Button variant="secondary" class="bg-[#AE7A42] hover:bg-[#95683C] text-white w-full sm:w-auto mt-4 sm:mt-0" @click="cekRequest">Cek</Button>
-            </CardContent>
-          </Card>
+          <Link href="/myrequest" class="block">
+            <Card class="bg-[#B8864B] text-white py-6 cursor-pointer hover:bg-[#a1743d] transition">
+              <CardHeader class="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle style="color: white" class="text-[24px]">My Request</CardTitle>
+                  <div class="text-[18px] font-normal text-white mt-1">Lihat Request Anda</div>
+                </div>
+                <span class="text-3xl font-bold">&gt;</span>
+              </CardHeader>
+            </Card>
+          </Link>
+
+          <Link href="/mypurchaseddesign" class="block">
+            <Card class="bg-white text-[#AE7A42] py-6 cursor-pointer hover:bg-[#EBEBEB] transition">
+              <CardHeader class="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle class="text-[24px]">My Purchased Design</CardTitle>
+                  <div class="text-[18px] font-normal mt-1">Lihat Design Anda yang sudah Anda beli</div>
+                </div>
+                <span class="text-3xl font-bold">&gt;</span>
+              </CardHeader>
+            </Card>
+          </Link>
 
           <!-- About & Portfolio (for designer/contractor) -->
           <template v-if="user.role === 'designer' || user.role === 'contractor'">
@@ -372,6 +380,7 @@ import {
 import Icon from '@/components/Icon.vue';
 import { ref, computed, onMounted, watch } from 'vue';
 import axios from 'axios';
+import { Link } from '@inertiajs/vue3';
 import { usePage, Head, router as inertiaRouter } from '@inertiajs/vue3';
 import { PencilLine } from 'lucide-vue-next';
 
@@ -601,19 +610,9 @@ async function updateSpecialty() {
   }
 }
 
-// Sample data
-const request = ref({
-  name: 'Rumah Jepang',
-  type: 'Rumah',
-  id: 'SA2DFG25GGS9',
-  date: '16 Januari 2025',
-  image: '/img/rumah-jepang.jpg',
-});
-
 function designerInitials(name: string) {
   return name.split(' ').map(n => n[0]).join('');
 }
-function cekRequest() {}
 
 function goToDesigner(id: number) {
   inertiaRouter.visit(`/designers/${id}`);

@@ -3,7 +3,7 @@ import UserInfo from '@/components/UserInfo.vue';
 import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import type { User } from '@/types';
 import { Link, router } from '@inertiajs/vue3';
-import { LogOut, MessageCircleQuestion, Settings } from 'lucide-vue-next';
+import { FolderCheck, LogOut, MessageCircleQuestion, Send, Settings } from 'lucide-vue-next';
 
 interface Props {
     user: User;
@@ -28,6 +28,18 @@ defineProps<Props>();
             <Link class="block w-full" href="/profile" prefetch as="button">
                 <span class="mr-2"><svg xmlns='http://www.w3.org/2000/svg' class='h-4 w-4 inline' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z' /></svg></span>
                 Profile
+            </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem :as-child="true">
+            <Link class="block w-full" :href="route('customerservice')" prefetch as="button">
+                <Send class="mr-2 h-4 w-4" />
+                My Request
+            </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem :as-child="true">
+            <Link class="block w-full" :href="route('customerservice')" prefetch as="button">
+                <FolderCheck class="mr-2 h-4 w-4" />
+                Purchased Designs
             </Link>
         </DropdownMenuItem>
         <DropdownMenuItem :as-child="true">
