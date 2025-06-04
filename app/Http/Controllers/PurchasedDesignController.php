@@ -25,13 +25,16 @@ class PurchasedDesignController extends Controller
         ->exists();
 
     if ($alreadyPurchased) {
-        return redirect()->route('designs.show', $design->id)
+        return redirect()->route('designdetail', $design->id)
             ->with('info', 'You have already purchased this design.');
     }
 
     PurchasedDesign::create([
         'user_id' => Auth::id(),
         'design_id' => $design->id,
+        'design_name' => $design->name,
+        'design_country' => $design->country,
+        'design_specialty' => $design->specialty,
         'design_path' => $design->photo_path,
         'price' => $request->amount
     ]);
@@ -48,5 +51,17 @@ public function isPurchased(Request $request, $designId)
         ->exists();
 
     return response()->json(['purchased' => $purchased]);
+}
+
+public function userPurchasedDesigns(Request $request)
+{
+    $userId = Auth::id();
+    $designs = PurchasedDesign::where('user_id', $userId)
+        ->select('id', 'design_id', 'design_name', 'design_country', 'design_specialty', 'design_path')
+        ->get();
+
+    return response()->json([
+        'designs' => $designs
+    ]);
 }
 }

@@ -12,6 +12,9 @@ class PurchasedDesign extends Model
     protected $fillable = [
         'user_id',
         'design_id',
+        'design_name',
+        'design_country',
+        'design_specialty',
         'design_path',
         'price'
     ];

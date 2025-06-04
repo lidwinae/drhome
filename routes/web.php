@@ -58,11 +58,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->name('designer.request');
 
-    Route::get('contractors/{id}/request', function ($id) {
+    Route::get('/contractors/{id}/request', function ($id) {
         return Inertia::render('contractor/RequestContractor', [
-            'designerId' => $id
+            'contractorId' => $id
         ]);
-    })->name('contractor.request');
+    });
 
     Route::get('design/{id}/purchase', function ($id) {
         return Inertia::render('PurchaseDesign', [

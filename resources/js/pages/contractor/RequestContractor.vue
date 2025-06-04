@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
+import axios from 'axios';
 
 const statuses = [
     { id: 'design_submitted', label: 'Design Submitted' },
@@ -12,9 +14,66 @@ const statuses = [
 ];
 
 const currentStatus = ref('design_submitted');
-const page = usePage();
-const purchasedDesigns = page.props.purchasedDesigns as Array<{ id: number, design_id: number, design_path: string, design?: { name: string } }>;
+const purchasedDesigns = ref<Array<any>>([]);
 const selectedDesign = ref('');
+const province = ref('');
+const city = ref('');
+const landSize = ref('');
+const landShape = ref('');
+const budget = ref('');
+const deadline = ref('');
+const loading = ref(false);
+const error = ref<string|null>(null);
+const success = ref<string|null>(null);
+
+const page = usePage();
+const contractorId = page.props.contractorId;
+
+onMounted(async () => {
+    try {
+        const res = await axios.get('/api/user/purchased-designs');
+        purchasedDesigns.value = res.data.designs;
+    } catch (err) {
+        purchasedDesigns.value = [];
+    }
+});
+
+async function submitRequest() {
+    error.value = null;
+    success.value = null;
+
+    if (!selectedDesign.value || !province.value || !city.value || !landSize.value || !landShape.value) {
+        error.value = 'Semua field wajib diisi!';
+        return;
+    }
+
+    loading.value = true;
+    try {
+        await axios.post(`/api/contractors/${contractorId}/request`, {
+            purchased_design_id: selectedDesign.value,
+            province: province.value,
+            city: city.value,
+            land_size: landSize.value,
+            land_shape: landShape.value,
+            budget: budget.value ? parseFloat(budget.value) : null,
+            deadline: deadline.value ? deadline.value : null,
+        });
+        window.location.href = '/profile';
+        success.value = 'Request contractor submitted successfully!';
+        // Reset form
+        selectedDesign.value = '';
+        province.value = '';
+        city.value = '';
+        landSize.value = '';
+        landShape.value = '';
+        budget.value = '';
+        deadline.value = '';
+    } catch (err: any) {
+        error.value = err.response?.data?.message || 'Gagal mengirim request.';
+    } finally {
+        loading.value = false;
+    }
+}
 </script>
 
 <template>
@@ -22,7 +81,6 @@ const selectedDesign = ref('');
     <AppLayout>
         <main class="bg-gray-50 w-full min-h-screen p-4 md:p-8">
             <div class="max-w-7xl mx-auto space-y-6">
-                <!-- Request Contractor -->
                 <section class="flex flex-col lg:flex-row gap-6">
                     <div class="house-design bg-white rounded-2xl shadow-md p-6 lg:w-2/3">
                         <div class="space-y-6">
@@ -30,25 +88,27 @@ const selectedDesign = ref('');
                             <div class="mb-4 text-sm text-[#AE7A42] bg-[#FFF7ED] border border-[#AE7A42] rounded-lg px-4 py-3">
                                 <span class="font-semibold">*</span> Anda harus sudah memiliki design yang sudah dibeli jika ingin request contractor.
                             </div>
+                            <div v-if="error" class="mb-2 text-red-600">{{ error }}</div>
+                            <div v-if="success" class="mb-2 text-green-600">{{ success }}</div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="space-y-1">
                                     <label class="block text-sm font-medium text-gray-700">Province</label>
-                                    <input type="text" placeholder="Enter Province"
+                                    <input v-model="province" type="text" placeholder="Enter Province"
                                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition">
                                 </div>
                                 <div class="space-y-1">
                                     <label class="block text-sm font-medium text-gray-700">City</label>
-                                    <input type="text" placeholder="Enter City"
+                                    <input v-model="city" type="text" placeholder="Enter City"
                                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition">
                                 </div>
                                 <div class="space-y-1">
                                     <label class="block text-sm font-medium text-gray-700">Land Size (m²)</label>
-                                    <input type="text" placeholder="Enter Land Size"
+                                    <input v-model="landSize" type="text" placeholder="Enter Land Size"
                                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition">
                                 </div>
                                 <div class="space-y-1">
                                     <label class="block text-sm font-medium text-gray-700">Land Shape</label>
-                                    <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition">
+                                    <select v-model="landShape" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition">
                                         <option value="">Select Land Shape</option>
                                         <option value="rectangle">Rectangle</option>
                                         <option value="square">Square</option>
@@ -58,44 +118,33 @@ const selectedDesign = ref('');
                                 <div class="space-y-1 md:col-span-2">
                                     <label class="block text-sm font-medium text-gray-700">Design File</label>
                                     <div class="flex items-center gap-3">
-                                    <select v-model="selectedDesign" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition">
-                                        <option value="">Pilih Design yang sudah dibeli</option>
-                                        <option v-for="item in purchasedDesigns" :key="item.id" :value="item.id">
-                                            {{ item.design?.name || `Design #${item.design_id}` }}
-                                        </option>
-                                    </select>    
+                                        <select v-model="selectedDesign" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition">
+                                            <option value="">Pilih Design yang sudah dibeli</option>
+                                            <option v-for="item in purchasedDesigns" :key="item.id" :value="item.id">
+                                                {{ item.design_name }} - {{ item.design_country }} - {{ item.design_specialty }}
+                                            </option>
+                                        </select>
                                     </div>
                                 </div>
-                                <div class="space-y-1 md:col-span-2 mb-2">
+                                <div class="space-y-1 md:col-span-2">
                                     <label class="block text-sm font-medium text-gray-700">Budget (IDR)</label>
-                                    <input type="text" placeholder="Enter Budget"
+                                    <input v-model="budget" type="number" min="0" placeholder="Enter Budget"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition">
+                                </div>
+                                <div class="space-y-1 md:col-span-2 mb-2">
+                                    <label class="block text-sm font-medium text-gray-700">Deadline</label>
+                                    <input v-model="deadline" type="date"
                                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition">
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- Timeline Section (Desktop) -->
-                    <section class="timeline-section bg-white rounded-2xl shadow-md p-6 lg:w-1/3 hidden lg:block">
-                        <h2 class="text-2xl font-bold text-gray-800 border-b pb-3 mb-6">Timeline</h2>
-                        <div class="space-y-1 max-w-md">
-                            <label class="block text-sm font-medium text-gray-700">Deadline</label>
-                            <div class="relative">
-                                <input type="date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition pr-10">
-                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
                     <!-- Status Section (Desktop) -->
                     <section class="status-section bg-[#AE7A42] rounded-2xl shadow-md p-6 lg:w-1/3 flex flex-col justify-center hidden lg:block">
                         <h2 class="text-2xl font-bold text-white border-b border-[#fff7ed]/30 pb-3 mb-6">Project Status</h2>
                         <div class="space-y-4">
                             <div v-for="(status, index) in statuses" :key="status.id" class="flex items-start">
                                 <div class="flex-shrink-0 relative">
-                                    <!-- Status circle -->
                                     <div :class="[
                                         'h-6 w-6 rounded-full flex items-center justify-center border-2',
                                         currentStatus === status.id
@@ -104,7 +153,6 @@ const selectedDesign = ref('');
                                     ]">
                                         <span v-if="currentStatus === status.id">✓</span>
                                     </div>
-                                    <!-- Vertical line between statuses -->
                                     <div v-if="index < statuses.length - 1"
                                         class="absolute left-1/2 top-6 w-0.5 h-10 -ml-px"
                                         :class="currentStatus === status.id ? 'bg-white' : 'bg-white/30'"></div>
@@ -131,7 +179,7 @@ const selectedDesign = ref('');
                     <div class="space-y-1 max-w-md">
                         <label class="block text-sm font-medium text-gray-700">Deadline</label>
                         <div class="relative">
-                            <input type="date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition pr-10">
+                            <input v-model="deadline" type="date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition pr-10">
                             <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
@@ -146,7 +194,6 @@ const selectedDesign = ref('');
                     <div class="space-y-4">
                         <div v-for="(status, index) in statuses" :key="status.id" class="flex items-start">
                             <div class="flex-shrink-0 relative">
-                                <!-- Status circle -->
                                 <div :class="[
                                     'h-6 w-6 rounded-full flex items-center justify-center border-2',
                                     currentStatus === status.id
@@ -155,7 +202,6 @@ const selectedDesign = ref('');
                                 ]">
                                     <span v-if="currentStatus === status.id">✓</span>
                                 </div>
-                                <!-- Vertical line between statuses -->
                                 <div v-if="index < statuses.length - 1"
                                     class="absolute left-1/2 top-6 w-0.5 h-10 -ml-px"
                                     :class="currentStatus === status.id ? 'bg-white' : 'bg-white/30'"></div>
@@ -177,8 +223,13 @@ const selectedDesign = ref('');
                 </section>
                 <!-- Footer -->
                 <div class="flex justify-end">
-                    <button class="px-6 py-3 bg-[#AE7A42] hover:bg-[#8c5e30] text-white font-medium rounded-lg shadow transition">
-                        Submit Request
+                    <button
+                        class="px-6 py-3 bg-[#AE7A42] hover:bg-[#8c5e30] text-white font-medium rounded-lg shadow transition"
+                        :disabled="loading"
+                        @click="submitRequest"
+                    >
+                        <span v-if="loading">Submitting...</span>
+                        <span v-else>Submit Request</span>
                     </button>
                 </div>
             </div>

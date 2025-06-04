@@ -382,11 +382,81 @@ const selectedFile = ref<File | null>(null);
 const avatarPreview = ref<string | null>(null);
 const fileInput = ref<HTMLInputElement | null>(null);
 
+function openAvatarModal() {
+  isAvatarModalOpen.value = true;
+  selectedFile.value = null;
+  avatarPreview.value = null;
+}
+
+function handleFileChange(e: Event) {
+  const files = (e.target as HTMLInputElement).files;
+  if (files && files[0]) {
+    selectedFile.value = files[0];
+    avatarPreview.value = URL.createObjectURL(files[0]);
+  }
+}
+
+async function uploadAvatar() {
+  if (!selectedFile.value) return;
+  isUploading.value = true;
+  const formData = new FormData();
+  formData.append('avatar', selectedFile.value);
+  try {
+    const res = await axios.post('/profile', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    user.value.avatar = res.data.avatar_url;
+    isAvatarModalOpen.value = false;
+    selectedFile.value = null;
+    avatarPreview.value = null;
+    alert('Foto profil berhasil diubah!');
+  } catch (e) {
+    alert('Gagal mengubah foto profil');
+  } finally {
+    isUploading.value = false;
+  }
+}
+
 const isBgModalOpen = ref(false);
 const isBgUploading = ref(false);
 const selectedBgFile = ref<File | null>(null);
 const bgPreview = ref<string | null>(null);
 const bgFileInput = ref<HTMLInputElement | null>(null);
+
+function openBgModal() {
+  isBgModalOpen.value = true;
+  selectedBgFile.value = null;
+  bgPreview.value = null;
+}
+
+function handleBgFileChange(e: Event) {
+  const files = (e.target as HTMLInputElement).files;
+  if (files && files[0]) {
+    selectedBgFile.value = files[0];
+    bgPreview.value = URL.createObjectURL(files[0]);
+  }
+}
+
+async function uploadBackground() {
+  if (!selectedBgFile.value) return;
+  isBgUploading.value = true;
+  const formData = new FormData();
+  formData.append('background', selectedBgFile.value);
+  try {
+    const res = await axios.post('/profile/background', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    user.value.background = res.data.background_url;
+    isBgModalOpen.value = false;
+    selectedBgFile.value = null;
+    bgPreview.value = null;
+    alert('Background berhasil diubah!');
+  } catch (e) {
+    alert('Gagal mengubah background');
+  } finally {
+    isBgUploading.value = false;
+  }
+}
 
 const isEditModalOpen = ref(false);
 const isAboutModalOpen = ref(false);
@@ -402,14 +472,14 @@ const user = ref({
   origin_city: page.props.auth.user.origin_city || '',
   country: page.props.auth.user.country || '',
   avatar: page.props.auth.user.avatar
-    ? page.props.auth.user.avatar.startsWith('http')
+    ? (page.props.auth.user.avatar.startsWith('http')
       ? page.props.auth.user.avatar
-      : `/storage/${page.props.auth.user.avatar}`
+      : `/storage/${page.props.auth.user.avatar}`)
     : '/img/profile.jpg',
   background: page.props.auth.user.background
-    ? page.props.auth.user.background.startsWith('http')
+    ? (page.props.auth.user.background.startsWith('http')
       ? page.props.auth.user.background
-      : `/storage/${page.props.auth.user.background}`
+      : `/storage/${page.props.auth.user.background}`)
     : null,
   joined: page.props.auth.user.created_at
     ? new Date(page.props.auth.user.created_at).toLocaleDateString('id-ID', {

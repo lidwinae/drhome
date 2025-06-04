@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\ContractorController;
 use App\Http\Controllers\Api\MailsAdminController;
+use App\Http\Controllers\PurchasedDesignController;
+use App\Http\Controllers\RequestContractorController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\DesignerController;
 use App\Http\Controllers\Api\DesignController;
@@ -36,4 +38,7 @@ Route::get('admin/contractors', [ContractorController::class, 'showPreviewPortfo
 Route::get('/customerservice', [MailsAdminController::class, 'userHistory']);
 Route::get('/customerservice/{id}', [MailsAdminController::class, 'show']);
 Route::post('/customerservice', [MailsAdminController::class, 'store'])->name('customerservice.store');
+
+Route::get('/user/purchased-designs', [PurchasedDesignController::class, 'userPurchasedDesigns']);
+Route::post('/contractors/{id}/request', [RequestContractorController::class, 'store']);
 // });
