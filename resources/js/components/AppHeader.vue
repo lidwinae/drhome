@@ -18,7 +18,7 @@ import UserMenuContent from '@/components/UserMenuContent.vue';
 import { getInitials } from '@/composables/useInitials';
 import type { BreadcrumbItem, NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Blocks, House, LayoutDashboard, Menu, Search, Shield } from 'lucide-vue-next';
+import { Blocks, House, LayoutDashboard, Menu, SendHorizontal, Shield } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 interface Props {
@@ -72,6 +72,14 @@ const mainNavItems = computed(() => {
       title: 'Admin',
       href: '/admin',
       icon: Shield,
+    });
+  }
+
+  if (auth.value?.user?.role === 'designer' || auth.value?.user?.role === 'contractor') {
+    items.push({
+      title: 'Requests',
+      href: '/request',
+      icon: SendHorizontal,
     });
   }
 

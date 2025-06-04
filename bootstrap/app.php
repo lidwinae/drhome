@@ -8,6 +8,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use App\Http\Middleware\EnsureIsAdmin;
+use App\Http\Middleware\EnsureIsDesignerOrContractor;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -37,6 +38,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->group('admin', [
             'web',
             EnsureIsAdmin::class,
+        ]);
+
+        $middleware->group('designer_contractor', [
+            'web',
+            EnsureIsDesignerOrContractor::class,
         ]);
 
     })

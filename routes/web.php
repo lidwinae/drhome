@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\DesignerController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\PurchasedDesignController;
+use App\Http\Controllers\RequestController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -75,13 +76,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/design/{id}/is-purchased', [PurchasedDesignController::class, 'isPurchased'])
         ->name('design.isPurchased');
 
-    Route::get('request', function () {
-        return Inertia::render('Request');
-    })->name('request');
-
     Route::get('/customerservice', function () {
         return Inertia::render('CustomerService');
     })->name('customerservice');
+
+    // designer contractor only
+    Route::middleware('designer_contractor')->group(function () {
+        Route::get('/request', [RequestController::class, 'index']);
+        
+    });
 });
 
 require __DIR__ . '/settings.php';
