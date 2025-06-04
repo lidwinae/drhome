@@ -21,6 +21,8 @@ class RequestContractor extends Model
         'budget',
         'deadline',
         'status',
+        'progress',
+        'notes'
     ];
 
     public function purchasedDesign()

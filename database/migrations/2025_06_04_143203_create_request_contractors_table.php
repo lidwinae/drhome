@@ -21,15 +21,15 @@ public function up(): void
         $table->string('land_size', 50);
         $table->string('land_shape', 50);
         $table->decimal('budget', 16, 2)->nullable();
+        $table->text('notes')->nullable();
         $table->date('deadline')->nullable();
         $table->enum('status', [
-            'design_submitted',
-            'request_accepted',
-            'payment',
-            'construction_start',
-            'construction_end',
-            'rejected'
-        ])->default('design_submitted');
+            'accepted',
+            'waiting',
+            'rejected',
+            'finished'
+        ])->default('waiting');
+        $table->enum('progress',['design_submitted', 'payment', 'construction_start', 'construction_end'])->default('design_submitted');
         $table->timestamps();
 
         $table->foreign('client_id')->references('id')->on('users')->onDelete('set null');

@@ -20,6 +20,7 @@ public function store(Request $request, $id)
         'land_shape' => 'required|string|max:50',
         'budget' => 'nullable|numeric',
         'deadline' => 'nullable|date',
+        'notes' => 'nullable|string',
     ]);
 
     $data = [
@@ -32,7 +33,9 @@ public function store(Request $request, $id)
         'land_shape' => $validated['land_shape'],
         'budget' => $validated['budget'] ?? null,
         'deadline' => $validated['deadline'] ?? null,
-        'status' => 'design_submitted',
+        'notes' => $validated['notes'] ?? null,
+        'status' => 'waiting',
+        'progress' => 'design_submitted',
     ];
 
     $requestContractor = RequestContractor::create($data);

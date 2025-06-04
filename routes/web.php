@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\DesignerController;
 use App\Http\Controllers\AvatarController;
+use App\Http\Controllers\MyRequestController;
 use App\Http\Controllers\PurchasedDesignController;
 use App\Http\Controllers\RequestController;
 use Illuminate\Support\Facades\Route;
@@ -54,7 +55,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('contractordetail');
 
     Route::get('designers/{id}/request', function ($id) {
-        return Inertia::render('Build_group/RequestDesign', [
+        return Inertia::render('Build_group/RequestDesigner', [
             'designerId' => $id
         ]);
     })->name('designer.request');
@@ -79,6 +80,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/customerservice', function () {
         return Inertia::render('CustomerService');
     })->name('customerservice');
+
+    Route::get('/myrequest', [MyRequestController::class, 'index']);
 
     // designer contractor only
     Route::middleware('designer_contractor')->group(function () {

@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ContractorController;
 use App\Http\Controllers\Api\MailsAdminController;
 use App\Http\Controllers\PurchasedDesignController;
 use App\Http\Controllers\RequestContractorController;
+use App\Http\Controllers\RequestDesignerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\DesignerController;
 use App\Http\Controllers\Api\DesignController;
@@ -41,4 +42,5 @@ Route::post('/customerservice', [MailsAdminController::class, 'store'])->name('c
 
 Route::get('/user/purchased-designs', [PurchasedDesignController::class, 'userPurchasedDesigns']);
 Route::post('/contractors/{id}/request', [RequestContractorController::class, 'store']);
+Route::post('/designers/{id}/request', [RequestDesignerController::class, 'store']);
 // });
