@@ -9,28 +9,61 @@ const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Build Contractor', href: '/build/contractor' },
 ];
 
-const designers = ref<Array<any>>([]);
+const contractors = ref<Array<any>>([]);
 const isLoading = ref(true);
 const error = ref<string | null>(null);
 
-onMounted(async () => {
+const search = ref('');
+const country = ref('');
+const specialty = ref('');
+const city = ref('');
+const showSortDropdown = ref(false);
+const sort = ref('az'); // 'az' = A-Z, 'za' = Z-A
+
+function toggleSortDropdown() {
+  showSortDropdown.value = !showSortDropdown.value;
+}
+
+function setSort(value: string) {
+  sort.value = value;
+  showSortDropdown.value = false;
+  fetchContractors();
+}
+
+async function fetchContractors() {
   isLoading.value = true;
   try {
-    const response = await axios.get('/api/contractors');
-    designers.value = response.data.data || [];
+    const response = await axios.get('/api/contractors', {
+      params: {
+        search: search.value,
+        country: country.value,
+        specialty: specialty.value,
+        city: city.value,
+        sort: sort.value,
+      }
+    });
+    contractors.value = response.data.data || [];
     error.value = null;
   } catch (err: any) {
-    error.value = err?.response?.data?.message || 'Failed to load designers';
-    designers.value = [];
+    error.value = err?.response?.data?.message || 'Failed to load contractors';
+    contractors.value = [];
   } finally {
     isLoading.value = false;
   }
-});
+}
+
+function onSearch() {
+  fetchContractors();
+}
 
 function handleImageError(event: Event) {
   const target = event.target as HTMLImageElement;
   target.src = '/images/default_Avatar.png'; // fallback image
 }
+
+onMounted(() => {
+  fetchContractors();
+});
 </script>
 
 <template>
@@ -49,18 +82,41 @@ function handleImageError(event: Event) {
     </div>
 
     <!-- Search Bar -->
-    <div class="flex justify-center px-8 pb-8 w-full">
-      <div class="flex items-center bg-white rounded-[20px] h-12 px-4 shadow-sm w-full max-w-[1000px]">
-        <button class="bg-transparent border-none cursor-pointer flex items-center p-2 mr-2">
-          <img src="/images/filter.svg" alt="Filter" class="w-[30px] h-[30px] block" />
-        </button>
-        <input type="text" placeholder="Search your favourite designer..." 
-          class="flex-1 border-none outline-none py-3 px-4 text-base text-gray-700 bg-transparent">
-        <button class="bg-transparent border-none cursor-pointer flex items-center p-2 ml-2">
-          <img src="/images/search.svg" alt="Search" class="w-[30px] h-[30px] block" />
-        </button>
-      </div>
+<div class="flex justify-center px-8 pb-8 w-full">
+  <div class="flex items-center bg-white rounded-[20px] h-12 px-4 shadow-sm w-full max-w-[1000px] relative">
+    <button
+      class="bg-transparent border-none cursor-pointer flex items-center p-2 mr-2"
+      @click="toggleSortDropdown"
+      aria-label="Sort"
+    >
+      <img src="/images/filter.svg" alt="Filter" class="w-[30px] h-[30px] block" />
+    </button>
+    <!-- Dropdown -->
+    <div
+      v-if="showSortDropdown"
+      class="absolute left-0 top-12 bg-white border rounded shadow-md z-10 w-50"
+    >
+      <button
+        class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+        @click="setSort('az')"
+      >Filter nama dari A-Z</button>
+      <button
+        class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+        @click="setSort('za')"
+      >Filter nama dari Z-A</button>
     </div>
+    <input
+      v-model="search"
+      @keyup.enter="onSearch"
+      type="text"
+      placeholder="Search your favourite contractor..."
+      class="flex-1 border-none outline-none py-3 px-4 text-base text-gray-700 bg-transparent"
+    >
+    <button @click="onSearch" class="bg-transparent border-none cursor-pointer flex items-center p-2 ml-2">
+      <img src="/images/search.svg" alt="Search" class="w-[30px] h-[30px] block" />
+    </button>
+  </div>
+</div>
 
     <!-- Designers Grid Section -->
     <div class="w-full max-w-[1100px] mx-auto px-8 pb-12 relative">
@@ -85,13 +141,13 @@ function handleImageError(event: Event) {
         <p>{{ error }}</p>
       </div>
 
-      <div v-else-if="designers.length === 0" class="text-center py-8 font-light text-sm text-[#AE7A42]">
+      <div v-else-if="contractors.length === 0" class="text-center py-8 font-light text-sm text-[#AE7A42]">
         <p>No contractors available</p>
       </div>
 
       <div v-else class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <Link 
-          v-for="designer in designers" 
+          v-for="designer in contractors" 
           :key="designer.id" 
           :href="route('contractordetail', { id: designer.id })"
           class="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-transform duration-300 ease-in-out hover:-translate-y-[5px]"

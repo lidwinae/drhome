@@ -12,22 +12,43 @@ class DesignerController extends Controller
     /**
      * Display a listing of the resource.
      */
-public function index()
+public function index(Request $request)
 {
-    $designers = User::with('designer')
+    $query = User::with('designer')
         ->where('role', 'designer')
-        ->select('id', 'name', 'origin_city', 'country', 'avatar')
-        ->get()
-        ->map(function ($designer) {
-            return [
-                'id' => $designer->id,
-                'name' => $designer->name,
-                'origin_city' => $designer->origin_city,
-                'country' => $designer->country,
-                'avatar_url' => $designer->avatar ? \Storage::url($designer->avatar) : null,
-                'specialty' => $designer->designer->specialty ?? null,
-            ];
-        });
+        ->select('id', 'name', 'origin_city', 'country', 'avatar');
+
+    // Search by name
+    if ($request->filled('search')) {
+    $search = $request->search;
+    $query->where(function ($q) use ($search) {
+        $q->where('name', 'like', '%' . $search . '%')
+          ->orWhere('origin_city', 'like', '%' . $search . '%')
+          ->orWhere('country', 'like', '%' . $search . '%')
+          ->orWhereHas('designer', function ($q2) use ($search) {
+              $q2->where('specialty', 'like', '%' . $search . '%');
+          });
+    });
+    }
+
+    if ($request->filled('sort')) {
+        if ($request->sort === 'az') {
+            $query->orderBy('name', 'asc');
+        } elseif ($request->sort === 'za') {
+            $query->orderBy('name', 'desc');
+        }
+    }
+
+    $designers = $query->get()->map(function ($designer) {
+        return [
+            'id' => $designer->id,
+            'name' => $designer->name,
+            'origin_city' => $designer->origin_city,
+            'country' => $designer->country,
+            'avatar_url' => $designer->avatar ? \Storage::url($designer->avatar) : null,
+            'specialty' => $designer->designer->specialty ?? null,
+        ];
+    });
 
     return response()->json([
         'success' => true,

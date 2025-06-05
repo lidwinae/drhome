@@ -12,23 +12,44 @@ use Illuminate\Support\Facades\Log;
 
 class DesignController extends Controller
 {
-    public function index()
-    {
-        $designs = Design::all()->map(function ($design) {
-            return [
-                'id' => $design->id,
-                'name' => $design->name,
-                'country' => $design->country,
-                'specialty' => $design->specialty,
-                'description' => $design->description,
-                'photo_url' => $design->photo_path ? Storage::url($design->photo_path) : null,
-                'preview_url' => $design->preview_path ? Storage::url($design->preview_path) : null,
-                'file_url' => $design->file_path ? Storage::url($design->file_path) : null
-            ];
-        });
+public function index(Request $request)
+{
+    $query = Design::query();
 
-        return response()->json($designs);
+    // Search by name, country, specialty, description
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', '%' . $search . '%')
+              ->orWhere('country', 'like', '%' . $search . '%')
+              ->orWhere('specialty', 'like', '%' . $search . '%');
+        });
     }
+
+    // Sort by name
+    if ($request->filled('sort')) {
+        if ($request->sort === 'az') {
+            $query->orderBy('name', 'asc');
+        } elseif ($request->sort === 'za') {
+            $query->orderBy('name', 'desc');
+        }
+    }
+
+    $designs = $query->get()->map(function ($design) {
+        return [
+            'id' => $design->id,
+            'name' => $design->name,
+            'country' => $design->country,
+            'specialty' => $design->specialty,
+            'description' => $design->description,
+            'photo_url' => $design->photo_path ? \Storage::url($design->photo_path) : null,
+            'preview_url' => $design->preview_path ? \Storage::url($design->preview_path) : null,
+            'file_url' => $design->file_path ? \Storage::url($design->file_path) : null
+        ];
+    });
+
+    return response()->json($designs);
+}
 
     public function store(Request $request)
     {

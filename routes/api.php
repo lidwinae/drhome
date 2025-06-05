@@ -49,5 +49,6 @@ Route::post('/contractors/{id}/request', [RequestContractorController::class, 's
 Route::post('/designers/{id}/request', [RequestDesignerController::class, 'store']);
 
 Route::post('/chat/send', [ChatController::class, 'send']);
-    Route::get('/chat/{userId}', [ChatController::class, 'getChats']);
+Route::get('/chat/{userId}', [ChatController::class, 'getChats']);
+Route::get('/purchaseddesigns', [PurchasedDesignController::class, 'index']);
 // });

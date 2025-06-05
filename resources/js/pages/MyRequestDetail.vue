@@ -239,7 +239,9 @@ function getCurrentUserId() {
                                 </div>
                                 <div class="flex items-center gap-4">
                                     <span class="font-semibold w-48">Deadline</span>
-                                    <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">{{ request.deadline || '-' }}</span>
+                                    <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">
+                                    {{ request.deadline ? new Date(request.deadline).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-' }}
+                                    </span>
                                 </div>
                                 <div class="flex items-center gap-4">
                                     <span class="font-semibold w-48">Notes</span>

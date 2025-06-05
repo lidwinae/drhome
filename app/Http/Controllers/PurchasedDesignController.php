@@ -6,10 +6,51 @@ use App\Models\Design;
 use App\Models\RequestDesigner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class PurchasedDesignController extends Controller
 {
+public function index(Request $request)
+{
+    $user = $request->user();
+
+    // Ambil semua purchased_designs milik user
+    $purchased = PurchasedDesign::where('user_id', $user->id)->get();
+
+    // Ambil semua design_id yang tidak null
+    $designIds = $purchased->pluck('design_id')->filter()->unique()->toArray();
+
+    // Ambil data design yang diperlukan
+    $designs = [];
+    if (!empty($designIds)) {
+        $designs = Design::whereIn('id', $designIds)->get()->keyBy('id');
+    }
+
+    // Format hasil
+    $result = $purchased->map(function ($item) use ($designs) {
+        $photo_url = null;
+        if ($item->design_id && isset($designs[$item->design_id]) && $designs[$item->design_id]->photo_path) {
+            $photo_url = Storage::url($designs[$item->design_id]->photo_path);
+        }
+        return [
+            'id' => $item->id,
+            'design_id' => $item->design_id,
+            'design_name' => $item->design_name,
+            'design_country' => $item->design_country,
+            'design_specialty' => $item->design_specialty,
+            'design_path' => $item->design_path,
+            'price' => $item->price,
+            'photo_url' => $photo_url,
+        ];
+    });
+
+    return response()->json([
+        'success' => true,
+        'data' => $result
+    ]);
+}
+
     // Store a new purchase
     public function store(Request $request)
 {

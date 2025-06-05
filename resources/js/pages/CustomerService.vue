@@ -97,7 +97,7 @@ onMounted(fetchMails);
                         <select
                             id="judul"
                             v-model="form.judul"
-                            class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-700 focus:ring-amber-700 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 p-2.5"
+                            class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#AE7A42]-700 focus:ring-[#AE7A42]-700 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 p-2.5 border border-black/40"
                         >
                             <option value="Feedback">Feedback</option>
                             <option value="Request menjadi designer">Request menjadi designer</option>
@@ -111,7 +111,7 @@ onMounted(fetchMails);
                             id="message"
                             v-model="form.message"
                             rows="6"
-                            class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-700 focus:ring-amber-700 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 p-3"
+                            class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-700 focus:ring-amber-700 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 p-3 border border-black/40"
                             placeholder="Tulis pesan Anda di sini..."
                             required
                         ></textarea>
@@ -163,7 +163,7 @@ onMounted(fetchMails);
                         v-for="mail in mails" 
                         :key="mail.id"
                         @click="openMailDetail(mail.id)"
-                        class="cursor-pointer flex justify-between items-center p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition-colors"
+                        class="cursor-pointer flex justify-between items-center p-6 bg-white border border-black/40 rounded-lg shadow hover:bg-gray-50 transition-colors"
                     >
                         <div>
                             <h3 class="text-lg font-medium text-gray-900">{{ mail.judul }}</h3>

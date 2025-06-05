@@ -82,6 +82,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('CustomerService');
     })->name('customerservice');
 
+    Route::get('/mypurchaseddesign', function () {
+        return Inertia::render('PurchasedDesigns');
+    })->name('mypurchaseddesign');
+
     Route::get('/myrequest', [MyRequestController::class, 'index']);
     Route::get('/myrequest/{id}', [MyRequestController::class, 'show'])->name('myrequest.show');
     Route::post('/my-request/{type}/{id}/pay', [MyRequestController::class, 'pay'])->name('my-request.pay');

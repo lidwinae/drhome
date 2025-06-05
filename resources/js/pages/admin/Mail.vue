@@ -87,7 +87,7 @@ onMounted(() => {
               type="email"
               id="recipient"
               placeholder="example@email.com"
-              class="mt-1 p-4 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              class="mt-1 p-4 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               required
               :disabled="isSending"
             >
@@ -100,7 +100,7 @@ onMounted(() => {
               type="text"
               id="subject"
               placeholder="Enter email subject"
-              class="mt-1 p-4 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              class="mt-1 p-4 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               required
               :disabled="isSending"
             >
@@ -113,7 +113,7 @@ onMounted(() => {
               id="message"
               rows="6"
               placeholder="Write your message here..."
-              class="mt-1 p-4 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              class="mt-1 p-4 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               required
               :disabled="isSending"
             ></textarea>
@@ -146,7 +146,7 @@ onMounted(() => {
           Belum ada riwayat email
         </div>
 
-        <div v-for="item in emailHistory" :key="item.id" class="bg-white p-6 shadow-md rounded-lg border-2 border-black-400 space-y-4">
+        <div v-for="item in emailHistory" :key="item.id" class="bg-white p-6 shadow-md rounded-lg border border-gray-300 space-y-4">
           <div class="flex space-x-4">
             <strong class="text-sm font-semibold text-gray-700 w-32">Email Penerima</strong>
             <p class="text-gray-600 flex-1">: {{ item.recipient }}</p>

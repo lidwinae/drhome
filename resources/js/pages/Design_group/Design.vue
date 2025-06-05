@@ -1,38 +1,67 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
-import { Link } from '@inertiajs/vue3';
 import axios from 'axios';
 
 const breadcrumbs: BreadcrumbItem[] = [
-  {
-    title: 'Design',
-    href: '/design',
-  },
+  { title: 'Design', href: '/design' },
 ];
 
 const designs = ref<Array<any>>([]);
 const isLoading = ref(true);
 const error = ref<string | null>(null);
 
-onMounted(async () => {
+const search = ref('');
+const country = ref('');
+const specialty = ref('');
+const showSortDropdown = ref(false);
+const sort = ref('az'); // 'az' = A-Z, 'za' = Z-A
+
+function toggleSortDropdown() {
+  showSortDropdown.value = !showSortDropdown.value;
+}
+
+function setSort(value: string) {
+  sort.value = value;
+  showSortDropdown.value = false;
+  fetchDesigns();
+}
+
+async function fetchDesigns() {
+  isLoading.value = true;
   try {
-    const response = await axios.get('/api/designs');
-    designs.value = response.data;
-  } catch (err) {
-    console.error('Error fetching designs:', err);
-    error.value = 'Failed to load designs';
+    const response = await axios.get('/api/designs', {
+      params: {
+        search: search.value,
+        country: country.value,
+        specialty: specialty.value,
+        sort: sort.value,
+      }
+    });
+    designs.value = response.data || [];
+    error.value = null;
+  } catch (err: any) {
+    error.value = err?.response?.data?.message || 'Failed to load designs';
+    designs.value = [];
   } finally {
     isLoading.value = false;
   }
-});
+}
 
-const handleImageError = (e: Event) => {
-  const target = e.target as HTMLImageElement;
-  target.src = '/images/design.jpg';
-};
+function onSearch() {
+  fetchDesigns();
+}
+
+function handleImageError(event: Event) {
+  const target = event.target as HTMLImageElement;
+  target.src = '/images/design.jpg'; // fallback image
+}
+
+onMounted(() => {
+  fetchDesigns();
+});
 </script>
 
 <template>
@@ -53,21 +82,41 @@ const handleImageError = (e: Event) => {
     </div>
 
     <!-- Search Bar -->
-    <div class="flex justify-center px-8 pb-8 w-full">
-      <div class="flex items-center bg-white rounded-[20px] h-[50px] px-4 shadow-[0_2px_10px_rgba(0,0,0,0.1)] w-full max-w-[1000px]">
-        <button class="bg-transparent border-none cursor-pointer flex items-center p-2 mr-2">
-          <img src="/images/filter.svg" alt="Filter" class="w-[30px] h-[30px] block" />
-        </button>
-        <input
-          type="text"
-          placeholder="Search your favourite design..."
-          class="flex-1 border-none outline-none py-[0.8rem] px-4 text-base text-[#484848] bg-transparent"
-        >
-        <button class="bg-transparent border-none cursor-pointer flex items-center p-2 ml-2">
-          <img src="/images/search.svg" alt="Search" class="w-[30px] h-[30px] block" />
-        </button>
-      </div>
+<div class="flex justify-center px-8 pb-8 w-full">
+  <div class="flex items-center bg-white rounded-[20px] h-12 px-4 shadow-sm w-full max-w-[1000px] relative">
+    <button
+      class="bg-transparent border-none cursor-pointer flex items-center p-2 mr-2"
+      @click="toggleSortDropdown"
+      aria-label="Sort"
+    >
+      <img src="/images/filter.svg" alt="Filter" class="w-[30px] h-[30px] block" />
+    </button>
+    <!-- Dropdown -->
+    <div
+      v-if="showSortDropdown"
+      class="absolute left-0 top-12 bg-white border rounded shadow-md z-10 w-50"
+    >
+      <button
+        class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+        @click="setSort('az')"
+      >Filter nama dari A-Z</button>
+      <button
+        class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+        @click="setSort('za')"
+      >Filter nama dari Z-A</button>
     </div>
+    <input
+      v-model="search"
+      @keyup.enter="onSearch"
+      type="text"
+      placeholder="Search your favourite contractor..."
+      class="flex-1 border-none outline-none py-3 px-4 text-base text-gray-700 bg-transparent"
+    >
+    <button @click="onSearch" class="bg-transparent border-none cursor-pointer flex items-center p-2 ml-2">
+      <img src="/images/search.svg" alt="Search" class="w-[30px] h-[30px] block" />
+    </button>
+  </div>
+</div>
 
     <!-- Designs Grid Section -->
     <div class="w-full max-w-[1100px] mx-auto px-8 pb-12">

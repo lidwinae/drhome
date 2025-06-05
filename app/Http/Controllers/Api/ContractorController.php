@@ -11,22 +11,44 @@ class ContractorController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
 {
-    $contractors = User::with('contractor')
+
+        $query = User::with('contractor')
         ->where('role', 'contractor')
-        ->select('id', 'name', 'origin_city', 'country', 'avatar')
-        ->get()
-        ->map(function ($contractor) {
-            return [
-                'id' => $contractor->id,
-                'name' => $contractor->name,
-                'origin_city' => $contractor->origin_city,
-                'country' => $contractor->country,
-                'avatar_url' => $contractor->avatar ? \Storage::url($contractor->avatar) : null,
-                'specialty' => $contractor->contractor->specialty ?? null,
-            ];
-        });
+        ->select('id', 'name', 'origin_city', 'country', 'avatar');
+
+    // Search by name
+    if ($request->filled('search')) {
+    $search = $request->search;
+    $query->where(function ($q) use ($search) {
+        $q->where('name', 'like', '%' . $search . '%')
+          ->orWhere('origin_city', 'like', '%' . $search . '%')
+          ->orWhere('country', 'like', '%' . $search . '%')
+          ->orWhereHas('contractor', function ($q2) use ($search) {
+              $q2->where('specialty', 'like', '%' . $search . '%');
+          });
+    });
+    }
+
+    if ($request->filled('sort')) {
+        if ($request->sort === 'az') {
+            $query->orderBy('name', 'asc');
+        } elseif ($request->sort === 'za') {
+            $query->orderBy('name', 'desc');
+        }
+    }
+
+    $contractors = $query->get()->map(function ($contractor) {
+    return [
+        'id' => $contractor->id,
+        'name' => $contractor->name,
+        'origin_city' => $contractor->origin_city,
+        'country' => $contractor->country,
+        'avatar_url' => $contractor->avatar ? \Storage::url($contractor->avatar) : null,
+        'specialty' => $contractor->contractor->specialty ?? null,
+    ];
+});
 
     return response()->json([
         'success' => true,

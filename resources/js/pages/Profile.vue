@@ -273,7 +273,7 @@
           </Link>
 
           <Link href="/mypurchaseddesign" class="block">
-            <Card class="bg-white text-[#AE7A42] py-6 cursor-pointer hover:bg-[#EBEBEB] transition">
+            <Card class="bg-white text-[#AE7A42] py-6 cursor-pointer hover:bg-[#EBEBEB] transition mb-2">
               <CardHeader class="flex flex-row items-center justify-between">
                 <div>
                   <CardTitle class="text-[24px]">My Purchased Design</CardTitle>
@@ -513,6 +513,17 @@ const updatedAt = computed(() => designerData.value?.updated_at ?? null);
 const userInitials = computed(() => user.value.name.split(' ').map(n => n[0]).join(''));
 const canEditAbout = computed(() => user.value.role === 'designer' || user.value.role === 'contractor');
 
+async function fetchRekomendasiDesigners() {
+  try {
+    const resRekom = await axios.get('/api/designers');
+    designers.value = resRekom.data.data
+      .filter((d: any) => d.id !== user.value.id)
+      .slice(0, 5);
+  } catch (e) {
+    designers.value = [];
+  }
+}
+
 async function fetchDesignerData() {
   let endpoint = '';
   if (user.value.role === 'designer') {
@@ -618,8 +629,14 @@ function goToDesigner(id: number) {
   inertiaRouter.visit(`/designers/${id}`);
 }
 
-onMounted(fetchDesignerData);
-watch(() => user.value.role, fetchDesignerData);
+onMounted(() => {
+  fetchDesignerData();
+  fetchRekomendasiDesigners();
+});
+watch(() => user.value.role, () => {
+  fetchDesignerData();
+  fetchRekomendasiDesigners();
+});
 </script>
 
 <style scoped>
