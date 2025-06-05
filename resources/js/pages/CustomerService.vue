@@ -61,6 +61,7 @@ const fetchMails = async () => {
         const response = await axios.get('/api/customerservice');
         mails.value = response.data.data || [];
     } catch (err) {
+        console.error(err);
         error.value = 'Gagal memuat riwayat pesan';
     } finally {
         isLoading.value = false;
@@ -73,6 +74,7 @@ const openMailDetail = async (mailId: number) => {
         selectedMail.value = response.data.data;
         showModal.value = true;
     } catch (err) {
+        console.error(err);
         error.value = 'Gagal memuat detail pesan';
     }
 };

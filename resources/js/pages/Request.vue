@@ -2,6 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = defineProps({
     requests: {
         type: Array,

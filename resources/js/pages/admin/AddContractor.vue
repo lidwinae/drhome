@@ -151,7 +151,7 @@ const savePortfolio = async () => {
                                     <select
                                         v-model="form.email"
                                         id="email"
-                                        class="block w-full rounded-lg border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-500 text-base sm:text-sm px-4"
+                                        class="block w-full rounded-lg border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#AE7A42]-500 text-base sm:text-sm px-4"
                                         required
                                         :disabled="loadingClients"
                                     >
@@ -176,7 +176,7 @@ const savePortfolio = async () => {
                                     <select
                                         v-model="form.role"
                                         id="role"
-                                        class="block w-full rounded-lg border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-500 text-base sm:text-sm px-4"
+                                        class="block w-full rounded-lg border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#AE7A42]-500 text-base sm:text-sm px-4"
                                     >
                                         <option value="contractor">Contractor</option>
                                     </select>
@@ -383,7 +383,7 @@ const savePortfolio = async () => {
                         <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                             <button
                                 type="button"
-                                class="mt-3 mb-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                                class="mt-3 mb-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AE7A42]-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                                 @click="closeModal"
                             >
                                 Close

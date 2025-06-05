@@ -16,6 +16,7 @@ const props = defineProps({
     }
 });
 
+const openAccStatus = ref(props.request.open_acc);
 const amount = ref(props.request.budget || '');
 const paymentLoading = ref(false);
 const paymentError = ref<string|null>(null);
@@ -113,7 +114,7 @@ async function openAcc() {
     try {
         await axios.post(`/my-request/${props.type}/${props.request.id}/open-acc`);
         openAccSuccess.value = 'Open ACC berhasil diaktifkan!';
-        props.request.open_acc = true;
+        openAccStatus.value = true; // update ref lokal, BUKAN props
     } catch (e: any) {
         openAccError.value = e.response?.data?.message || 'Gagal mengaktifkan Open ACC';
     } finally {
@@ -327,7 +328,7 @@ function getCurrentUserId() {
                         <div class="flex justify-end mb-6">
                             <template v-if="(request.progress === 'construction_start' || request.progress === 'design_start')">
         <button
-            v-if="!request.open_acc"
+            v-if="!openAccStatus"
             @click="openAcc"
             :disabled="openAccLoading"
             class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white text-[20px] font-medium rounded-lg shadow transition flex items-center mr-4"

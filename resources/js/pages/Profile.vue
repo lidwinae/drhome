@@ -420,6 +420,7 @@ async function uploadAvatar() {
     avatarPreview.value = null;
     alert('Foto profil berhasil diubah!');
   } catch (e) {
+    console.error(e);
     alert('Gagal mengubah foto profil');
   } finally {
     isUploading.value = false;
@@ -461,6 +462,7 @@ async function uploadBackground() {
     bgPreview.value = null;
     alert('Background berhasil diubah!');
   } catch (e) {
+    console.error(e);
     alert('Gagal mengubah background');
   } finally {
     isBgUploading.value = false;
@@ -474,7 +476,6 @@ const designers = ref<any[]>([]);
 
 // User data (from Inertia)
 const page = usePage();
-const designerId = page.props.designerId;
 const user = ref({
   id: page.props.auth.user.id,
   name: page.props.auth.user.name,
@@ -520,6 +521,7 @@ async function fetchRekomendasiDesigners() {
       .filter((d: any) => d.id !== user.value.id)
       .slice(0, 5);
   } catch (e) {
+    console.error(e);
     designers.value = [];
   }
 }
@@ -550,6 +552,7 @@ async function fetchDesignerData() {
         .filter((d: any) => d.id !== user.value.id)
         .slice(0, 5);
     } catch (e) {
+      console.error(e);
       designerData.value = null;
     }
   }
@@ -578,6 +581,7 @@ async function updateProfile() {
     isEditModalOpen.value = false;
     alert('Profil berhasil diperbarui!');
   } catch (e) {
+    console.error(e);
     alert('Gagal memperbarui profil');
   }
 }
@@ -598,6 +602,7 @@ async function updateAbout() {
     isAboutModalOpen.value = false;
     alert('About berhasil diperbarui!');
   } catch (e) {
+    console.error(e);
     alert('Gagal memperbarui about');
   }
 }
@@ -617,6 +622,7 @@ async function updateSpecialty() {
     isSpecialtyModalOpen.value = false;
     alert('Specialty berhasil diperbarui!');
   } catch (e) {
+    console.error(e);
     alert('Gagal memperbarui specialty');
   }
 }

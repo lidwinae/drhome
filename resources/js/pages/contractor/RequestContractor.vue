@@ -35,6 +35,7 @@ onMounted(async () => {
         const res = await axios.get('/api/user/purchased-designs');
         purchasedDesigns.value = res.data.designs;
     } catch (err) {
+        console.error(err);
         purchasedDesigns.value = [];
     }
 });
