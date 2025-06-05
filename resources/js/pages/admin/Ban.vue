@@ -88,7 +88,18 @@ onMounted(() => {
                 <div v-for="user in users" :key="user.id" class="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-medium text-gray-900">{{ user.name }}</h3>
+                            <div class="flex items-center space-x-3">
+                                <img
+                                    v-if="user.avatar || user.avatar_url"
+                                    :src="user.avatar_url || ('/storage/' + user.avatar)"
+                                    alt="Avatar"
+                                    class="w-9 h-9 rounded-full object-cover border border-gray-200"
+                                />
+                                <span v-else class="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-lg font-bold">
+                                    {{ user.name.charAt(0) }}
+                                </span>
+                                <h3 class="text-lg font-medium text-gray-900">{{ user.name }}</h3>
+                            </div>
                             <span 
                                 :class="{
                                     'bg-red-100 text-red-800': user.status === 'banned',

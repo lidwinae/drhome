@@ -34,10 +34,10 @@ class ContractorController extends Controller
     ]);
 }
 
-    public function showPreviewPortfolio()
+public function showPreviewPortfolio()
 {
     $contractors = Contractor::with(['user' => function($query) {
-            $query->select('id', 'name', 'email');
+            $query->select('id', 'name', 'email', 'avatar', 'origin_city', 'country');
         }])
         ->select('user_id', 'specialty', 'portfolio_path')
         ->get()
@@ -46,6 +46,9 @@ class ContractorController extends Controller
                 'id' => $contractor->user->id,
                 'name' => $contractor->user->name,
                 'email' => $contractor->user->email,
+                'origin_city' => $contractor->user->origin_city ?? null,
+                'country' => $contractor->user->country ?? null,
+                'avatar_url' => $contractor->user->avatar ? \Storage::url($contractor->user->avatar) : null,
                 'specialty' => $contractor->specialty,
                 'portfolio_url' => $contractor->portfolio_path ? asset('storage/' . $contractor->portfolio_path) : null,
                 'portfolio_filename' => $contractor->portfolio_path ? basename($contractor->portfolio_path) : null,
@@ -103,10 +106,32 @@ class ContractorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
+public function updatePortfolio(Request $request, $id)
+{
+    $request->validate([
+        'portfolio' => 'required|file|mimes:pdf,jpg,jpeg,png,gif|max:16384',
+    ]);
+
+    $contractor = Contractor::where('user_id', $id)->firstOrFail();
+
+    // Hapus file lama jika ada
+    if ($contractor->portfolio_path) {
+        \Storage::disk('public')->delete($contractor->portfolio_path);
     }
+
+    // Simpan file baru
+    $path = $request->file('portfolio')->store('contractors/portfolios', 'public');
+    $contractor->portfolio_path = $path;
+    $contractor->save();
+
+    return response()->json([
+        'success' => true,
+        'portfolio' => [
+            'url' => asset('storage/' . $path),
+            'filename' => basename($path),
+        ]
+    ]);
+}
 
     /**
      * Remove the specified resource from storage.

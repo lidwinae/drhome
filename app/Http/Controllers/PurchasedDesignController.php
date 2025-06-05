@@ -36,7 +36,7 @@ class PurchasedDesignController extends Controller
         'design_name' => $design->name,
         'design_country' => $design->country,
         'design_specialty' => $design->specialty,
-        'design_path' => $design->photo_path,
+        'design_path' => $design->file_path,
         'price' => $request->amount
     ]);
 

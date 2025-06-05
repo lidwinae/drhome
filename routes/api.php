@@ -36,6 +36,9 @@ Route::get('email/history', [MailsAdminController::class, 'riwayat']);
 Route::get('admin/users', [UserController::class, 'index']);
 Route::get('admin/clients', [UserController::class, 'getClients']);
 Route::get('admin/contractors', [ContractorController::class, 'showPreviewPortfolio']);
+Route::post('/contractors/{id}/portfolio', [ContractorController::class, 'updatePortfolio']);
+Route::get('admin/designers', [DesignerController::class, 'showPreviewPortfolio']);
+Route::post('/designers/{id}/portfolio', [DesignerController::class, 'updatePortfolio']);
 
 Route::get('/customerservice', [MailsAdminController::class, 'userHistory']);
 Route::get('/customerservice/{id}', [MailsAdminController::class, 'show']);

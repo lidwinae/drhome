@@ -5,7 +5,6 @@ use App\Models\Designer;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class DesignerController extends Controller
@@ -38,10 +37,32 @@ public function index()
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //
-    }
+public function showPreviewPortfolio()
+{
+    $designers = Designer::with(['user' => function($query) {
+            $query->select('id', 'name', 'email', 'avatar', 'origin_city', 'country');
+        }])
+        ->select('user_id', 'specialty', 'portfolio_path')
+        ->get()
+        ->map(function ($designer) {
+            return [
+                'id' => $designer->user->id,
+                'name' => $designer->user->name,
+                'email' => $designer->user->email,
+                'origin_city' => $designer->user->origin_city ?? null,
+                'country' => $designer->user->country ?? null,
+                'avatar_url' => $designer->user->avatar ? \Storage::url($designer->user->avatar) : null,
+                'specialty' => $designer->specialty,
+                'portfolio_url' => $designer->portfolio_path ? asset('storage/' . $designer->portfolio_path) : null,
+                'portfolio_filename' => $designer->portfolio_path ? basename($designer->portfolio_path) : null,
+            ];
+        });
+
+    return response()->json([
+        'success' => true,
+        'data' => $designers
+    ]);
+}
 
     /**
      * Display the specified resource.
@@ -82,10 +103,32 @@ public function show($id)
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
+public function updatePortfolio(Request $request, $id)
+{
+    $request->validate([
+        'portfolio' => 'required|file|mimes:pdf,jpg,jpeg,png,gif|max:16384',
+    ]);
+
+    $designer = Designer::where('user_id', $id)->firstOrFail();
+
+    // Hapus file lama jika ada
+    if ($designer->portfolio_path) {
+        \Storage::disk('public')->delete($designer->portfolio_path);
     }
+
+    // Simpan file baru
+    $path = $request->file('portfolio')->store('designers/portfolios', 'public');
+    $designer->portfolio_path = $path;
+    $designer->save();
+
+    return response()->json([
+        'success' => true,
+        'portfolio' => [
+            'url' => asset('storage/' . $path),
+            'filename' => basename($path),
+        ]
+    ]);
+}
 
     /**
      * Remove the specified resource from storage.

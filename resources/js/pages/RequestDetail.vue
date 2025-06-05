@@ -310,8 +310,8 @@ async function finishConstruction() {
                 <input 
                     v-model="purchasedForm.design_name" 
                     type="text" 
-                    class="w-full px-4 py-2 border rounded-lg bg-gray-100" 
-                    placeholder="Contoh: Classic Luxury Living Room"
+                    class="w-full px-4 py-2 border rounded-lg bg-gray-100 focus:border-[#AE7A42] focus:ring-[#AE7A42]" 
+                    placeholder="Modern Scandinavian House..."
                     required
                 >
                 <p class="text-xs text-gray-500 mt-1">Masukkan nama desain yang jelas dan deskriptif</p>
@@ -321,8 +321,8 @@ async function finishConstruction() {
                 <input 
                     v-model="purchasedForm.design_country" 
                     type="text" 
-                    class="w-full px-4 py-2 border rounded-lg bg-gray-100" 
-                    placeholder="Contoh: Indonesia, Japan, Scandinavian"
+                    class="w-full px-4 py-2 border rounded-lg bg-gray-100 focus:border-[#AE7A42] focus:ring-[#AE7A42]" 
+                    placeholder="Indonesia, Japan, Scandinavian..."
                     required
                 >
                 <p class="text-xs text-gray-500 mt-1">Masukkan gaya atau asal negara desain</p>
@@ -332,8 +332,8 @@ async function finishConstruction() {
                 <input 
                     v-model="purchasedForm.design_specialty" 
                     type="text" 
-                    class="w-full px-4 py-2 border rounded-lg bg-gray-100" 
-                    placeholder="Contoh: Minimalist, Industrial, Bohemian"
+                    class="w-full px-4 py-2 border rounded-lg bg-gray-100 focus:border-[#AE7A42] focus:ring-[#AE7A42]" 
+                    placeholder="Masukkan specialty di sini..."
                     required
                 >
                 <p class="text-xs text-gray-500 mt-1">Spesialisasi atau gaya khusus desain</p>
@@ -344,7 +344,7 @@ async function finishConstruction() {
         type="file"
         accept=".pdf,.jpg,.jpeg,.png"
         @change="handleFileChange"
-        class="w-full px-4 py-2 border rounded-lg bg-gray-100"
+        class="w-full px-4 py-2 border rounded-lg bg-gray-100 focus:border-[#AE7A42] focus:ring-[#AE7A42]"
         required
     >
     <p class="text-xs text-gray-500 mt-1">Upload file desain (PDF/JPG/PNG, max 16MB)</p>
@@ -356,8 +356,8 @@ async function finishConstruction() {
                     type="number" 
                     min="0" 
                     step="0.01" 
-                    class="w-full px-4 py-2 border rounded-lg bg-gray-100" 
-                    placeholder="Contoh: 1500000"
+                    class="w-full px-4 py-2 border rounded-lg bg-gray-100 focus:border-[#AE7A42] focus:ring-[#AE7A42]" 
+                    placeholder="Masukkan angka di sini..."
                     required
                 >
                 <p class="text-xs text-gray-500 mt-1">Harga dalam mata uang lokal (tanpa titik/koma)</p>

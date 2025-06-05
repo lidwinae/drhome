@@ -35,6 +35,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/contractor', function () {
             return Inertia::render('admin/AddContractor');
         });
+        Route::get('/designer', function () {
+            return Inertia::render('admin/AddDesigner');
+        });
         Route::patch('/contractor', [UserController::class, 'update'])->name('upd');
     });
 

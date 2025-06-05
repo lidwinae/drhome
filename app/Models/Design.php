@@ -13,5 +13,6 @@ class Design extends Model
         'description',
         'photo_path',
         'preview_path',
+        'file_path',
     ];
 }

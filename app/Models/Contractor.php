@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Contractor extends Model
 {
+    protected $primaryKey = 'user_id';
+    public $incrementing = false;
     protected $fillable = [
         'user_id',
         'specialty',

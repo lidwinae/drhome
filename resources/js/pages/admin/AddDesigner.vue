@@ -5,7 +5,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
 const breadcrumbs = [
-    { title: 'Update Role', href: '/admin/add/contractor' },
+    { title: 'Update Role', href: '/admin/add/designer' },
 ];
 
 const clients = ref([]);
@@ -27,7 +27,7 @@ onMounted(async () => {
     try {
         const [clientsResponse, contractorsResponse] = await Promise.all([
             axios.get('/api/admin/clients'),
-            axios.get('/api/admin/contractors')
+            axios.get('/api/admin/designers')
         ]);
         clients.value = clientsResponse.data;
         contractors.value = contractorsResponse.data.data ?? contractorsResponse.data;
@@ -42,10 +42,10 @@ onMounted(async () => {
 const fetchContractors = async () => {
     loadingContractors.value = true;
     try {
-        const contractorsResponse = await axios.get('/api/admin/contractors');
+        const contractorsResponse = await axios.get('/api/admin/designers');
         contractors.value = contractorsResponse.data.data ?? contractorsResponse.data;
     } catch (error) {
-        console.error('Failed to fetch contractors:', error);
+        console.error('Failed to fetch designers:', error);
     } finally {
         loadingContractors.value = false;
     }
@@ -53,7 +53,7 @@ const fetchContractors = async () => {
 
 const form = useForm({
     email: '',
-    role: 'contractor',
+    role: 'designer',
 });
 
 const submit = () => {
@@ -68,14 +68,14 @@ const submit = () => {
 const openContractorModal = async (contractorId: number) => {
     try {
         loadingContractorDetails.value = true;
-        const response = await axios.get(`/api/contractors/${contractorId}`);
+        const response = await axios.get(`/api/designers/${contractorId}`);
         selectedContractor.value = response.data.data;
         showModal.value = true;
         editingPortfolio.value = false;
         portfolioFile.value = null;
         uploadError.value = '';
     } catch (error) {
-        console.error('Failed to fetch contractor details:', error);
+        console.error('Failed to fetch designer details:', error);
     } finally {
         loadingContractorDetails.value = false;
     }
@@ -110,7 +110,7 @@ const savePortfolio = async () => {
     try {
         const formData = new FormData();
         formData.append('portfolio', portfolioFile.value);
-        const response = await axios.post(`/api/contractors/${selectedContractor.value.id}/portfolio`, formData, {
+        const response = await axios.post(`/api/designers/${selectedContractor.value.id}/portfolio`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
 
@@ -132,14 +132,14 @@ const savePortfolio = async () => {
         <div class="mx-auto w-full px-4 py-6 sm:px-6 lg:px-12">
             <div class="mx-auto w-full max-w-6xl">
                 <div class="flex justify-between items-center mb-6 mt-2 ml-1">
-                    <h2 class="text-2xl font-archivo font-semibold">Role Management: Contractor</h2>
+                    <h2 class="text-2xl font-archivo font-semibold">Role Management: Designer</h2>
                 </div>
                 
                 <!-- Card Update Role -->
                 <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden mb-8">
                     <div class="px-5 py-6 sm:p-8">
                         <div class="mt-2 max-w-3xl text-[17px] sm:text-[17px] text-gray-600">
-                            <p>Tambahkan kontraktor baru dengan mengupdate role user</p>
+                            <p>Tambahkan designer baru dengan mengupdate role user</p>
                         </div>
                         
                         <form @submit.prevent="submit" class="mt-6">
@@ -178,7 +178,7 @@ const savePortfolio = async () => {
                                         id="role"
                                         class="block w-full rounded-lg border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-500 text-base sm:text-sm px-4"
                                     >
-                                        <option value="contractor">Contractor</option>
+                                        <option value="designer">Designer</option>
                                     </select>
                                 </div>
                             </div>
@@ -211,9 +211,9 @@ const savePortfolio = async () => {
 
                 <!-- Card Contractors List -->
                 <div class="mb-8">
-                    <h2 class="text-xl font-archivo font-semibold mb-6 px-2">Contractors List</h2>
+                    <h2 class="text-xl font-archivo font-semibold mb-6 px-2">Designers List</h2>
                     <div v-if="loadingContractors" class="text-center py-8">
-                        <p class="text-gray-500">Memuat data contractors...</p>
+                        <p class="text-gray-500">Memuat data designers...</p>
                     </div>
                     <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div 
@@ -261,7 +261,7 @@ const savePortfolio = async () => {
                                 <div class="mt-3 text-left sm:mt-0 sm:text-left w-full">
                                     <div class="flex justify-between items-center mb-4">
                                         <h3 class="text-lg leading-6 font-medium text-gray-900">
-                                            Contractor Details
+                                            Designers Details
                                         </h3>
                                         <button @click="closeModal" class="text-gray-400 hover:text-gray-500">
                                             <span class="sr-only">Close</span>
@@ -271,7 +271,7 @@ const savePortfolio = async () => {
                                         </button>
                                     </div>
                                     <div v-if="loadingContractorDetails" class="text-center py-8">
-                                        <p class="text-gray-500">Memuat detail contractor...</p>
+                                        <p class="text-gray-500">Memuat detail designer...</p>
                                     </div>
                                     <div v-else-if="selectedContractor" class="space-y-4">
                                         <div class="flex items-start space-x-4">

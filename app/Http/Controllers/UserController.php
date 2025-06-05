@@ -41,15 +41,26 @@ class UserController extends Controller
     }
 
     public function index()
-    {
-        $users = User::query()
-            ->select(['id', 'name', 'email', 'role', 'status', 'created_at'])
-            ->where('role', '!=', 'admin')
-            ->latest()
-            ->get();
-    
-        return response()->json($users);
-    }
+{
+    $users = User::query()
+        ->select(['id', 'name', 'email', 'role', 'status', 'created_at', 'avatar'])
+        ->where('role', '!=', 'admin')
+        ->latest()
+        ->get()
+        ->map(function ($user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'status' => $user->status,
+                'created_at' => $user->created_at,
+                'avatar_url' => $user->avatar ? asset('storage/' . $user->avatar) : null,
+            ];
+        });
+
+    return response()->json($users);
+}
 
     public function getClients()
     {
