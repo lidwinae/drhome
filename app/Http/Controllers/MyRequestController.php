@@ -45,4 +45,86 @@ class MyRequestController extends Controller
             'requests' => $allRequests,
         ]);
     }
+
+public function show($id)
+{
+    $user = Auth::user();
+
+    // Cek di request_contractors
+    $request = RequestContractor::with([
+            'contractor:id,name,avatar',
+            'purchasedDesign' // tambahkan ini
+        ])
+        ->where('id', $id)
+        ->where('client_id', $user->id)
+        ->first();
+
+    if ($request) {
+        $type = 'contractor';
+    } else {
+        // Cek di request_designers
+        $request = RequestDesigner::with([
+                'designer:id,name,avatar',
+                'purchasedDesign' // tambahkan ini
+            ])
+            ->where('id', $id)
+            ->where('client_id', $user->id)
+            ->first();
+
+        if ($request) {
+            $type = 'designer';
+        } else {
+            abort(404, 'Request not found or not authorized.');
+        }
+    }
+
+    return inertia('MyRequestDetail', [
+        'request' => $request,
+        'type' => $type,
+    ]);
+}
+
+public function pay($type, $id)
+{
+    $user = Auth::user();
+
+    if ($type === 'contractor') {
+        $request = RequestContractor::where('id', $id)->where('client_id', $user->id)->firstOrFail();
+        $nextProgress = 'construction_start';
+    } else if ($type === 'designer') {
+        $request = RequestDesigner::where('id', $id)->where('client_id', $user->id)->firstOrFail();
+        $nextProgress = 'design_start';
+    } else {
+        abort(404, 'Invalid request type.');
+    }
+
+    request()->validate([
+        'amount' => 'required|numeric|min:1'
+    ]);
+
+    // Simpan payment ke kolom payment dan update progress
+    $request->payment = request('amount');
+    $request->progress = $nextProgress;
+    $request->save();
+
+    return response()->json(['message' => 'Payment successful!']);
+}
+
+public function openAcc($type, $id)
+{
+    $user = Auth::user();
+
+    if ($type === 'contractor') {
+        $request = RequestContractor::where('id', $id)->where('client_id', $user->id)->firstOrFail();
+    } else if ($type === 'designer') {
+        $request = RequestDesigner::where('id', $id)->where('client_id', $user->id)->firstOrFail();
+    } else {
+        abort(404, 'Invalid request type.');
+    }
+
+    $request->open_acc = true;
+    $request->save();
+
+    return response()->json(['success' => true]);
+}
 }

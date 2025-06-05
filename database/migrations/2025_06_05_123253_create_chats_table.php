@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('designs', function (Blueprint $table) {
+        Schema::create('chats', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);
-            $table->string('country', 50);
-            $table->string('specialty', 50);
-            $table->text('description')->nullable();
-            $table->string('photo_path')->nullable();
-            $table->string('preview_path')->nullable();
+            $table->unsignedBigInteger('sender_id')->nullable();
+            $table->unsignedBigInteger('recipient_id')->nullable();
+            $table->text('message');
             $table->string('file_path')->nullable();
+
+            $table->foreign('sender_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('recipient_id')->references('id')->on('users')->onDelete('set null');
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('designs');
+        Schema::dropIfExists('chats');
     }
 };

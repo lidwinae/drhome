@@ -4,11 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class RequestContractor extends Model
 {
     use HasFactory;
+
     protected $table = 'request_contractors';
+
+    // Penting untuk UUID
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
         'client_id',
@@ -22,8 +28,21 @@ class RequestContractor extends Model
         'deadline',
         'status',
         'progress',
-        'notes'
+        'notes',
+        'open_acc',
     ];
+
+    // Auto-generate UUID saat membuat data
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->id)) {
+                $model->id = (string) Str::uuid();
+            }
+        });
+    }
 
     public function purchasedDesign()
     {

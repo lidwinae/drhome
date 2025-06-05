@@ -65,4 +65,28 @@ class User extends Authenticatable
     {
         return $this->hasMany(PurchasedDesign::class, 'user_id');
     }
+
+    public function sentChats()
+{
+    return $this->hasMany(Chat::class, 'sender_id');
+}
+
+/**
+ * Get all chats received by this user
+ */
+public function receivedChats()
+{
+    return $this->hasMany(Chat::class, 'recipient_id');
+}
+
+/**
+ * Get all chats (both sent and received)
+ */
+public function chats()
+{
+    return Chat::where(function($query) {
+        $query->where('sender_id', $this->id)
+              ->orWhere('recipient_id', $this->id);
+    });
+}
 }

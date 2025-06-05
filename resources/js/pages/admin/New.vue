@@ -3,7 +3,7 @@ import AppLayout from '@/layouts/app/AppSidebarLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
-import { Pencil, Trash2, HousePlus } from 'lucide-vue-next';
+import { Pencil, Trash2, HousePlus, FileText } from 'lucide-vue-next';
 import axios from 'axios';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -21,8 +21,10 @@ const newDesign = ref<any>({
     description: '',
     photoFile: null,
     previewFile: null,
+    fileFile: null,
     photo_preview: null,
-    preview_preview: null
+    preview_preview: null,
+    file_preview: null
 });
 const isLoading = ref(false);
 const isFetching = ref(true);
@@ -41,6 +43,7 @@ const fetchDesigns = async () => {
             ...d,
             photo_url: d.photo_url || '/images/design.jpg',
             preview_url: d.preview_url || '/videos/design.mp4',
+            file_url: d.file_url || '#'
         }));
     } catch (error) {
         console.error('Error fetching designs:', error);
@@ -54,8 +57,10 @@ const openEditModal = (design: any) => {
         ...design,
         photoFile: null,
         previewFile: null,
+        fileFile: null,
         photo_preview: design.photo_url,
-        preview_preview: design.preview_url
+        preview_preview: design.preview_url,
+        file_preview: design.file_url
     };
     showEditModal.value = true;
 };
@@ -68,8 +73,10 @@ const openCreateModal = () => {
         description: '',
         photoFile: null,
         previewFile: null,
+        fileFile: null,
         photo_preview: null,
-        preview_preview: null
+        preview_preview: null,
+        file_preview: null
     };
     showCreateModal.value = true;
 };
@@ -100,6 +107,10 @@ const handleUpdate = async () => {
         
         if (currentDesign.value.previewFile) {
             formData.append('preview', currentDesign.value.previewFile);
+        }
+
+        if (currentDesign.value.fileFile) {
+            formData.append('file', currentDesign.value.fileFile);
         }
 
         if (!confirm('Are you sure you want to update this design?')) return;
@@ -139,6 +150,10 @@ const handleCreate = async () => {
             formData.append('preview', newDesign.value.previewFile);
         }
 
+        if (newDesign.value.fileFile) {
+            formData.append('file', newDesign.value.fileFile);
+        }
+
         if (!confirm('Are you sure you want to create this design?')) return;
         
         await axios.post('/api/designs', formData, {
@@ -157,12 +172,15 @@ const handleCreate = async () => {
     }
 };
 
-const handleFileChange = (event: Event, type: 'photo' | 'preview', isNew: boolean = false) => {
+const handleFileChange = (event: Event, type: 'photo' | 'preview' | 'file', isNew: boolean = false) => {
     const input = event.target as HTMLInputElement;
     if (input.files?.[0]) {
         const target = isNew ? newDesign.value : currentDesign.value;
         target[`${type}File`] = input.files[0];
-        target[`${type}_preview`] = URL.createObjectURL(input.files[0]);
+        
+        if (type !== 'file') {
+            target[`${type}_preview`] = URL.createObjectURL(input.files[0]);
+        }
         
         if (type === 'preview') {
             videoUrl.value = URL.createObjectURL(input.files[0]);
@@ -247,6 +265,20 @@ const openVideoModal = (url: string) => {
                                     @click="openVideoModal(currentDesign.preview_preview)"></video>
                             </div>
                         </div>
+
+                        <div class="mb-4">
+                            <label class="block mb-1">Design File</label>
+                            <input type="file" @change="(e) => handleFileChange(e, 'file')" 
+                                accept=".pdf,.zip,.rar,.jpg,.jpeg,.png,.psd,.ai"
+                                class="w-full p-2 border rounded">
+                            <div v-if="currentDesign.file_preview" class="mt-2">
+                                <a :href="currentDesign.file_preview" target="_blank" 
+                                   class="inline-flex items-center text-[#AE7A42] hover:underline">
+                                    <FileText class="mr-1" :size="16" />
+                                    View File
+                                </a>
+                            </div>
+                        </div>
                     </form>
                 </div>
                 
@@ -328,6 +360,19 @@ const openVideoModal = (url: string) => {
                                     @click="openVideoModal(newDesign.preview_preview)"></video>
                             </div>
                         </div>
+
+                        <div class="mb-4">
+                            <label class="block mb-1">Design File</label>
+                            <input type="file" @change="(e) => handleFileChange(e, 'file', true)" 
+                                accept=".pdf,.zip,.rar,.jpg,.jpeg,.png,.psd,.ai"
+                                class="w-full p-2 border rounded">
+                            <div v-if="newDesign.fileFile" class="mt-2">
+                                <span class="inline-flex items-center text-gray-600">
+                                    <FileText class="mr-1" :size="16" />
+                                    {{ newDesign.fileFile.name }}
+                                </span>
+                            </div>
+                        </div>
                     </form>
                 </div>
                 
@@ -406,6 +451,15 @@ const openVideoModal = (url: string) => {
                                 </svg>
                                 {{ design.specialty }}
                             </span>
+                        </div>
+
+                        <!-- File Link -->
+                        <div v-if="design.file_url && design.file_url !== '#'" class="flex justify-center">
+                            <a :href="design.file_url" target="_blank" 
+                               class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors">
+                                <FileText class="w-3 h-3 mr-1" />
+                                View File
+                            </a>
                         </div>
                     </div>
                     <div class="flex justify-between p-3 border-t gap-2">

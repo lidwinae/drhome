@@ -22,7 +22,8 @@ class DesignController extends Controller
                 'specialty' => $design->specialty,
                 'description' => $design->description,
                 'photo_url' => $design->photo_path ? Storage::url($design->photo_path) : null,
-                'preview_url' => $design->preview_path ? Storage::url($design->preview_path) : null
+                'preview_url' => $design->preview_path ? Storage::url($design->preview_path) : null,
+                'file_url' => $design->file_path ? Storage::url($design->file_path) : null
             ];
         });
 
@@ -39,6 +40,7 @@ class DesignController extends Controller
                 'description' => 'nullable|string',
                 'photo' => 'nullable|image|max:16384', // Max 16MB
                 'preview' => 'nullable|mimetypes:video/mp4,video/quicktime|max:51200', // Max 50MB
+                'file' => 'nullable|file|mimes:pdf,zip,rar,jpg,jpeg,png,psd,ai|max:102400', // Max 100MB
             ]);
 
             $data = [
@@ -58,6 +60,12 @@ class DesignController extends Controller
             if ($request->hasFile('preview')) {
                 $path = $request->file('preview')->store('designs/previews', 'public');
                 $data['preview_path'] = $path;
+            }
+
+            // Handle file upload
+            if ($request->hasFile('file')) {
+                $path = $request->file('file')->store('designs/files', 'public');
+                $data['file_path'] = $path;
             }
 
             $design = Design::create($data);
@@ -86,7 +94,8 @@ class DesignController extends Controller
             'specialty' => $design->specialty,
             'description' => $design->description,
             'photo_url' => $design->photo_path ? Storage::url($design->photo_path) : null,
-            'preview_url' => $design->preview_path ? Storage::url($design->preview_path) : null
+            'preview_url' => $design->preview_path ? Storage::url($design->preview_path) : null,
+            'file_url' => $design->file_path ? Storage::url($design->file_path) : null
         ]);
     }
 
@@ -102,6 +111,7 @@ class DesignController extends Controller
                 'description' => 'nullable|string',
                 'photo' => 'nullable|image|max:16384',
                 'preview' => 'nullable|mimetypes:video/mp4,video/quicktime|max:51200',
+                'file' => 'nullable|file|mimes:pdf,zip,rar,jpg,jpeg,png,psd,ai|max:102400',
             ]);
 
             $updateData = [
@@ -133,6 +143,17 @@ class DesignController extends Controller
                 $updateData['preview_path'] = $path;
             }
 
+            // Handle file update
+            if ($request->hasFile('file')) {
+                // Delete old file if exists
+                if ($design->file_path) {
+                    Storage::disk('public')->delete($design->file_path);
+                }
+                
+                $path = $request->file('file')->store('designs/files', 'public');
+                $updateData['file_path'] = $path;
+            }
+
             $design->update($updateData);
 
             return response()->json([
@@ -160,6 +181,9 @@ class DesignController extends Controller
             }
             if ($design->preview_path) {
                 Storage::disk('public')->delete($design->preview_path);
+            }
+            if ($design->file_path) {
+                Storage::disk('public')->delete($design->file_path);
             }
             
             $design->delete();

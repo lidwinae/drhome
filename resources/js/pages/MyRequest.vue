@@ -122,7 +122,7 @@ function getTargetUser(request: any) {
                         </div>
                         <div class="w-full sm:w-auto flex justify-end">
                             <Link
-                                :href="request.type === 'contractor' ? `/request-contractor/${request.id}` : `/request-designer/${request.id}`"
+                                :href="request.type === 'contractor' ? `/myrequest/${request.id}` : `/myrequest/${request.id}`"
                                 class="mt-2 sm:mt-0 px-4 py-2 rounded bg-[#AE7A42] text-white hover:bg-[#8c5e30] transition"
                             >
                                 View Details

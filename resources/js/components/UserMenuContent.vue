@@ -31,13 +31,13 @@ defineProps<Props>();
             </Link>
         </DropdownMenuItem>
         <DropdownMenuItem :as-child="true">
-            <Link class="block w-full" :href="route('customerservice')" prefetch as="button">
+            <Link class="block w-full" href="/myrequest" prefetch as="button">
                 <Send class="mr-2 h-4 w-4" />
                 My Request
             </Link>
         </DropdownMenuItem>
         <DropdownMenuItem :as-child="true">
-            <Link class="block w-full" :href="route('customerservice')" prefetch as="button">
+            <Link class="block w-full" href="/mypurchaseddesign" prefetch as="button">
                 <FolderCheck class="mr-2 h-4 w-4" />
                 Purchased Designs
             </Link>

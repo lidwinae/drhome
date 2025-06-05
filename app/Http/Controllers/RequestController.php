@@ -38,4 +38,89 @@ public function index()
         'role' => $role
     ]);
 }
+
+public function show($id)
+{
+    // Cek apakah request contractor dengan id ini ada
+    $request = RequestContractor::with([
+            'client:id,name,avatar',
+            'contractor:id,name,avatar',
+            'purchasedDesign' // tambahkan ini
+        ])
+        ->find($id);
+
+    if ($request) {
+        $type = 'contractor';
+    } else {
+        // Jika tidak, cek di request designer
+        $request = RequestDesigner::with([
+                'client:id,name,avatar',
+                'designer:id,name,avatar',
+                'purchasedDesign' // tambahkan ini
+            ])
+            ->find($id);
+        if ($request) {
+            $type = 'designer';
+        } else {
+            abort(404, 'Request not found');
+        }
+    }
+
+    return inertia('RequestDetail', [
+        'request' => $request,
+        'type' => $type,
+    ]);
+}
+
+public function updateStatus(Request $request, $id)
+{
+    $request->validate([
+        'status' => 'required|in:accepted,rejected',
+        'type' => 'required|in:contractor,designer',
+    ]);
+
+    if ($request->type === 'contractor') {
+        $model = RequestContractor::findOrFail($id);
+    } else {
+        $model = RequestDesigner::findOrFail($id);
+    }
+
+    // Hanya bisa update jika status masih waiting
+    if ($model->status !== 'waiting') {
+        return response()->json(['message' => 'Status cannot be changed.'], 400);
+    }
+
+    $model->status = $request->status;
+
+    // Set progress sesuai status
+    if ($request->status === 'accepted') {
+        $model->progress = 'payment';
+    } elseif ($request->status === 'rejected') {
+        // progress tetap (tidak berubah)
+    }
+
+    $model->save();
+
+    return response()->json(['message' => 'Status updated successfully.']);
+}
+
+public function finishConstruction(Request $request, $id)
+{
+    $request->validate([
+        'type' => 'required|in:contractor'
+    ]);
+
+    $model = RequestContractor::findOrFail($id);
+
+    // Hanya bisa update jika progress masih construction_start
+    if ($model->progress !== 'construction_start') {
+        return response()->json(['message' => 'Cannot finish construction at this stage.'], 400);
+    }
+
+    $model->progress = 'construction_end';
+    $model->status = 'finished';
+    $model->save();
+
+    return response()->json(['message' => 'Construction finished.']);
+}
 }

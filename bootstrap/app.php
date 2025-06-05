@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ChatAccess;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
@@ -43,6 +44,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->group('designer_contractor', [
             'web',
             EnsureIsDesignerOrContractor::class,
+        ]);
+
+        $middleware->group('chat.access', [
+            'web',
+            ChatAccess::class,
         ]);
 
     })

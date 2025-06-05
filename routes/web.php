@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\DesignerController;
 use App\Http\Controllers\AvatarController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\MyRequestController;
 use App\Http\Controllers\PurchasedDesignController;
 use App\Http\Controllers\RequestController;
@@ -82,11 +83,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('customerservice');
 
     Route::get('/myrequest', [MyRequestController::class, 'index']);
+    Route::get('/myrequest/{id}', [MyRequestController::class, 'show'])->name('myrequest.show');
+    Route::post('/my-request/{type}/{id}/pay', [MyRequestController::class, 'pay'])->name('my-request.pay');
+    Route::post('/my-request/{type}/{id}/open-acc', [MyRequestController::class, 'openAcc'])->name('my-request.open-acc');
+
+    Route::get('/chat/{user1}/{user2}', [ChatController::class, 'show'])->name('chat.show')->middleware('chat.access');
+    Route::post('/chat/send', [ChatController::class, 'send']);
 
     // designer contractor only
     Route::middleware('designer_contractor')->group(function () {
         Route::get('/request', [RequestController::class, 'index']);
-        
+        Route::get('/request/{id}', [RequestController::class, 'show'])->name('request.show');
+        Route::post('/request/{id}/status', [RequestController::class, 'updateStatus'])->name('request.updateStatus');
+        Route::post('/purchased-designs/from-request-designer', [PurchasedDesignController::class, 'storeFromRequestDesigner'])->name('purchased-designs.from-request-designer');
+        Route::post('/request/{id}/finish-construction', [RequestController::class, 'finishConstruction']);
     });
 });
 

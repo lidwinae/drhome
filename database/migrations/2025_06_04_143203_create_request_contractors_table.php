@@ -12,7 +12,7 @@ return new class extends Migration
 public function up(): void
 {
     Schema::create('request_contractors', function (Blueprint $table) {
-        $table->id();
+        $table->uuid('id')->primary();
         $table->unsignedBigInteger('client_id')->nullable();
         $table->unsignedBigInteger('contractor_id')->nullable();
         $table->unsignedBigInteger('purchased_design_id')->nullable();
@@ -30,6 +30,8 @@ public function up(): void
             'finished'
         ])->default('waiting');
         $table->enum('progress',['design_submitted', 'payment', 'construction_start', 'construction_end'])->default('design_submitted');
+        $table->decimal('payment', 16, 2)->nullable();
+        $table->boolean('open_acc')->default(false);
         $table->timestamps();
 
         $table->foreign('client_id')->references('id')->on('users')->onDelete('set null');
