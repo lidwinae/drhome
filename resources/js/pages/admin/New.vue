@@ -53,7 +53,7 @@ const fetchDesigns = async () => {
 };
 
 const openEditModal = (design: any) => {
-    currentDesign.value = { 
+    currentDesign.value = {
         ...design,
         photoFile: null,
         previewFile: null,
@@ -93,18 +93,18 @@ const handleDelete = async (id: number) => {
 
 const handleUpdate = async () => {
     isLoading.value = true;
-    
+
     try {
         const formData = new FormData();
         formData.append('name', currentDesign.value.name);
         formData.append('country', currentDesign.value.country);
         formData.append('specialty', currentDesign.value.specialty);
         formData.append('description', currentDesign.value.description);
-        
+
         if (currentDesign.value.photoFile) {
             formData.append('photo', currentDesign.value.photoFile);
         }
-        
+
         if (currentDesign.value.previewFile) {
             formData.append('preview', currentDesign.value.previewFile);
         }
@@ -114,7 +114,7 @@ const handleUpdate = async () => {
         }
 
         if (!confirm('Are you sure you want to update this design?')) return;
-        
+
         await axios.post(`/api/designs/${currentDesign.value.id}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -134,18 +134,18 @@ const handleUpdate = async () => {
 
 const handleCreate = async () => {
     isLoading.value = true;
-    
+
     try {
         const formData = new FormData();
         formData.append('name', newDesign.value.name);
         formData.append('country', newDesign.value.country);
         formData.append('specialty', newDesign.value.specialty);
         formData.append('description', newDesign.value.description);
-        
+
         if (newDesign.value.photoFile) {
             formData.append('photo', newDesign.value.photoFile);
         }
-        
+
         if (newDesign.value.previewFile) {
             formData.append('preview', newDesign.value.previewFile);
         }
@@ -155,7 +155,7 @@ const handleCreate = async () => {
         }
 
         if (!confirm('Are you sure you want to create this design?')) return;
-        
+
         await axios.post('/api/designs', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -177,11 +177,11 @@ const handleFileChange = (event: Event, type: 'photo' | 'preview' | 'file', isNe
     if (input.files?.[0]) {
         const target = isNew ? newDesign.value : currentDesign.value;
         target[`${type}File`] = input.files[0];
-        
+
         if (type !== 'file') {
             target[`${type}_preview`] = URL.createObjectURL(input.files[0]);
         }
-        
+
         if (type === 'preview') {
             videoUrl.value = URL.createObjectURL(input.files[0]);
         }
@@ -215,51 +215,51 @@ const openVideoModal = (url: string) => {
                 <div class="p-6 border-b">
                     <h3 class="text-xl font-semibold">Edit Design</h3>
                 </div>
-                
+
                 <div class="overflow-y-auto p-6 flex-1">
                     <form @submit.prevent="handleUpdate">
                         <div class="mb-4">
                             <label class="block mb-1">Name</label>
-                            <input v-model="currentDesign.name" type="text" 
+                            <input v-model="currentDesign.name" type="text"
                                 class="w-full p-2 border rounded" required>
                         </div>
-                        
+
                         <div class="mb-4">
                             <label class="block mb-1">Country</label>
-                            <input v-model="currentDesign.country" type="text" 
+                            <input v-model="currentDesign.country" type="text"
                                 class="w-full p-2 border rounded" required>
                         </div>
-                        
+
                         <div class="mb-4">
                             <label class="block mb-1">Specialty</label>
-                            <input v-model="currentDesign.specialty" type="text" 
+                            <input v-model="currentDesign.specialty" type="text"
                                 class="w-full p-2 border rounded" required>
                         </div>
 
                         <div class="mb-4">
                             <label class="block mb-1">Description</label>
-                            <textarea v-model="currentDesign.description" 
+                            <textarea v-model="currentDesign.description"
                                 class="w-full p-2 border rounded" rows="4"></textarea>
                         </div>
-                        
+
                         <div class="mb-4">
                             <label class="block mb-1">Photo</label>
-                            <input type="file" @change="(e) => handleFileChange(e, 'photo')" 
+                            <input type="file" @change="(e) => handleFileChange(e, 'photo')"
                                 accept="image/*"
                                 class="w-full p-2 border rounded">
-                            <img v-if="currentDesign.photo_preview" 
-                                :src="currentDesign.photo_preview" 
+                            <img v-if="currentDesign.photo_preview"
+                                :src="currentDesign.photo_preview"
                                 class="mt-2 max-w-full max-h-48 object-contain">
                         </div>
-                        
+
                         <div class="mb-4">
                             <label class="block mb-1">Video Preview</label>
-                            <input type="file" @change="(e) => handleFileChange(e, 'preview')" 
+                            <input type="file" @change="(e) => handleFileChange(e, 'preview')"
                                 accept="video/mp4,video/quicktime"
                                 class="w-full p-2 border rounded">
                             <div v-if="currentDesign.preview_preview" class="mt-2">
-                                <video 
-                                    :src="currentDesign.preview_preview" 
+                                <video
+                                    :src="currentDesign.preview_preview"
                                     controls
                                     class="max-w-full max-h-48"
                                     @click="openVideoModal(currentDesign.preview_preview)"></video>
@@ -268,11 +268,11 @@ const openVideoModal = (url: string) => {
 
                         <div class="mb-4">
                             <label class="block mb-1">Design File</label>
-                            <input type="file" @change="(e) => handleFileChange(e, 'file')" 
+                            <input type="file" @change="(e) => handleFileChange(e, 'file')"
                                 accept=".pdf,.zip,.rar,.jpg,.jpeg,.png,.psd,.ai"
                                 class="w-full p-2 border rounded">
                             <div v-if="currentDesign.file_preview" class="mt-2">
-                                <a :href="currentDesign.file_preview" target="_blank" 
+                                <a :href="currentDesign.file_preview" target="_blank"
                                    class="inline-flex items-center text-[#AE7A42] hover:underline">
                                     <FileText class="mr-1" :size="16" />
                                     View File
@@ -281,13 +281,13 @@ const openVideoModal = (url: string) => {
                         </div>
                     </form>
                 </div>
-                
+
                 <div class="p-4 border-t flex justify-end gap-4">
-                    <button type="button" @click="showEditModal = false" 
+                    <button type="button" @click="showEditModal = false"
                             class="px-4 py-2 bg-gray-200 rounded">
                         Cancel
                     </button>
-                    <button type="button" 
+                    <button type="button"
                             class="px-4 py-2 bg-[#AE7A42] text-white rounded flex items-center justify-center gap-2 min-w-32"
                             :disabled="isLoading"
                             @click="handleUpdate">
@@ -310,51 +310,51 @@ const openVideoModal = (url: string) => {
                 <div class="p-6 border-b">
                     <h3 class="text-xl font-semibold">Create New Design</h3>
                 </div>
-                
+
                 <div class="overflow-y-auto p-6 flex-1">
                     <form @submit.prevent="handleCreate">
                         <div class="mb-4">
                             <label class="block mb-1">Name *</label>
-                            <input v-model="newDesign.name" type="text" 
+                            <input v-model="newDesign.name" type="text"
                                 class="w-full p-2 border rounded" required>
                         </div>
-                        
+
                         <div class="mb-4">
                             <label class="block mb-1">Country *</label>
-                            <input v-model="newDesign.country" type="text" 
+                            <input v-model="newDesign.country" type="text"
                                 class="w-full p-2 border rounded" required>
                         </div>
-                        
+
                         <div class="mb-4">
                             <label class="block mb-1">Specialty *</label>
-                            <input v-model="newDesign.specialty" type="text" 
+                            <input v-model="newDesign.specialty" type="text"
                                 class="w-full p-2 border rounded" required>
                         </div>
 
                         <div class="mb-4">
                             <label class="block mb-1">Description</label>
-                            <textarea v-model="newDesign.description" 
+                            <textarea v-model="newDesign.description"
                                 class="w-full p-2 border rounded" rows="4"></textarea>
                         </div>
-                        
+
                         <div class="mb-4">
                             <label class="block mb-1">Photo</label>
-                            <input type="file" @change="(e) => handleFileChange(e, 'photo', true)" 
+                            <input type="file" @change="(e) => handleFileChange(e, 'photo', true)"
                                 accept="image/*"
                                 class="w-full p-2 border rounded">
-                            <img v-if="newDesign.photo_preview" 
-                                :src="newDesign.photo_preview" 
+                            <img v-if="newDesign.photo_preview"
+                                :src="newDesign.photo_preview"
                                 class="mt-2 max-w-full max-h-48 object-contain">
                         </div>
-                        
+
                         <div class="mb-4">
                             <label class="block mb-1">Video Preview</label>
-                            <input type="file" @change="(e) => handleFileChange(e, 'preview', true)" 
+                            <input type="file" @change="(e) => handleFileChange(e, 'preview', true)"
                                 accept="video/mp4,video/quicktime"
                                 class="w-full p-2 border rounded">
                             <div v-if="newDesign.preview_preview" class="mt-2">
-                                <video 
-                                    :src="newDesign.preview_preview" 
+                                <video
+                                    :src="newDesign.preview_preview"
                                     controls
                                     class="max-w-full max-h-48"
                                     @click="openVideoModal(newDesign.preview_preview)"></video>
@@ -363,7 +363,7 @@ const openVideoModal = (url: string) => {
 
                         <div class="mb-4">
                             <label class="block mb-1">Design File</label>
-                            <input type="file" @change="(e) => handleFileChange(e, 'file', true)" 
+                            <input type="file" @change="(e) => handleFileChange(e, 'file', true)"
                                 accept=".pdf,.zip,.rar,.jpg,.jpeg,.png,.psd,.ai"
                                 class="w-full p-2 border rounded">
                             <div v-if="newDesign.fileFile" class="mt-2">
@@ -375,13 +375,13 @@ const openVideoModal = (url: string) => {
                         </div>
                     </form>
                 </div>
-                
+
                 <div class="p-4 border-t flex justify-end gap-4">
-                    <button type="button" @click="showCreateModal = false" 
+                    <button type="button" @click="showCreateModal = false"
                             class="px-4 py-2 bg-gray-200 rounded">
                         Cancel
                     </button>
-                    <button type="button" 
+                    <button type="button"
                             class="px-4 py-2 bg-[#AE7A42] text-white rounded flex items-center justify-center gap-2 min-w-32"
                             :disabled="isLoading"
                             @click="handleCreate">
@@ -412,15 +412,15 @@ const openVideoModal = (url: string) => {
                 <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#AE7A42] mb-4"></div>
                 <p class="text-black mt-2">Loading designs...</p>
             </div>
-            
+
             <!-- Empty State -->
             <div v-else-if="designs.length === 0 && !isFetching" class="text-center py-8 text-[#AE7A42]">
                 <p>No designs available</p>
             </div>
-            
+
             <!-- Design Grid -->
             <div v-else class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                <div v-for="design in designs" :key="design.id" 
+                <div v-for="design in designs" :key="design.id"
                      class="bg-white rounded-xl shadow-md overflow-hidden transition-transform hover:-translate-y-4">
                     <img :src="design.photo_url" :alt="design.name"
                          class="w-full h-64 object-cover cursor-pointer"
@@ -455,7 +455,7 @@ const openVideoModal = (url: string) => {
 
                         <!-- File Link -->
                         <div v-if="design.file_url && design.file_url !== '#'" class="flex justify-center">
-                            <a :href="design.file_url" target="_blank" 
+                            <a :href="design.file_url" target="_blank"
                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors">
                                 <FileText class="w-3 h-3 mr-1" />
                                 View File

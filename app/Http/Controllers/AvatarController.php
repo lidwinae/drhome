@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Contractor;
 use App\Models\Designer;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -72,40 +73,63 @@ class AvatarController extends Controller {
         ]);
     }
 
-    public function updateSpecialty(Request $request)
+public function updateSpecialty(Request $request)
 {
     $request->validate([
         'specialty' => 'required|string|max:50',
     ]);
 
-    $designer = Designer::firstOrCreate(
-        ['user_id' => auth()->id()],
-        ['specialty' => '', 'description' => '']
-    );
-    $designer->specialty = $request->specialty;
-    $designer->save();
+    $user = auth()->user();
+    
+    if ($user->role === 'designer') {
+        $model = Designer::firstOrCreate(
+            ['user_id' => $user->id],
+            ['specialty' => '', 'description' => '']
+        );
+    } elseif ($user->role === 'contractor') {
+        $model = Contractor::firstOrCreate(
+            ['user_id' => $user->id],
+            ['specialty' => '', 'description' => '']
+        );
+    } else {
+        return response()->json(['error' => 'Unauthorized action'], 403);
+    }
+
+    $model->specialty = $request->specialty;
+    $model->save();
 
     return response()->json([
-        'specialty' => $designer->specialty,
+        'specialty' => $model->specialty,
     ]);
 }
 
-// Update About/Description
-public function updateAbout(Request $request)
-{
-    $request->validate([
-        'description' => 'required|string|max:1000',
-    ]);
+    public function updateAbout(Request $request)
+    {
+        $request->validate([
+            'description' => 'required|string|max:1000',
+        ]);
 
-    $designer = Designer::firstOrCreate(
-        ['user_id' => auth()->id()],
-        ['specialty' => '', 'description' => '']
-    );
-    $designer->description = $request->description;
-    $designer->save();
+        $user = auth()->user();
+        
+        if ($user->role === 'designer') {
+            $model = Designer::firstOrCreate(
+                ['user_id' => $user->id],
+                ['specialty' => '', 'description' => '']
+            );
+        } elseif ($user->role === 'contractor') {
+            $model = Contractor::firstOrCreate(
+                ['user_id' => $user->id],
+                ['specialty' => '', 'description' => '']
+            );
+        } else {
+            return response()->json(['error' => 'Unauthorized action'], 403);
+        }
 
-    return response()->json([
-        'description' => $designer->description,
-    ]);
-}
+        $model->description = $request->description;
+        $model->save();
+
+        return response()->json([
+            'description' => $model->description,
+        ]);
+    }
 }

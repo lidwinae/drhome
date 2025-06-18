@@ -74,7 +74,7 @@ onMounted(() => {
         <source src="/videos/design.mp4" type="video/mp4">
         <img src="/images/design.jpg" alt="Background" class="w-full max-w-[1000px] rounded-[20px] aspect-[2.35/1] object-cover shadow-[0_4px_20px_rgba(0,0,0,0.1)]">
       </video>
-      
+
       <div class="absolute top-[40%] left-1/3 -translate-x-1/2 -translate-y-1/2 text-center w-[80%] max-w-[500px] px-8 z-[2] font-['Archivo']">
         <h1 class="text-[#183D55] font-bold mb-1 text-shadow-[0_2px_4px_rgba(255,255,255,0.5)] leading-[1.2] text-[clamp(0.9rem,3.1vw,2.4rem)]">Temukan design terbaik</h1>
         <p class="text-[#183D55] font-bold mb-1 text-shadow-[0_2px_4px_rgba(255,255,255,0.5)] leading-[1.2] text-[clamp(0.9rem,3.1vw,2.4rem)]">dengan Dr.Home</p>
@@ -136,9 +136,9 @@ onMounted(() => {
       </div>
 
       <div v-else class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Link 
-          v-for="design in designs" 
-          :key="design.id" 
+        <Link
+          v-for="design in designs"
+          :key="design.id"
           :href="route('designdetail', { id: design.id })"
           class="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-transform duration-300 ease-in-out hover:-translate-y-[5px]"
         >
@@ -153,7 +153,7 @@ onMounted(() => {
             <h3 class="m-0 mb-3 text-[24px] font-medium text-gray-800 transition-colors duration-200 hover:text-[#AE7A42]">
               {{ design.name }}
             </h3>
-            
+
             <!-- Country and Specialty with icons and backgrounds -->
             <div class="flex flex-wrap justify-center gap-2 mb-3">
               <!-- Country -->
@@ -164,7 +164,7 @@ onMounted(() => {
                 </svg>
                 {{ design.country }}
               </span>
-              
+
               <!-- Specialty -->
               <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                 <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

@@ -57,7 +57,7 @@ public function send(Request $request)
     public function getChats($userId)
     {
         $currentUserId = Auth::id();
-        
+
         $chats = Chat::where(function($query) use ($currentUserId, $userId) {
                 $query->where('sender_id', $currentUserId)
                       ->where('recipient_id', $userId);

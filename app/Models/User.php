@@ -42,7 +42,7 @@ class User extends Authenticatable
         // Field yang boleh diupdate admin
         $allowed = ['role', 'status'];
         $filtered = array_intersect_key($attributes, array_flip($allowed));
-        
+
         return $this->forceFill($filtered)->save();
     }
 

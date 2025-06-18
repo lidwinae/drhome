@@ -2,7 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { MessageSquareText } from 'lucide-vue-next';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 
 const props = defineProps({
@@ -16,6 +16,7 @@ const props = defineProps({
     }
 });
 
+const requestData = ref(props.request); // Use ref for request data that can be updated
 const openAccStatus = ref(props.request.open_acc);
 const amount = ref(props.request.budget || '');
 const paymentLoading = ref(false);
@@ -25,6 +26,9 @@ const paymentSuccess = ref<string|null>(null);
 const openAccLoading = ref(false);
 const openAccError = ref<string|null>(null);
 const openAccSuccess = ref<string|null>(null);
+
+// Polling interval
+let pollingInterval: number | null = null;
 
 const statuses = computed(() => {
     if (props.type === 'contractor') {
@@ -44,7 +48,7 @@ const statuses = computed(() => {
     }
 });
 
-const currentStatus = computed(() => props.request.progress);
+const currentStatus = computed(() => requestData.value.progress);
 
 function getStatusLabel(request: any, type: string) {
     if (type === 'contractor') {
@@ -89,9 +93,9 @@ function getStatusClass(request: any, type: string) {
 
 function getTargetUser() {
     if (props.type === 'contractor') {
-        return props.request.contractor;
+        return requestData.value.contractor;
     } else if (props.type === 'designer') {
-        return props.request.designer;
+        return requestData.value.designer;
     }
     return null;
 }
@@ -112,9 +116,11 @@ async function openAcc() {
     openAccError.value = null;
     openAccSuccess.value = null;
     try {
-        await axios.post(`/my-request/${props.type}/${props.request.id}/open-acc`);
+        await axios.post(`/my-request/${props.type}/${requestData.value.id}/open-acc`);
         openAccSuccess.value = 'Open ACC berhasil diaktifkan!';
-        openAccStatus.value = true; // update ref lokal, BUKAN props
+        openAccStatus.value = true;
+        // Fetch updated data after successful open acc
+        await fetchData();
     } catch (e: any) {
         openAccError.value = e.response?.data?.message || 'Gagal mengaktifkan Open ACC';
     } finally {
@@ -126,8 +132,9 @@ async function submitPayment() {
     paymentLoading.value = true;
     paymentError.value = null;
     try {
-        await axios.post(`/my-request/${props.type}/${props.request.id}/pay`, { amount: amount.value });
-        window.location.reload();
+        await axios.post(`/my-request/${props.type}/${requestData.value.id}/pay`, { amount: amount.value });
+        // Fetch updated data after successful payment
+        await fetchData();
     } catch (e: any) {
         paymentError.value = e.response?.data?.message || 'Failed to process payment';
     } finally {
@@ -136,9 +143,34 @@ async function submitPayment() {
 }
 
 function getCurrentUserId() {
-    // Misal, current user id dikirim dari backend ke props, atau window.Laravel.user.id
-    return props.request.client_id; // atau window.Laravel.user.id
+    return requestData.value.client_id;
 }
+
+// Fungsi untuk mengambil data terbaru
+async function fetchData() {
+    try {
+        const response = await axios.get(`/api/myrequest/${requestData.value.id}`);
+        requestData.value = response.data.request;
+        // Update local refs with new data
+        openAccStatus.value = response.data.request.open_acc;
+        amount.value = response.data.request.budget || '';
+    } catch (error) {
+        console.error('Error fetching updated data:', error);
+    }
+}
+
+// Setup polling ketika komponen dimount
+onMounted(() => {
+    // Mulai polling setiap 2 detik
+    pollingInterval = window.setInterval(fetchData, 2000);
+});
+
+// Bersihkan interval ketika komponen di-unmount
+onUnmounted(() => {
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+    }
+});
 </script>
 
 <template>
@@ -166,14 +198,14 @@ function getCurrentUserId() {
                         <div class="mb-4">
                             <span
                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                                :class="getStatusClass(request, type)"
+                                :class="getStatusClass(requestData, type)"
                             >
-                                {{ getStatusLabel(request, type) }}
+                                {{ getStatusLabel(requestData, type) }}
                             </span>
                         </div>
                         <!-- Pesan progress -->
                         <div
-                            v-if="request.progress === 'design_start' || request.progress === 'construction_start'"
+                            v-if="requestData.progress === 'design_start' || requestData.progress === 'construction_start'"
                             class="mb-4 mt-2 text-[17px] text-[#AE7A42] bg-[#FFF7ED] border border-[#AE7A42] rounded-lg px-4 py-3 w-full"
                         >
                             <span class="font-semibold">*</span>
@@ -182,11 +214,11 @@ function getCurrentUserId() {
                         <!-- Detail Table -->
                         <div class="w-full mb-4 mt-8">
                             <div class="flex flex-col gap-6 text-xl">
-                                <div v-if="request.purchased_design && request.purchased_design.design_path" class="flex items-center gap-4">
+                                <div v-if="requestData.purchased_design && requestData.purchased_design.design_path" class="flex items-center gap-4">
                                     <span class="font-semibold w-48">Design File</span>
                                     <span class="flex-1">
                                         <a
-                                            :href="'/storage/' + request.purchased_design.design_path"
+                                            :href="'/storage/' + requestData.purchased_design.design_path"
                                             target="_blank"
                                             class="bg-gray-100 rounded-lg px-4 py-2 text-blue-600 underline block text-left"
                                         >
@@ -194,64 +226,70 @@ function getCurrentUserId() {
                                         </a>
                                     </span>
                                 </div>
-                                
+
                                 <!-- Payment Row -->
-                                <div class="flex items-center gap-4" v-if="request.payment">
+                                <div class="flex items-center gap-4" v-if="requestData.payment">
                                     <span class="font-semibold w-48">Payment</span>
                                     <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 font-bold text-left">
-                                        {{ 'IDR ' + new Intl.NumberFormat('id-ID').format(request.payment) }}
+                                        {{ 'IDR ' + new Intl.NumberFormat('id-ID').format(requestData.payment) }}
                                     </span>
                                 </div>
                                 <div class="flex items-center gap-4">
                                     <span class="font-semibold w-48">Budget</span>
                                     <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 font-bold text-gray-800 text-2xl text-left">
-                                        {{ request.budget ? 'IDR ' + new Intl.NumberFormat('id-ID').format(request.budget) : '-' }}
+                                        {{ requestData.budget ? 'IDR ' + new Intl.NumberFormat('id-ID').format(requestData.budget) : '-' }}
                                     </span>
                                 </div>
-                                <div class="flex items-center gap-4" v-if="type === 'contractor'">
+                                <div class="flex items-center gap-4">
                                     <span class="font-semibold w-48">Province</span>
-                                    <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">{{ request.province }}</span>
+                                    <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">{{ requestData.province }}</span>
                                 </div>
-                                <div class="flex items-center gap-4" v-if="type === 'contractor'">
+                                <div class="flex items-center gap-4">
                                     <span class="font-semibold w-48">City</span>
-                                    <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">{{ request.city }}</span>
+                                    <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">{{ requestData.city }}</span>
                                 </div>
                                 <div class="flex items-center gap-4">
                                     <span class="font-semibold w-48">Land Size</span>
-                                    <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">{{ request.land_size }} m²</span>
+                                    <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">{{ requestData.land_size }} m²</span>
                                 </div>
                                 <div class="flex items-center gap-4">
                                     <span class="font-semibold w-48">Land Shape</span>
-                                    <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">{{ request.land_shape }}</span>
+                                    <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">{{ requestData.land_shape }}</span>
                                 </div>
                                 <div class="flex items-center gap-4" v-if="type === 'designer'">
                                     <span class="font-semibold w-48">Sun Orientation</span>
-                                    <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">{{ request.sun_orientation }}</span>
+                                    <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">{{ requestData.sun_orientation }}</span>
                                 </div>
                                 <div class="flex items-center gap-4" v-if="type === 'designer'">
                                     <span class="font-semibold w-48">Wind Orientation</span>
-                                    <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">{{ request.wind_orientation }}</span>
+                                    <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">{{ requestData.wind_orientation }}</span>
                                 </div>
-                                <div class="flex items-center gap-4" v-if="type === 'designer' && request.design_reference_path">
+                                <div class="flex items-center gap-4" v-if="type === 'designer' && requestData.design_reference_path">
                                     <span class="font-semibold w-48">Design Reference</span>
                                     <span class="flex-1">
-                                        <a :href="'/storage/' + request.design_reference_path" target="_blank" class="bg-gray-100 rounded-lg px-4 py-2 text-blue-600 underline block text-left">View File</a>
+                                        <a
+                                            :href="'/storage/' + requestData.design_reference_path"
+                                            target="_blank"
+                                            class="bg-gray-100 rounded-lg px-4 py-2 text-blue-600 underline block text-left"
+                                        >
+                                            View File
+                                        </a>
                                     </span>
                                 </div>
                                 <div class="flex items-center gap-4">
                                     <span class="font-semibold w-48">Deadline</span>
                                     <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">
-                                    {{ request.deadline ? new Date(request.deadline).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-' }}
+                                    {{ requestData.deadline ? new Date(requestData.deadline).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-' }}
                                     </span>
                                 </div>
                                 <div class="flex items-center gap-4">
                                     <span class="font-semibold w-48">Notes</span>
-                                    <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">{{ request.notes || '-' }}</span>
+                                    <span class="flex-1 bg-gray-100 rounded-lg px-4 py-2 text-left">{{ requestData.notes || '-' }}</span>
                                 </div>
                             </div>
                         </div>
                         <!-- Payment Section di dalam card detail -->
-                        <div v-if="request.progress === 'payment'" class="w-full mt-6">
+                        <div v-if="requestData.progress === 'payment'" class="w-full mt-6">
                             <div class="border-t pt-6">
                                 <h3 class="text-2xl font-bold mb-4 text-[#AE7A42]">Enter Payment</h3>
                                 <p class="mb-4 text-black">Silakan lakukan pembayaran sesuai nominal berikut.</p>
@@ -326,29 +364,29 @@ function getCurrentUserId() {
                         </div>
                         <!-- Chat & Open ACC Card -->
                         <div class="flex justify-end mb-6">
-                            <template v-if="(request.progress === 'construction_start' || request.progress === 'design_start')">
-        <button
-            v-if="!openAccStatus"
-            @click="openAcc"
-            :disabled="openAccLoading"
-            class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white text-[20px] font-medium rounded-lg shadow transition flex items-center mr-4"
-        >
-            <span v-if="openAccLoading">Processing...</span>
-            <span v-else>Buka ACC</span>
-        </button>
-        <span
-            v-else
-            class="px-6 py-3 bg-green-100 text-green-700 text-[20px] font-medium rounded-lg shadow flex items-center mr-4"
-        >
-            ACC dibuka <span class="ml-2 text-green-600 text-2xl font-bold">✓</span>
-        </span>
-    </template>
-    <Link
-        :href="`/chat/${getCurrentUserId()}/${getTargetUser()?.id}`"
-        class="px-6 py-3 bg-[#AE7A42] hover:bg-[#8c5e30] text-white text-[20px] font-medium rounded-lg shadow transition flex items-center"
-    >
-        <MessageSquareText class="mr-4"/>Chat
-    </Link>
+                            <template v-if="(requestData.progress === 'construction_start' || requestData.progress === 'design_start')">
+                                <button
+                                    v-if="!openAccStatus"
+                                    @click="openAcc"
+                                    :disabled="openAccLoading"
+                                    class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white text-[20px] font-medium rounded-lg shadow transition flex items-center mr-4"
+                                >
+                                    <span v-if="openAccLoading">Processing...</span>
+                                    <span v-else>Buka ACC</span>
+                                </button>
+                                <span
+                                    v-else
+                                    class="px-6 py-3 bg-green-100 text-green-700 text-[20px] font-medium rounded-lg shadow flex items-center mr-4"
+                                >
+                                    ACC dibuka <span class="ml-2 text-green-600 text-2xl font-bold">✓</span>
+                                </span>
+                            </template>
+                            <Link
+                                :href="`/chat/${getCurrentUserId()}/${getTargetUser()?.id}`"
+                                class="px-6 py-3 bg-[#AE7A42] hover:bg-[#8c5e30] text-white text-[20px] font-medium rounded-lg shadow transition flex items-center"
+                            >
+                                <MessageSquareText class="mr-4"/>Chat
+                            </Link>
                         </div>
                     </div>
                 </section>
@@ -389,29 +427,29 @@ function getCurrentUserId() {
                     </section>
                     <!-- Chat & Open ACC Card -->
                     <div class="flex justify-end mb-6">
-                            <template v-if="(request.progress === 'construction_start' || request.progress === 'design_start')">
-        <button
-            v-if="!request.open_acc"
-            @click="openAcc"
-            :disabled="openAccLoading"
-            class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white text-[20px] font-medium rounded-lg shadow transition flex items-center mr-2"
-        >
-            <span v-if="openAccLoading">Processing...</span>
-            <span v-else>Buka ACC</span>
-        </button>
-        <span
-            v-else
-            class="px-6 py-3 bg-green-100 text-green-700 text-[20px] font-medium rounded-lg shadow flex items-center mr-2"
-        >
-            ACC dibuka <span class="ml-2 text-green-600 text-2xl font-bold">✓</span>
-        </span>
-    </template>
-    <Link
-        :href="`/chat/${getCurrentUserId()}/${getTargetUser()?.id}`"
-        class="px-6 py-3 bg-[#AE7A42] hover:bg-[#8c5e30] text-white text-[20px] font-medium rounded-lg shadow transition flex items-center"
-    >
-        <MessageSquareText class="mr-4"/>Chat
-    </Link>
+                        <template v-if="(requestData.progress === 'construction_start' || requestData.progress === 'design_start')">
+                            <button
+                                v-if="!openAccStatus"
+                                @click="openAcc"
+                                :disabled="openAccLoading"
+                                class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white text-[20px] font-medium rounded-lg shadow transition flex items-center mr-2"
+                            >
+                                <span v-if="openAccLoading">Processing...</span>
+                                <span v-else>Buka ACC</span>
+                            </button>
+                            <span
+                                v-else
+                                class="px-6 py-3 bg-green-100 text-green-700 text-[20px] font-medium rounded-lg shadow flex items-center mr-2"
+                            >
+                                ACC dibuka <span class="ml-2 text-green-600 text-2xl font-bold">✓</span>
+                            </span>
+                        </template>
+                        <Link
+                            :href="`/chat/${getCurrentUserId()}/${getTargetUser()?.id}`"
+                            class="px-6 py-3 bg-[#AE7A42] hover:bg-[#8c5e30] text-white text-[20px] font-medium rounded-lg shadow transition flex items-center"
+                        >
+                            <MessageSquareText class="mr-4"/>Chat
+                        </Link>
                     </div>
                 </div>
             </div>

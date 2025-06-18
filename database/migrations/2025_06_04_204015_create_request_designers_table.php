@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('sun_orientation', 100);
             $table->string('wind_orientation', 100);
             $table->string('design_reference_path')->nullable();
+            $table->string('province');
+            $table->string('city');
             $table->decimal('budget', 16, 2)->nullable();
             $table->text('notes')->nullable();
             $table->date('deadline')->nullable();

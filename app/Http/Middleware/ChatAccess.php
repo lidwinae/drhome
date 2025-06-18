@@ -13,10 +13,10 @@ class ChatAccess
     public function handle(Request $request, Closure $next)
     {
         $user1 = (int) $request->route('user1');
-        $user2 = (int) $request->route('user2');
+        
         $authId = auth()->id();
 
-        // Hanya user1 atau user2 yang boleh akses
+        // Hanya user yang sedang login yang boleh akses
         if ($authId !== $user1) {
             abort(404);
         }

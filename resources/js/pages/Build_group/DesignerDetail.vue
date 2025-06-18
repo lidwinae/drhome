@@ -215,9 +215,7 @@ const isOwnProfile = computed(() => {
                     </div>
                   </CardContent>
                 </Card>
-                <Button class="fixed bottom-8 right-8 shadow-lg rounded-full p-4 bg-[#AE7A42] hover:bg-[#95683C] text-white z-10" size="icon">
-                  <Icon name="chat" />
-                </Button>
+                
               </div>
             </div>
           </div>
@@ -246,9 +244,7 @@ const isOwnProfile = computed(() => {
                 </div>
               </CardContent>
             </Card>
-            <Button class="fixed bottom-8 right-8 shadow-lg rounded-full p-4 bg-[#AE7A42] hover:bg-[#95683C] text-white z-10" size="icon">
-              <Icon name="chat" />
-            </Button>
+            
           </div>
         </div>
       </div>

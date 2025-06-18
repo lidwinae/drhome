@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+
+interface Region {
+    id: string;
+    name: string;
+}
 
 const statuses = [
     { id: 'fill_form', label: 'Fill Form' },
@@ -30,35 +35,71 @@ const success = ref<string|null>(null);
 const page = usePage();
 const designerId = page.props.designerId;
 
+const provinces = ref<Region[]>([]);
+const cities = ref<Region[]>([]);
+const selectedProvince = ref('');
+const selectedCity = ref('');
+
+onMounted(async () => {
+    try {
+        // Ambil data provinsi
+        const provinceResponse = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json');
+        provinces.value = await provinceResponse.json();
+    } catch (error) {
+        console.error('Error fetching provinces:', error);
+    }
+});
+
+async function handleProvinceChange() {
+    if (!selectedProvince.value) {
+        cities.value = [];
+        selectedCity.value = '';
+        return;
+    }
+
+    try {
+        const response = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectedProvince.value}.json`);
+        cities.value = await response.json();
+    } catch (error) {
+        console.error('Error fetching cities:', error);
+    }
+}
+
 async function submitRequest() {
     error.value = null;
     success.value = null;
 
-    if (!sunOrientation.value || !windOrientation.value || !landSize.value || !landShape.value || !notes.value) {
+    if (!sunOrientation.value || !windOrientation.value || !landSize.value || 
+        !landShape.value || !notes.value || 
+        !selectedProvince.value || !selectedCity.value) {
         error.value = 'Semua field wajib diisi!';
         return;
     }
 
     loading.value = true;
     try {
-        const formData = new FormData();
-        formData.append('sun_orientation', sunOrientation.value);
-        formData.append('wind_orientation', windOrientation.value);
-        formData.append('land_size', landSize.value);
-        formData.append('land_shape', landShape.value);
-        formData.append('budget', budget.value ? budget.value : '');
-        formData.append('deadline', deadline.value ? deadline.value : '');
-        formData.append('notes', notes.value);
-        if (designReference.value) {
-            formData.append('design_reference_path', designReference.value);
-        }
+        const selectedProvinceObj = provinces.value.find(p => p.id === selectedProvince.value);
+        const selectedCityObj = cities.value.find(c => c.id === selectedCity.value);
 
-        await axios.post(`/api/designers/${designerId}/request`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
+        await axios.post(`/api/designers/${designerId}/request`, {
+            purchased_design_id: null,
+            sun_orientation: sunOrientation.value,
+            wind_orientation: windOrientation.value,
+            province: selectedProvinceObj?.name || '',
+            city: selectedCityObj?.name || '',
+            land_size: landSize.value,
+            land_shape: landShape.value,
+            budget: budget.value ? parseFloat(budget.value) : null,
+            deadline: deadline.value ? deadline.value : null,
+            notes: notes.value,
         });
+        
         window.location.href = '/myrequest';
     } catch (err: any) {
-        error.value = err.response?.data?.message || 'Gagal mengirim request.';
+        console.error('Full error:', err);
+        error.value = err.response?.data?.message || 
+                     err.response?.data?.error || 
+                     'Gagal mengirim request. Silakan coba lagi.';
     } finally {
         loading.value = false;
     }
@@ -113,6 +154,32 @@ function handleFileChange(e: Event) {
                                         <option value="irregular">Irregular</option>
                                     </select>
                                 </div>
+                                <div class="space-y-1">
+                                    <label class="block text-sm font-medium text-gray-700">Province</label>
+                                    <select
+                                        v-model="selectedProvince"
+                                        @change="handleProvinceChange"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition"
+                                    >
+                                        <option value="">Select Province</option>
+                                        <option v-for="province in provinces" :key="province.id" :value="province.id">
+                                            {{ province.name }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="block text-sm font-medium text-gray-700">City</label>
+                                    <select
+                                        v-model="selectedCity"
+                                        :disabled="!selectedProvince"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition"
+                                    >
+                                        <option value="">Select City</option>
+                                        <option v-for="city in cities" :key="city.id" :value="city.id">
+                                            {{ city.name }}
+                                        </option>
+                                    </select>
+                                </div>
                                 <div class="space-y-1 md:col-span-2">
                                     <label class="block text-sm font-medium text-gray-700">Design Reference (optional)</label>
                                     <input type="file" accept=".jpg,.jpeg,.png,.pdf" @change="handleFileChange"
@@ -147,7 +214,7 @@ function handleFileChange(e: Event) {
                         <div class="space-y-4">
                             <div v-for="(status, index) in statuses" :key="status.id" class="flex items-start">
                                 <div class="flex-shrink-0 relative">
-                                    <div :class="[ 
+                                    <div :class="[
                                         'h-6 w-6 rounded-full flex items-center justify-center border-2',
                                         currentStatus === status.id
                                             ? 'bg-white text-[#AE7A42] border-white'

@@ -39,6 +39,37 @@ public function index()
     ]);
 }
 
+public function indexApi()
+{
+    $user = Auth::user();
+
+    if (!$user) {
+        abort(404);
+    }
+
+    $requests = [];
+    $role = null;
+
+    if ($user->role === 'contractor') {
+        $requests = RequestContractor::with(['client:id,name,avatar'])
+            ->where('contractor_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        $role = 'contractor';
+    } elseif ($user->role === 'designer') {
+        $requests = RequestDesigner::with(['client:id,name,avatar'])
+            ->where('designer_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        $role = 'designer';
+    }
+
+    return response()->json([
+        'requests' => $requests,
+        'role' => $role,
+    ]);
+}
+
 public function show($id)
 {
     // Cek apakah request contractor dengan id ini ada
@@ -71,6 +102,40 @@ public function show($id)
         'type' => $type,
     ]);
 }
+
+    public function showApi($id)
+    {
+        // Cek di request_contractors
+        $request = RequestContractor::with([
+                'client:id,name,avatar',
+                'contractor:id,name,avatar',
+                'purchasedDesign'
+            ])->find($id);
+
+        if ($request) {
+            $type = 'contractor';
+        } else {
+            // Cek di request_designers
+            $request = RequestDesigner::with([
+                    'client:id,name,avatar',
+                    'designer:id,name,avatar',
+                    'purchasedDesign'
+                ])->find($id);
+
+            if ($request) {
+                $type = 'designer';
+            } else {
+                return response()->json([
+                    'message' => 'Request not found'
+                ], 404);
+            }
+        }
+
+        return response()->json([
+            'request' => $request,
+            'type' => $type,
+        ]);
+    }
 
 public function updateStatus(Request $request, $id)
 {

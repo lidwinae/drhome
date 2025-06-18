@@ -5,6 +5,12 @@ import { Head } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 
+// Tambahkan interface untuk Region
+interface Region {
+    id: string;
+    name: string;
+}
+
 const statuses = [
     { id: 'fill_form', label: 'Fill Form' },
     { id: 'design_submitted', label: 'Design Submitted' },
@@ -16,8 +22,6 @@ const statuses = [
 const currentStatus = ref('fill_form');
 const purchasedDesigns = ref<Array<any>>([]);
 const selectedDesign = ref('');
-const province = ref('');
-const city = ref('');
 const landSize = ref('');
 const landShape = ref('');
 const budget = ref('');
@@ -27,11 +31,22 @@ const loading = ref(false);
 const error = ref<string|null>(null);
 const success = ref<string|null>(null);
 
+// Tambahkan variabel untuk provinsi dan kota
+const provinces = ref<Region[]>([]);
+const cities = ref<Region[]>([]);
+const selectedProvince = ref('');
+const selectedCity = ref('');
+
 const page = usePage();
 const contractorId = page.props.contractorId;
 
 onMounted(async () => {
     try {
+        // Ambil data provinsi
+        const provinceResponse = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json');
+        provinces.value = await provinceResponse.json();
+
+        // Ambil data purchased designs
         const res = await axios.get('/api/user/purchased-designs');
         purchasedDesigns.value = res.data.designs;
     } catch (err) {
@@ -40,21 +55,42 @@ onMounted(async () => {
     }
 });
 
+// Tambahkan fungsi untuk handle perubahan provinsi
+async function handleProvinceChange() {
+    if (!selectedProvince.value) {
+        cities.value = [];
+        selectedCity.value = '';
+        return;
+    }
+
+    try {
+        const response = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectedProvince.value}.json`);
+        cities.value = await response.json();
+    } catch (error) {
+        console.error('Error fetching cities:', error);
+    }
+}
+
 async function submitRequest() {
     error.value = null;
     success.value = null;
 
-    if (!selectedDesign.value || !province.value || !city.value || !landSize.value || !landShape.value || !notes.value) {
+    // Update validasi untuk menggunakan selectedProvince dan selectedCity
+    if (!selectedDesign.value || !selectedProvince.value || !selectedCity.value || !landSize.value || !landShape.value || !notes.value) {
         error.value = 'Semua field wajib diisi!';
         return;
     }
 
     loading.value = true;
     try {
+        // Get province and city names from the selected IDs
+        const selectedProvinceObj = provinces.value.find(p => p.id === selectedProvince.value);
+        const selectedCityObj = cities.value.find(c => c.id === selectedCity.value);
+
         await axios.post(`/api/contractors/${contractorId}/request`, {
             purchased_design_id: selectedDesign.value,
-            province: province.value,
-            city: city.value,
+            province: selectedProvinceObj?.name || '',
+            city: selectedCityObj?.name || '',
             land_size: landSize.value,
             land_shape: landShape.value,
             budget: budget.value ? parseFloat(budget.value) : null,
@@ -87,13 +123,29 @@ async function submitRequest() {
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="space-y-1">
                                     <label class="block text-sm font-medium text-gray-700">Province</label>
-                                    <input v-model="province" type="text" placeholder="Enter Province"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition">
+                                    <select
+                                        v-model="selectedProvince"
+                                        @change="handleProvinceChange"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition"
+                                    >
+                                        <option value="">Select Province</option>
+                                        <option v-for="province in provinces" :key="province.id" :value="province.id">
+                                            {{ province.name }}
+                                        </option>
+                                    </select>
                                 </div>
                                 <div class="space-y-1">
                                     <label class="block text-sm font-medium text-gray-700">City</label>
-                                    <input v-model="city" type="text" placeholder="Enter City"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition">
+                                    <select
+                                        v-model="selectedCity"
+                                        :disabled="!selectedProvince"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition"
+                                    >
+                                        <option value="">Select City</option>
+                                        <option v-for="city in cities" :key="city.id" :value="city.id">
+                                            {{ city.name }}
+                                        </option>
+                                    </select>
                                 </div>
                                 <div class="space-y-1">
                                     <label class="block text-sm font-medium text-gray-700">Land Size (m²)</label>
@@ -140,7 +192,7 @@ async function submitRequest() {
                                     class="w-full px-4 py-4 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition"
                                     required
                                     ></textarea>
-                                        
+
                                 </div>
                             </div>
                         </div>
@@ -179,7 +231,7 @@ async function submitRequest() {
                         </div>
                     </section>
                 </section>
-                
+
                 <!-- Status Section (Mobile) -->
                 <section class="status-section bg-[#AE7A42] rounded-2xl shadow-md p-6 block lg:hidden">
                     <h2 class="text-2xl font-bold text-white border-b border-[#fff7ed]/30 pb-3 mb-6">Project Status</h2>

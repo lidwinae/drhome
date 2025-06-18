@@ -12,44 +12,44 @@ use Illuminate\Support\Facades\Log;
 
 class DesignController extends Controller
 {
-public function index(Request $request)
-{
-    $query = Design::query();
+    public function index(Request $request)
+    {
+        $query = Design::query();
 
-    // Search by name, country, specialty, description
-    if ($request->filled('search')) {
-        $search = $request->search;
-        $query->where(function ($q) use ($search) {
-            $q->where('name', 'like', '%' . $search . '%')
-              ->orWhere('country', 'like', '%' . $search . '%')
-              ->orWhere('specialty', 'like', '%' . $search . '%');
-        });
-    }
-
-    // Sort by name
-    if ($request->filled('sort')) {
-        if ($request->sort === 'az') {
-            $query->orderBy('name', 'asc');
-        } elseif ($request->sort === 'za') {
-            $query->orderBy('name', 'desc');
+        // Search by name, country, specialty, description
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('country', 'like', '%' . $search . '%')
+                    ->orWhere('specialty', 'like', '%' . $search . '%');
+            });
         }
+
+        // Sort by name
+        if ($request->filled('sort')) {
+            if ($request->sort === 'az') {
+                $query->orderBy('name', 'asc');
+            } elseif ($request->sort === 'za') {
+                $query->orderBy('name', 'desc');
+            }
+        }
+
+        $designs = $query->get()->map(function ($design) {
+            return [
+                'id' => $design->id,
+                'name' => $design->name,
+                'country' => $design->country,
+                'specialty' => $design->specialty,
+                'description' => $design->description,
+                'photo_url' => $design->photo_path ? Storage::url($design->photo_path) : null,
+                'preview_url' => $design->preview_path ? Storage::url($design->preview_path) : null,
+                'file_url' => $design->file_path ? Storage::url($design->file_path) : null
+            ];
+        });
+
+        return response()->json($designs);
     }
-
-    $designs = $query->get()->map(function ($design) {
-        return [
-            'id' => $design->id,
-            'name' => $design->name,
-            'country' => $design->country,
-            'specialty' => $design->specialty,
-            'description' => $design->description,
-            'photo_url' => $design->photo_path ? \Storage::url($design->photo_path) : null,
-            'preview_url' => $design->preview_path ? \Storage::url($design->preview_path) : null,
-            'file_url' => $design->file_path ? \Storage::url($design->file_path) : null
-        ];
-    });
-
-    return response()->json($designs);
-}
 
     public function store(Request $request)
     {
@@ -96,7 +96,6 @@ public function index(Request $request)
                 'design' => $design,
                 'message' => 'Design created successfully'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -148,7 +147,7 @@ public function index(Request $request)
                 if ($design->photo_path) {
                     Storage::disk('public')->delete($design->photo_path);
                 }
-                
+
                 $path = $request->file('photo')->store('designs/photos', 'public');
                 $updateData['photo_path'] = $path;
             }
@@ -159,7 +158,7 @@ public function index(Request $request)
                 if ($design->preview_path) {
                     Storage::disk('public')->delete($design->preview_path);
                 }
-                
+
                 $path = $request->file('preview')->store('designs/previews', 'public');
                 $updateData['preview_path'] = $path;
             }
@@ -170,7 +169,7 @@ public function index(Request $request)
                 if ($design->file_path) {
                     Storage::disk('public')->delete($design->file_path);
                 }
-                
+
                 $path = $request->file('file')->store('designs/files', 'public');
                 $updateData['file_path'] = $path;
             }
@@ -182,7 +181,6 @@ public function index(Request $request)
                 'design' => $design,
                 'message' => 'Design updated successfully'
             ]);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -195,7 +193,7 @@ public function index(Request $request)
     {
         try {
             $design = Design::findOrFail($id);
-            
+
             // Delete associated files
             if ($design->photo_path) {
                 Storage::disk('public')->delete($design->photo_path);
@@ -206,7 +204,7 @@ public function index(Request $request)
             if ($design->file_path) {
                 Storage::disk('public')->delete($design->file_path);
             }
-            
+
             $design->delete();
             return response()->json(['success' => true]);
         } catch (\Exception $e) {

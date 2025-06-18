@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import { ref, onMounted, onUnmounted } from 'vue';
+import axios from 'axios';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = defineProps({
@@ -14,11 +16,12 @@ const props = defineProps({
     }
 });
 
+const requestData = ref(props.requests);
+let pollingInterval: number | null = null;
+
 // Helper untuk label status/progress
 function getStatusLabel(request: any, role: string) {
     if (role === 'contractor') {
-        // status: accepted, waiting, rejected, finished
-        // progress: design_submitted, payment, construction_start, construction_end
         if (request.status === 'rejected') return 'Rejected';
         if (request.status === 'accepted' && request.progress === 'construction_end') return 'Finished';
         if (request.status === 'accepted' && request.progress === 'construction_start') return 'Construction Started';
@@ -27,8 +30,6 @@ function getStatusLabel(request: any, role: string) {
         if (request.status === 'waiting') return 'Waiting';
         if (request.status === 'finished') return 'Finished';
     } else if (role === 'designer') {
-        // status: accepted, waiting, rejected, finished
-        // progress: form_submitted, payment, design_start, design_end
         if (request.status === 'rejected') return 'Rejected';
         if (request.status === 'accepted' && request.progress === 'design_end') return 'Finished';
         if (request.status === 'accepted' && request.progress === 'design_start') return 'Design Started';
@@ -55,6 +56,34 @@ function getStatusClass(request: any, role: string) {
     }
     return 'bg-gray-100 text-gray-800';
 }
+
+// Fetch updated requests
+const fetchRequests = async () => {
+    try {
+        const response = await axios.get(`/api/requests`);
+        // Only update if there are changes
+        if (JSON.stringify(response.data.requests) !== JSON.stringify(requestData.value)) {
+            requestData.value = response.data.requests;
+        }
+    } catch (error) {
+        console.error('Failed to fetch requests:', error);
+    }
+};
+
+// Start polling when component mounts
+onMounted(() => {
+    // Initial fetch
+    fetchRequests();
+    // Start polling every 2 seconds
+    pollingInterval = window.setInterval(fetchRequests, 2000);
+});
+
+// Clean up interval when component unmounts
+onUnmounted(() => {
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+    }
+});
 </script>
 
 <template>
@@ -63,12 +92,12 @@ function getStatusClass(request: any, role: string) {
         <main class="bg-gray-50 w-full min-h-screen p-4 md:p-8">
             <div class="max-w-3xl mx-auto">
                 <h1 class="text-2xl font-bold text-gray-800 mb-6">Your Request Job</h1>
-                <div v-if="requests.length === 0" class="text-center text-gray-500 py-12">
+                <div v-if="requestData.length === 0" class="text-center text-gray-500 py-12">
                     No requests found
                 </div>
                 <div class="flex flex-col gap-4">
                     <div
-                        v-for="request in requests"
+                        v-for="request in requestData"
                         :key="request.id"
                         class="bg-white rounded-xl shadow p-6 flex flex-col sm:flex-row items-center gap-4"
                     >

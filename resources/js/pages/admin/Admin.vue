@@ -2,7 +2,7 @@
 import AppLayout from '@/layouts/app/AppSidebarLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -18,17 +18,21 @@ const error = ref<string | null>(null);
 const showModal = ref(false);
 const selectedMail = ref<any>(null);
 const submitError = ref<string | null>(null);
+let pollingInterval: number | null = null;
 
 // Gunakan Inertia Form khusus untuk reply
 const replyForm = useForm({
   reply: '',
 });
 
-// Fetch mails list dengan axios (agar tetap bekerja)
+// Fetch mails list dengan axios
 const fetchMails = async () => {
   try {
     const response = await axios.get('/api/admins');
-    mails.value = response.data.data || [];
+    // Only update if there are changes
+    if (JSON.stringify(response.data.data) !== JSON.stringify(mails.value)) {
+      mails.value = response.data.data || [];
+    }
   } catch (err) {
     console.error('Error:', err);
     error.value = 'Gagal memuat mails';
@@ -103,7 +107,18 @@ const submitReply = () => {
   });
 };
 
-onMounted(fetchMails);
+// Start polling when component mounts
+onMounted(() => {
+  fetchMails();
+  pollingInterval = window.setInterval(fetchMails, 2000);
+});
+
+// Clean up interval when component unmounts
+onUnmounted(() => {
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+  }
+});
 </script>
 
 <template>
@@ -176,7 +191,20 @@ onMounted(fetchMails);
                 <div class="text-gray-500">: {{ selectedMail?.role }}</div>
 
                 <div class="text-gray-500">Dikirim</div>
-                <div class="text-gray-500">: {{ new Date(selectedMail?.created_at).toLocaleString() }}</div>
+                <!-- Format penanggalan yang lebih baik -->
+                <div class="text-gray-500">
+                  : {{
+                    new Date(selectedMail?.created_at).toLocaleString('id-ID', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false
+                    })
+                  }}
+                </div>
+
               </div>
             </div>
             <button 
@@ -214,13 +242,16 @@ onMounted(fetchMails);
                   />
                   <div v-else class="text-center">
                     <p class="text-gray-600 mb-2">File portfolio ({{ selectedMail.portfolio.mime_type }})</p>
+                    
                     <a 
-                      :href="`data:${selectedMail.portfolio.mime_type};base64,${selectedMail.portfolio.data}`"
-                      download="portfolio"
+                      :href="selectedMail.portfolio.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#AE7A42] hover:bg-[#9c6d3a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AE7A42]"
                     >
-                      Download Portfolio
+                      View File
                     </a>
+                    
                   </div>
                 </div>
               </div>
@@ -249,7 +280,7 @@ onMounted(fetchMails);
                   <div>
                     <textarea
                       v-model="replyForm.reply"
-                      class="w-full border border-gray-300 rounded-md shadow-sm focus:border-[#AE7A42] focus:ring-[#AE7A42] min-h-[150px] p-3"
+                      class="w-full px-4 py-4 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition min-h-[150px] p-3"
                       placeholder="Tulis balasan Anda..."
                       :disabled="replyForm.processing"
                     ></textarea>

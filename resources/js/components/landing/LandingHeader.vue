@@ -14,9 +14,12 @@ const user = computed(() => usePage().props.auth.user);
             </div>
 
             <div class="flex items-center space-x-8">
+
+                <!-- Navigation Links -->
                 <Link href="/" class="text-gray-700 hover:text-[#B07D48]">Home</Link>
                 <Link href="/build" class="text-gray-700 hover:text-[#B07D48]">Build</Link>
                 <Link href="/design" class="text-gray-700 hover:text-[#B07D48]">Design</Link>
+
                 <!-- Conditional rendering based on auth status -->
                 <div v-if="user">
                     <Link 
@@ -26,6 +29,8 @@ const user = computed(() => usePage().props.auth.user);
                         <span>{{ user.name.split(' ')[0] }}</span>
                     </Link>
                 </div>
+
+                <!-- If user is not authenticated, show Login link -->
                 <div v-else>
                     <Link 
                         href="/login" 
@@ -37,6 +42,7 @@ const user = computed(() => usePage().props.auth.user);
             </div>
         </nav>
     </header>
+    
     <!-- Spacer to prevent content from going under fixed header -->
     <div class="h-16"></div>
 </template>

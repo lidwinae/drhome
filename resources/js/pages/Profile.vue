@@ -124,9 +124,11 @@
         <!-- Edit Profile Modal -->
     <Dialog :open="isEditModalOpen" @update:open="val => isEditModalOpen = val">
       <DialogContent class="sm:max-w-md">
+
         <DialogHeader>
           <DialogTitle class="text-[#AE7A42]">Edit Profil</DialogTitle>
         </DialogHeader>
+
         <form @submit.prevent="updateProfile">
           <div class="flex flex-col gap-4 py-4">
             <div>
@@ -142,10 +144,12 @@
               <input v-model="editForm.country" type="text" class="w-full border rounded px-3 py-2" required />
             </div>
           </div>
+
           <DialogFooter>
             <Button variant="outline" @click="isEditModalOpen = false" type="button">Batal</Button>
             <Button type="submit" class="bg-[#AE7A42] hover:bg-[#95683C] text-white">Simpan</Button>
           </DialogFooter>
+
         </form>
       </DialogContent>
     </Dialog>
@@ -153,9 +157,11 @@
     <!-- Edit About Modal -->
     <Dialog :open="isAboutModalOpen" @update:open="val => isAboutModalOpen = val">
       <DialogContent class="sm:max-w-md">
+
         <DialogHeader>
           <DialogTitle class="text-[#AE7A42]">Edit About</DialogTitle>
         </DialogHeader>
+
         <form @submit.prevent="updateAbout">
           <div class="flex flex-col gap-4 py-4">
             <textarea v-model="aboutForm.description" rows="4" class="w-full border rounded px-3 py-2" required />
@@ -165,23 +171,28 @@
             <Button type="submit" class="bg-[#AE7A42] hover:bg-[#95683C] text-white">Simpan</Button>
           </DialogFooter>
         </form>
+
       </DialogContent>
     </Dialog>
 
     <!-- Edit Specialty Modal -->
     <Dialog :open="isSpecialtyModalOpen" @update:open="val => isSpecialtyModalOpen = val">
       <DialogContent class="sm:max-w-md">
+
         <DialogHeader>
           <DialogTitle class="text-[#AE7A42]">Edit Specialty</DialogTitle>
         </DialogHeader>
+
         <form @submit.prevent="updateSpecialty">
           <div class="flex flex-col gap-4 py-4">
             <input v-model="specialtyForm.specialty" type="text" class="w-full border rounded px-3 py-2" required />
           </div>
+
           <DialogFooter>
             <Button variant="outline" @click="isSpecialtyModalOpen = false" type="button">Batal</Button>
             <Button type="submit" class="bg-[#AE7A42] hover:bg-[#95683C] text-white">Simpan</Button>
           </DialogFooter>
+          
         </form>
       </DialogContent>
     </Dialog>
@@ -355,9 +366,7 @@
               </div>
             </CardContent>
           </Card>
-          <Button class="fixed bottom-8 right-8 shadow-lg rounded-full p-4 bg-[#AE7A42] hover:bg-[#95683C] text-white z-10" size="icon">
-            <Icon name="chat" />
-          </Button>
+      
         </div>
       </div>
     </div>

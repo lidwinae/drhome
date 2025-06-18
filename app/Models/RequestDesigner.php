@@ -25,6 +25,8 @@ class RequestDesigner extends Model
         'sun_orientation',
         'wind_orientation',
         'design_reference_path',
+        'province',
+        'city',
         'budget',
         'notes',
         'deadline',

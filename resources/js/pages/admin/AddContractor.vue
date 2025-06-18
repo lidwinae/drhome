@@ -336,7 +336,7 @@ const savePortfolio = async () => {
                                                     rel="noopener noreferrer"
                                                     class="mt-2 inline-flex items-center text-sm text-[#AE7A42] hover:text-[#8c5e30]"
                                                 >
-                                                    Download Portfolio
+                                                    View Portfolio in New Tab
                                                 </a>
                                             </div>
                                             <div v-else class="text-gray-400 text-sm">Belum ada portfolio</div>

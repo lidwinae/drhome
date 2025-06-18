@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick, watch } from 'vue';
+import { ref, onMounted, nextTick, watch, onUnmounted } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
 import axios from 'axios';
@@ -16,13 +16,17 @@ const chatContainer = ref(null);
 const file = ref<File|null>(null);
 const chats = ref<Array<any>>(props.initialChats || []);
 const isLoading = ref(true);
+let pollingInterval: number | null = null;
 
 // Fungsi untuk mengambil chat
 const fetchChats = async () => {
-    isLoading.value = true;
     try {
         const response = await axios.get(`/api/chat/${props.user2.id}`);
-        chats.value = response.data.chats;
+        // Only update if there are new messages
+        if (response.data.chats.length !== chats.value.length || 
+            response.data.chats[response.data.chats.length - 1]?.id !== chats.value[chats.value.length - 1]?.id) {
+            chats.value = response.data.chats;
+        }
     } catch (error) {
         console.error('Failed to fetch chats:', error);
     } finally {
@@ -37,7 +41,7 @@ function handleFileChange(e: Event) {
 
 async function sendMessage() {
     if (!message.value.trim() && !file.value) return;
-    
+
     sending.value = true;
     const formData = new FormData();
     formData.append('recipient_id', props.user2.id.toString());
@@ -81,13 +85,27 @@ watch(chats, () => {
     });
 }, { deep: true });
 
+// Setup polling
+const startPolling = () => {
+    pollingInterval = window.setInterval(fetchChats, 2000); // Poll every 2 seconds
+};
+
 onMounted(() => {
-    fetchChats();
+    fetchChats().then(() => {
+        startPolling();
+    });
     nextTick(() => {
         if (chatContainer.value) {
             chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
         }
     });
+});
+
+// Cleanup polling when component unmounts
+onUnmounted(() => {
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+    }
 });
 </script>
 
@@ -205,13 +223,13 @@ onMounted(() => {
                     />
                 </label>
                 <input
-    v-model="message"
-    type="text"
-    class="flex-1 px-4 py-2 border rounded-lg focus:border-[#AE7A42] focus:ring-[#AE7A42]"
-    placeholder="Type your message..."
-    :disabled="sending"
-    autocomplete="off"
-/>
+                    v-model="message"
+                    type="text"
+                    class="w-full px-4 py-2 ml-2 mr-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AE7A42] focus:border-[#AE7A42] outline-none transition"
+                    placeholder="Type your message..."
+                    :disabled="sending"
+                    autocomplete="off"
+                />
                 <button
                     type="submit"
                     class="px-6 py-2 bg-[#AE7A42] hover:bg-[#8c5e30] text-white rounded-lg font-semibold"

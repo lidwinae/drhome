@@ -42,11 +42,11 @@ onMounted(async () => {
       loading.value = false;
       return;
     }
-    
+
     // Ambil data design detail
     const response = await axios.get(`/api/designs/${id}`);
     design.value = response.data;
-    
+
     // Cek apakah sudah purchased
     if (authUserId) {
       const purchasedRes = await axios.get(`/design/${id}/is-purchased`);
@@ -62,7 +62,7 @@ onMounted(async () => {
     } catch (rekomError) {
       console.error('Failed to load designer recommendations:', rekomError);
     }
-    
+
     loading.value = false;
   } catch (err: any) {
     error.value = err.response?.data?.message || 'Failed to load design details';
@@ -119,21 +119,34 @@ onMounted(async () => {
                       </span>
                     </div>
                   </div>
-                  
+
                   <div class="md:self-end">
   <template v-if="!isPurchased">
-    <Link 
-      :href="route('purchase.design', { id: design.id })" 
+    <Link
+      :href="route('purchase.design', { id: design.id })"
       class="inline-block bg-[#AE7A42] hover:bg-[#8e6536] text-white font-bold py-3 px-6 rounded-full text-[16px] transition-colors duration-200 whitespace-nowrap"
     >
       Purchase
     </Link>
   </template>
   <template v-else>
-    <span class="inline-flex items-center bg-green-100 text-green-700 px-6 py-3 rounded-full font-bold">
-      <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-      Purchased
-    </span>
+    <div class="flex gap-3">
+      <span class="inline-flex items-center bg-green-100 text-green-700 px-6 py-3 rounded-full font-bold">
+        <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+        Purchased
+      </span>
+      <a
+        :href="design.file_url"
+        target="_blank"
+        class="inline-flex items-center bg-[#714C25] hover:bg-[#5a3d1d] text-white font-bold py-3 px-6 rounded-full text-[16px] transition-colors duration-200"
+      >
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+        View File
+      </a>
+    </div>
   </template>
 </div>
 

@@ -39,8 +39,8 @@ class UsersTableSeeder extends Seeder
             'status' => 'active',
             'country' => 'Indonesia',
             'origin_city' => 'Jakarta',
-            'avatar' => 'avatars/lidwinae.jpg',
-            'background' => 'backgrounds/bg1.png',
+            'avatar' => 'avatars/lidwinaes.png',
+            'background' => 'backgrounds/bg6.png',
         ]);
         
         // Clients
@@ -148,7 +148,7 @@ class UsersTableSeeder extends Seeder
                 'specialty' => 'minimalist',
                 'description' => 'Minimalist Japanese design with natural elements.',
                 'portfolio' => 'portfolio4.pdf',
-                'background' => 'backgrounds/bg2.png'
+                'background' => 'backgrounds/bg5.png'
             ],
             [
                 'name' => 'Dr. Strange Designs',
@@ -159,7 +159,7 @@ class UsersTableSeeder extends Seeder
                 'specialty' => 'futuristic',
                 'description' => 'Futuristic and avant-garde architectural designs.',
                 'portfolio' => 'portfolio.pdf',
-                'background' => 'backgrounds/bg3.png'
+                'background' => 'backgrounds/bg7.png'
             ],
             [
                 'name' => 'Samoyed Interiors',
@@ -170,7 +170,7 @@ class UsersTableSeeder extends Seeder
                 'specialty' => 'luxury',
                 'description' => 'Luxury interior designs with a cozy touch.',
                 'portfolio' => 'portfolio1.pdf',
-                'background' => 'backgrounds/bg4.png'
+                'background' => 'backgrounds/bg8.png'
             ],
             [
                 'name' => 'Corgi Architecture',
@@ -181,7 +181,7 @@ class UsersTableSeeder extends Seeder
                 'specialty' => 'traditional',
                 'description' => 'Traditional British architecture with modern comforts.',
                 'portfolio' => 'portfolio2.pdf',
-                'background' => 'backgrounds/bg5.png'
+                'background' => 'backgrounds/bg9.png'
             ],
             [
                 'name' => 'Malamute Structures',
@@ -192,7 +192,7 @@ class UsersTableSeeder extends Seeder
                 'specialty' => 'sustainable',
                 'description' => 'Eco-friendly and sustainable building designs.',
                 'portfolio' => 'portfolio3.pdf',
-                'background' => 'backgrounds/bg1.png'
+                'background' => 'backgrounds/bg10.png'
             ],
             [
                 'name' => 'Hatsune Virtual',
@@ -203,7 +203,7 @@ class UsersTableSeeder extends Seeder
                 'specialty' => 'virtual',
                 'description' => 'Virtual and augmented reality architectural visualization.',
                 'portfolio' => 'portfolio4.pdf',
-                'background' => 'backgrounds/bg2.png'
+                'background' => 'backgrounds/bg11.png'
             ]
         ];
 
@@ -232,45 +232,45 @@ class UsersTableSeeder extends Seeder
     /**
      * Copy sample files from public to storage
      */
-    protected function copySampleFiles(): void
-    {
-        // Copy avatar images
-        $avatarFiles = [
-            'lidwinae.jpg', 'hayao.png', 'argenta.jpg', 'cherry.png', 
-            'steve.png', 'drstrange.png', 'samoyed.png', 'corgi.png', 
-            'malamute.png', 'hatsune.png'
-        ];
+protected function copySampleFiles(): void
+{
+    // Copy avatar images
+    $avatarFiles = [
+        'lidwinaes.png', 'lidwinae.jpg', 'hayao.png', 'argenta.jpg', 'cherry.png', 
+        'steve.png', 'drstrange.png', 'samoyed.png', 'corgi.png', 
+        'malamute.png', 'hatsune.png'
+    ];
 
-        foreach ($avatarFiles as $file) {
-            $src = public_path("designers/{$file}");
-            $dst = storage_path("app/public/avatars/{$file}");
-            if (file_exists($src) && !file_exists($dst)) {
-                copy($src, $dst);
-            }
-        }
-
-        // Copy background images
-        $backgroundFiles = ['bg1.png', 'bg2.png', 'bg3.png', 'bg4.png', 'bg5.png'];
-        foreach ($backgroundFiles as $file) {
-            $src = public_path("background/{$file}");
-            $dst = storage_path("app/public/backgrounds/{$file}");
-            if (file_exists($src) && !file_exists($dst)) {
-                copy($src, $dst);
-            }
-        }
-
-        // Copy portfolio files
-        $portfolioFiles = [
-            'Portfolio.pdf', 'portfolio1.pdf', 'portfolio2.pdf', 
-            'portfolio3.pdf', 'portfolio4.pdf'
-        ];
-
-        foreach ($portfolioFiles as $file) {
-            $src = public_path("portfolio/{$file}");
-            $dst = storage_path("app/public/portfolios/{$file}");
-            if (file_exists($src) && !file_exists($dst)) {
-                copy($src, $dst);
-            }
+    foreach ($avatarFiles as $file) {
+        $src = public_path("designers/{$file}");
+        $dst = "avatars/{$file}";
+        if (file_exists($src) && !Storage::disk('public')->exists($dst)) {
+            Storage::disk('public')->put($dst, file_get_contents($src));
         }
     }
+
+    // Copy background images
+    $backgroundFiles = ['bg1.png', 'bg2.png', 'bg3.png', 'bg4.png', 'bg5.png', 'bg6.png', 'bg7.png', 'bg8.png', 'bg10.png', 'bg11.png'];
+    foreach ($backgroundFiles as $file) {
+        $src = public_path("background/{$file}");
+        $dst = "backgrounds/{$file}";
+        if (file_exists($src) && !Storage::disk('public')->exists($dst)) {
+            Storage::disk('public')->put($dst, file_get_contents($src));
+        }
+    }
+
+    // Copy portfolio files
+    $portfolioFiles = [
+        'portfolio.pdf', 'portfolio1.pdf', 'portfolio2.pdf', 
+        'portfolio3.pdf', 'portfolio4.pdf'
+    ];
+
+    foreach ($portfolioFiles as $file) {
+        $src = public_path("portfolio/{$file}");
+        $dst = "portfolios/{$file}";
+        if (file_exists($src) && !Storage::disk('public')->exists($dst)) {
+            Storage::disk('public')->put($dst, file_get_contents($src));
+        }
+    }
+}
 }

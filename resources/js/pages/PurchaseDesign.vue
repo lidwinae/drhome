@@ -31,13 +31,13 @@ function handleImageError(event: Event) {
 function formatCurrency(event: Event) {
   const input = event.target as HTMLInputElement;
   let value = input.value.replace(/[^0-9.]/g, '');
-  
+
   // Ensure proper decimal format
   const parts = value.split('.');
   if (parts.length > 1) {
     value = parts[0] + '.' + parts[1].slice(0, 2);
   }
-  
+
   amount.value = value;
 }
 
@@ -51,10 +51,22 @@ function submitPayment() {
   if (!window.confirm('Apakah anda yakin ingin melakukan pembayaran?')) {
     return;
   }
-  
-  router.post(route('purchase.post'), {
+
+  const payload = {
     design_id: design.value.id,
-    amount: amount.value
+    amount: amount.value,
+    design_path: design.value.file_path || design.value.file_url?.split('/storage/')[1]
+  };
+
+  console.log('Submitting payment with payload:', payload); // Debug log
+
+  router.post(route('purchase.post'), payload, {
+    onSuccess: () => {
+      console.log('Payment successful'); // Debug log
+    },
+    onError: (errors) => {
+      console.error('Payment failed:', errors); // Debug log
+    }
   });
 }
 
@@ -66,8 +78,9 @@ onMounted(async () => {
       loading.value = false;
       return;
     }
-    
+
     const response = await axios.get(`/api/designs/${id}`);
+    console.log('Design data:', response.data); // Debug log
     design.value = response.data;
     loading.value = false;
   } catch (err: any) {

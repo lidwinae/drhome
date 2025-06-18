@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    
     // halaman utama admin menampilkan mails to admin (pekerjaan utama admin)
     Route::get('/', function () {
         return Inertia::render('admin/Admin');
@@ -49,6 +50,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/users/{user}/unban', [UserController::class, 'unban'])->name('users.unban');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
-   
 });
 

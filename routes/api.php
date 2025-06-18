@@ -3,8 +3,10 @@
 use App\Http\Controllers\Api\ContractorController;
 use App\Http\Controllers\Api\MailsAdminController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\MyRequestController;
 use App\Http\Controllers\PurchasedDesignController;
 use App\Http\Controllers\RequestContractorController;
+use App\Http\Controllers\RequestController;
 use App\Http\Controllers\RequestDesignerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\DesignerController;
@@ -51,4 +53,9 @@ Route::post('/designers/{id}/request', [RequestDesignerController::class, 'store
 Route::post('/chat/send', [ChatController::class, 'send']);
 Route::get('/chat/{userId}', [ChatController::class, 'getChats']);
 Route::get('/purchaseddesigns', [PurchasedDesignController::class, 'index']);
+
+// routes for soft polling refresh every 2 seconds
+Route::get('/request/{id}', [RequestController::class, 'showApi']);
+Route::get('/myrequest/{id}', [MyRequestController::class, 'showApi']);
+Route::get('/requests', [RequestController::class, 'indexApi']);
 });
