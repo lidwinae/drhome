@@ -1,6 +1,6 @@
 # DrHome
 
-Platform Digital untuk Memudahkan Perencanaan dan Pembangunan Rumah. Temukan designer, contractor untuk membangun rumah Anda.
+Platform Digital untuk Memudahkan Perencanaan dan Pembangunan Rumah. Temukan designer, contractor untuk membangun rumah Anda. Dr. Home: platform berbasis web yang menghubungkan klien dengan desainer dan kontraktor profesional untuk proyek desain dan konstruksi rumah, menawarkan fitur seperti pencarian desain siap pakai, pengajuan request custom, portofolio desainer/kontraktor, sistem chat real-time, pembelian desain, serta manajemen proyek terintegrasi dengan otentikasi berbasis session dan otorisasi role-based (klien, desainer, kontraktor, admin) untuk pengalaman yang aman dan terpersonalisasi.
 
 # Installation Steps
 
