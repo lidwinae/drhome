@@ -161,9 +161,6 @@ php artisan serve
  │   │   ├── 📄 DesignsTableSeeder.php
  │   │   └── 📄 UsersTableSeeder.php
  │   └── 📄 .gitignore
- ├── 📂 docker
- │   └── 📂 apache
- │       └── ⚙️ 000-default.conf
  ├── 📂 node_modules
  ├── 📂 public
  │   ├── 📂 background
@@ -312,22 +309,19 @@ php artisan serve
  ├── 💲 .env.example
  ├── 📄 .gitattributes
  ├── 📄 .gitignore
+ ├── ⚙️ .htaccess
  ├── 📄 .prettierignore
  ├── 📄 .prettierrc
  ├── 📄 artisan
  ├── 📦 components.json
  ├── 📦 composer.json
  ├── 📦 composer.lock
- ├── 🐳 Dockerfile
  ├── 📄 eslint.config.js
  ├── 📦 package-lock.json
  ├── 📦 package.json
  ├── 📄 phpunit.xml
- ├── 📄 railway.toml
  ├── 📖 README.md
- ├── 📜 render.yaml
  ├── 📄 tsconfig.json
- ├── 📄 vercel.json
  └── 📄 vite.config.ts
 ```
 </details>
