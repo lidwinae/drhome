@@ -73,35 +73,35 @@ class AvatarController extends Controller {
         ]);
     }
 
-public function updateSpecialty(Request $request)
-{
-    $request->validate([
-        'specialty' => 'required|string|max:50',
-    ]);
+    public function updateSpecialty(Request $request)
+    {
+        $request->validate([
+            'specialty' => 'required|string|max:50',
+        ]);
 
-    $user = auth()->user();
-    
-    if ($user->role === 'designer') {
-        $model = Designer::firstOrCreate(
-            ['user_id' => $user->id],
-            ['specialty' => '', 'description' => '']
-        );
-    } elseif ($user->role === 'contractor') {
-        $model = Contractor::firstOrCreate(
-            ['user_id' => $user->id],
-            ['specialty' => '', 'description' => '']
-        );
-    } else {
-        return response()->json(['error' => 'Unauthorized action'], 403);
+        $user = auth()->user();
+        
+        if ($user->role === 'designer') {
+            $model = Designer::firstOrCreate(
+                ['user_id' => $user->id],
+                ['specialty' => '', 'description' => '']
+            );
+        } elseif ($user->role === 'contractor') {
+            $model = Contractor::firstOrCreate(
+                ['user_id' => $user->id],
+                ['specialty' => '', 'description' => '']
+            );
+        } else {
+            return response()->json(['error' => 'Unauthorized action'], 403);
+        }
+
+        $model->specialty = $request->specialty;
+        $model->save();
+
+        return response()->json([
+            'specialty' => $model->specialty,
+        ]);
     }
-
-    $model->specialty = $request->specialty;
-    $model->save();
-
-    return response()->json([
-        'specialty' => $model->specialty,
-    ]);
-}
 
     public function updateAbout(Request $request)
     {

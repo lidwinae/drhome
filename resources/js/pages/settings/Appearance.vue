@@ -26,5 +26,6 @@ const breadcrumbItems: BreadcrumbItem[] = [
                 <AppearanceTabs />
             </div>
         </SettingsLayout>
+        
     </AppLayout>
 </template>

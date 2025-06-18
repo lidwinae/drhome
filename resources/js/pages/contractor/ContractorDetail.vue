@@ -120,9 +120,11 @@ const isOwnProfile = computed(() => {
       <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#FAE5CC] text-[#714C25]">
         <Icon name="flag" class="w-3 h-3 mr-1" /> {{ designer.country }}
       </span>
+
       <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
         <Icon name="star" class="w-3 h-3 mr-1" /> {{ designer.specialty || '-' }}
       </span>
+
     </div>
     <template v-if="!isOwnProfile">
       <Link
@@ -133,6 +135,7 @@ const isOwnProfile = computed(() => {
         Request
       </Link>
     </template>
+    
     <template v-else>
       <Link
         :href="`/profile`"

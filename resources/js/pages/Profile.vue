@@ -1,3 +1,284 @@
+<script setup lang="ts">
+import AppLayout from '@/layouts/AppLayout.vue';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import Icon from '@/components/Icon.vue';
+import { ref, computed, onMounted, watch } from 'vue';
+import axios from 'axios';
+import { Link } from '@inertiajs/vue3';
+import { usePage, Head, router as inertiaRouter } from '@inertiajs/vue3';
+import { PencilLine } from 'lucide-vue-next';
+
+// Modal state
+const isAvatarModalOpen = ref(false);
+const isUploading = ref(false);
+const selectedFile = ref<File | null>(null);
+const avatarPreview = ref<string | null>(null);
+const fileInput = ref<HTMLInputElement | null>(null);
+
+function openAvatarModal() {
+  isAvatarModalOpen.value = true;
+  selectedFile.value = null;
+  avatarPreview.value = null;
+}
+
+function handleFileChange(e: Event) {
+  const files = (e.target as HTMLInputElement).files;
+  if (files && files[0]) {
+    selectedFile.value = files[0];
+    avatarPreview.value = URL.createObjectURL(files[0]);
+  }
+}
+
+async function uploadAvatar() {
+  if (!selectedFile.value) return;
+  isUploading.value = true;
+  const formData = new FormData();
+  formData.append('avatar', selectedFile.value);
+  try {
+    const res = await axios.post('/profile', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    user.value.avatar = res.data.avatar_url;
+    isAvatarModalOpen.value = false;
+    selectedFile.value = null;
+    avatarPreview.value = null;
+    alert('Foto profil berhasil diubah!');
+  } catch (e) {
+    console.error(e);
+    alert('Gagal mengubah foto profil');
+  } finally {
+    isUploading.value = false;
+  }
+}
+
+const isBgModalOpen = ref(false);
+const isBgUploading = ref(false);
+const selectedBgFile = ref<File | null>(null);
+const bgPreview = ref<string | null>(null);
+const bgFileInput = ref<HTMLInputElement | null>(null);
+
+function openBgModal() {
+  isBgModalOpen.value = true;
+  selectedBgFile.value = null;
+  bgPreview.value = null;
+}
+
+function handleBgFileChange(e: Event) {
+  const files = (e.target as HTMLInputElement).files;
+  if (files && files[0]) {
+    selectedBgFile.value = files[0];
+    bgPreview.value = URL.createObjectURL(files[0]);
+  }
+}
+
+async function uploadBackground() {
+  if (!selectedBgFile.value) return;
+  isBgUploading.value = true;
+  const formData = new FormData();
+  formData.append('background', selectedBgFile.value);
+  try {
+    const res = await axios.post('/profile/background', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    user.value.background = res.data.background_url;
+    isBgModalOpen.value = false;
+    selectedBgFile.value = null;
+    bgPreview.value = null;
+    alert('Background berhasil diubah!');
+  } catch (e) {
+    console.error(e);
+    alert('Gagal mengubah background');
+  } finally {
+    isBgUploading.value = false;
+  }
+}
+
+const isEditModalOpen = ref(false);
+const isAboutModalOpen = ref(false);
+const isSpecialtyModalOpen = ref(false);
+const designers = ref<any[]>([]);
+
+// User data (from Inertia)
+const page = usePage();
+const user = ref({
+  id: page.props.auth.user.id,
+  name: page.props.auth.user.name,
+  origin_city: page.props.auth.user.origin_city || '',
+  country: page.props.auth.user.country || '',
+  avatar: page.props.auth.user.avatar
+    ? (page.props.auth.user.avatar.startsWith('http')
+      ? page.props.auth.user.avatar
+      : `/storage/${page.props.auth.user.avatar}`)
+    : '/img/profile.jpg',
+  background: page.props.auth.user.background
+    ? (page.props.auth.user.background.startsWith('http')
+      ? page.props.auth.user.background
+      : `/storage/${page.props.auth.user.background}`)
+    : null,
+  joined: page.props.auth.user.created_at
+    ? new Date(page.props.auth.user.created_at).toLocaleDateString('id-ID', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : 'N/A',
+  role: page.props.auth.user.role || 'User',
+});
+
+// Data dari API designer
+const designerData = ref<{ specialty?: string; description?: string; portfolio?: any } | null>(null);
+
+// Helper computed agar selalu ambil dari designerData jika ada
+const specialty = computed(() => designerData.value?.specialty ?? '-');
+const description = computed(() => designerData.value?.description ?? '-');
+const portfolio = computed(() => designerData.value?.portfolio ?? null);
+const createdAt = computed(() => designerData.value?.created_at ?? null);
+const updatedAt = computed(() => designerData.value?.updated_at ?? null);
+
+const userInitials = computed(() => user.value.name.split(' ').map(n => n[0]).join(''));
+const canEditAbout = computed(() => user.value.role === 'designer' || user.value.role === 'contractor');
+
+async function fetchRekomendasiDesigners() {
+  try {
+    const resRekom = await axios.get('/api/designers');
+    designers.value = resRekom.data.data
+      .filter((d: any) => d.id !== user.value.id)
+      .slice(0, 5);
+  } catch (e) {
+    console.error(e);
+    designers.value = [];
+  }
+}
+
+async function fetchDesignerData() {
+  let endpoint = '';
+  if (user.value.role === 'designer') {
+    endpoint = `/api/designers/${user.value.id}`;
+  } else if (user.value.role === 'contractor') {
+    endpoint = `/api/contractors/${user.value.id}`;
+  }
+
+  if (endpoint) {
+    try {
+      const res = await axios.get(endpoint);
+      // Normalisasi agar field sama
+      const data = res.data.data;
+      designerData.value = {
+        specialty: data.specialty ?? '-',
+        description: data.description ?? '-',
+        portfolio: data.portfolio ?? null,
+        created_at: data.created_at ?? null,
+        updated_at: data.updated_at ?? null,
+      };
+      // Rekomendasi designer tetap sama
+      const resRekom = await axios.get('/api/designers');
+      designers.value = resRekom.data.data
+        .filter((d: any) => d.id !== user.value.id)
+        .slice(0, 5);
+    } catch (e) {
+      console.error(e);
+      designerData.value = null;
+    }
+  }
+}
+
+// Edit Profile Modal
+const editForm = ref({
+  name: user.value.name,
+  origin_city: user.value.origin_city,
+  country: user.value.country,
+});
+function openEditModal() {
+  editForm.value = {
+    name: user.value.name,
+    origin_city: user.value.origin_city,
+    country: user.value.country,
+  };
+  isEditModalOpen.value = true;
+}
+async function updateProfile() {
+  try {
+    const res = await axios.post('/profile/update', editForm.value);
+    user.value.name = res.data.name;
+    user.value.origin_city = res.data.origin_city;
+    user.value.country = res.data.country;
+    isEditModalOpen.value = false;
+    alert('Profil berhasil diperbarui!');
+  } catch (e) {
+    console.error(e);
+    alert('Gagal memperbarui profil');
+  }
+}
+
+// Edit About Modal
+const aboutForm = ref({
+  description: '',
+});
+function openAboutModal() {
+  aboutForm.value.description = designerData.value?.description || '';
+  isAboutModalOpen.value = true;
+}
+async function updateAbout() {
+  try {
+    const res = await axios.post('/profile/update-about', aboutForm.value);
+    // Update designerData agar tampilan langsung berubah
+    if (designerData.value) designerData.value.description = res.data.description;
+    isAboutModalOpen.value = false;
+    alert('About berhasil diperbarui!');
+  } catch (e) {
+    console.error(e);
+    alert('Gagal memperbarui about');
+  }
+}
+
+// Edit Specialty Modal
+const specialtyForm = ref({
+  specialty: '',
+});
+function openSpecialtyModal() {
+  specialtyForm.value.specialty = designerData.value?.specialty || '';
+  isSpecialtyModalOpen.value = true;
+}
+async function updateSpecialty() {
+  try {
+    const res = await axios.post('/profile/update-specialty', specialtyForm.value);
+    if (designerData.value) designerData.value.specialty = res.data.specialty;
+    isSpecialtyModalOpen.value = false;
+    alert('Specialty berhasil diperbarui!');
+  } catch (e) {
+    console.error(e);
+    alert('Gagal memperbarui specialty');
+  }
+}
+
+function designerInitials(name: string) {
+  return name.split(' ').map(n => n[0]).join('');
+}
+
+function goToDesigner(id: number) {
+  inertiaRouter.visit(`/designers/${id}`);
+}
+
+onMounted(() => {
+  fetchDesignerData();
+  fetchRekomendasiDesigners();
+});
+watch(() => user.value.role, () => {
+  fetchDesignerData();
+  fetchRekomendasiDesigners();
+});
+</script>
+
 <template>
   <Head title="Profile" />
   <AppLayout class="bg-[#F6F6F6]">
@@ -297,16 +578,17 @@
 
           <!-- About & Portfolio (for designer/contractor) -->
           <template v-if="user.role === 'designer' || user.role === 'contractor'">
-  <!-- About Section -->
-  <div class="bg-[#FAAE5C] text-white rounded-3xl p-6 shadow-sm">
-  <div class="flex justify-between items-center mb-4">
-    <h3 class="text-2xl font-bold">About</h3>
-    <Button v-if="canEditAbout" size="sm" class="bg-white text-[#AE7A42] hover:bg-[#F6F6F6]" @click="openAboutModal">
-      Edit
-    </Button>
-  </div>
-  <p class="mb-4">{{ description }}</p>
-</div>
+
+          <!-- About Section -->
+          <div class="bg-[#FAAE5C] text-white rounded-3xl p-6 shadow-sm">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-2xl font-bold">About</h3>
+              <Button v-if="canEditAbout" size="sm" class="bg-white text-[#AE7A42] hover:bg-[#F6F6F6]" @click="openAboutModal">
+                Edit
+              </Button>
+            </div>
+            <p class="mb-4">{{ description }}</p>
+          </div>
 
   <!-- Portfolio Card -->
 <div class="rounded-3xl p-6 mb-4 shadow-sm" style="background-color: #AE7A42;">
@@ -316,6 +598,7 @@
       <img :src="portfolio.url" alt="Portfolio" class="max-w-xs rounded shadow mx-auto" />
     </template>
     <template v-else-if="/\.pdf$/i.test(portfolio.url)">
+
       <iframe
         :src="portfolio.url"
         class="w-full rounded shadow"
@@ -323,6 +606,7 @@
         frameborder="0"
         allowfullscreen
       ></iframe>
+
     </template>
     <template v-else>
       <div class="text-white">File tidak dapat dipreview.</div>
@@ -372,287 +656,6 @@
     </div>
   </AppLayout>
 </template>
-
-<script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import Icon from '@/components/Icon.vue';
-import { ref, computed, onMounted, watch } from 'vue';
-import axios from 'axios';
-import { Link } from '@inertiajs/vue3';
-import { usePage, Head, router as inertiaRouter } from '@inertiajs/vue3';
-import { PencilLine } from 'lucide-vue-next';
-
-// Modal state
-const isAvatarModalOpen = ref(false);
-const isUploading = ref(false);
-const selectedFile = ref<File | null>(null);
-const avatarPreview = ref<string | null>(null);
-const fileInput = ref<HTMLInputElement | null>(null);
-
-function openAvatarModal() {
-  isAvatarModalOpen.value = true;
-  selectedFile.value = null;
-  avatarPreview.value = null;
-}
-
-function handleFileChange(e: Event) {
-  const files = (e.target as HTMLInputElement).files;
-  if (files && files[0]) {
-    selectedFile.value = files[0];
-    avatarPreview.value = URL.createObjectURL(files[0]);
-  }
-}
-
-async function uploadAvatar() {
-  if (!selectedFile.value) return;
-  isUploading.value = true;
-  const formData = new FormData();
-  formData.append('avatar', selectedFile.value);
-  try {
-    const res = await axios.post('/profile', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
-    user.value.avatar = res.data.avatar_url;
-    isAvatarModalOpen.value = false;
-    selectedFile.value = null;
-    avatarPreview.value = null;
-    alert('Foto profil berhasil diubah!');
-  } catch (e) {
-    console.error(e);
-    alert('Gagal mengubah foto profil');
-  } finally {
-    isUploading.value = false;
-  }
-}
-
-const isBgModalOpen = ref(false);
-const isBgUploading = ref(false);
-const selectedBgFile = ref<File | null>(null);
-const bgPreview = ref<string | null>(null);
-const bgFileInput = ref<HTMLInputElement | null>(null);
-
-function openBgModal() {
-  isBgModalOpen.value = true;
-  selectedBgFile.value = null;
-  bgPreview.value = null;
-}
-
-function handleBgFileChange(e: Event) {
-  const files = (e.target as HTMLInputElement).files;
-  if (files && files[0]) {
-    selectedBgFile.value = files[0];
-    bgPreview.value = URL.createObjectURL(files[0]);
-  }
-}
-
-async function uploadBackground() {
-  if (!selectedBgFile.value) return;
-  isBgUploading.value = true;
-  const formData = new FormData();
-  formData.append('background', selectedBgFile.value);
-  try {
-    const res = await axios.post('/profile/background', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
-    user.value.background = res.data.background_url;
-    isBgModalOpen.value = false;
-    selectedBgFile.value = null;
-    bgPreview.value = null;
-    alert('Background berhasil diubah!');
-  } catch (e) {
-    console.error(e);
-    alert('Gagal mengubah background');
-  } finally {
-    isBgUploading.value = false;
-  }
-}
-
-const isEditModalOpen = ref(false);
-const isAboutModalOpen = ref(false);
-const isSpecialtyModalOpen = ref(false);
-const designers = ref<any[]>([]);
-
-// User data (from Inertia)
-const page = usePage();
-const user = ref({
-  id: page.props.auth.user.id,
-  name: page.props.auth.user.name,
-  origin_city: page.props.auth.user.origin_city || '',
-  country: page.props.auth.user.country || '',
-  avatar: page.props.auth.user.avatar
-    ? (page.props.auth.user.avatar.startsWith('http')
-      ? page.props.auth.user.avatar
-      : `/storage/${page.props.auth.user.avatar}`)
-    : '/img/profile.jpg',
-  background: page.props.auth.user.background
-    ? (page.props.auth.user.background.startsWith('http')
-      ? page.props.auth.user.background
-      : `/storage/${page.props.auth.user.background}`)
-    : null,
-  joined: page.props.auth.user.created_at
-    ? new Date(page.props.auth.user.created_at).toLocaleDateString('id-ID', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
-    : 'N/A',
-  role: page.props.auth.user.role || 'User',
-});
-
-// Data dari API designer
-const designerData = ref<{ specialty?: string; description?: string; portfolio?: any } | null>(null);
-
-// Helper computed agar selalu ambil dari designerData jika ada
-const specialty = computed(() => designerData.value?.specialty ?? '-');
-const description = computed(() => designerData.value?.description ?? '-');
-const portfolio = computed(() => designerData.value?.portfolio ?? null);
-const createdAt = computed(() => designerData.value?.created_at ?? null);
-const updatedAt = computed(() => designerData.value?.updated_at ?? null);
-
-const userInitials = computed(() => user.value.name.split(' ').map(n => n[0]).join(''));
-const canEditAbout = computed(() => user.value.role === 'designer' || user.value.role === 'contractor');
-
-async function fetchRekomendasiDesigners() {
-  try {
-    const resRekom = await axios.get('/api/designers');
-    designers.value = resRekom.data.data
-      .filter((d: any) => d.id !== user.value.id)
-      .slice(0, 5);
-  } catch (e) {
-    console.error(e);
-    designers.value = [];
-  }
-}
-
-async function fetchDesignerData() {
-  let endpoint = '';
-  if (user.value.role === 'designer') {
-    endpoint = `/api/designers/${user.value.id}`;
-  } else if (user.value.role === 'contractor') {
-    endpoint = `/api/contractors/${user.value.id}`;
-  }
-
-  if (endpoint) {
-    try {
-      const res = await axios.get(endpoint);
-      // Normalisasi agar field sama
-      const data = res.data.data;
-      designerData.value = {
-        specialty: data.specialty ?? '-',
-        description: data.description ?? '-',
-        portfolio: data.portfolio ?? null,
-        created_at: data.created_at ?? null,
-        updated_at: data.updated_at ?? null,
-      };
-      // Rekomendasi designer tetap sama
-      const resRekom = await axios.get('/api/designers');
-      designers.value = resRekom.data.data
-        .filter((d: any) => d.id !== user.value.id)
-        .slice(0, 5);
-    } catch (e) {
-      console.error(e);
-      designerData.value = null;
-    }
-  }
-}
-
-// Edit Profile Modal
-const editForm = ref({
-  name: user.value.name,
-  origin_city: user.value.origin_city,
-  country: user.value.country,
-});
-function openEditModal() {
-  editForm.value = {
-    name: user.value.name,
-    origin_city: user.value.origin_city,
-    country: user.value.country,
-  };
-  isEditModalOpen.value = true;
-}
-async function updateProfile() {
-  try {
-    const res = await axios.post('/profile/update', editForm.value);
-    user.value.name = res.data.name;
-    user.value.origin_city = res.data.origin_city;
-    user.value.country = res.data.country;
-    isEditModalOpen.value = false;
-    alert('Profil berhasil diperbarui!');
-  } catch (e) {
-    console.error(e);
-    alert('Gagal memperbarui profil');
-  }
-}
-
-// Edit About Modal
-const aboutForm = ref({
-  description: '',
-});
-function openAboutModal() {
-  aboutForm.value.description = designerData.value?.description || '';
-  isAboutModalOpen.value = true;
-}
-async function updateAbout() {
-  try {
-    const res = await axios.post('/profile/update-about', aboutForm.value);
-    // Update designerData agar tampilan langsung berubah
-    if (designerData.value) designerData.value.description = res.data.description;
-    isAboutModalOpen.value = false;
-    alert('About berhasil diperbarui!');
-  } catch (e) {
-    console.error(e);
-    alert('Gagal memperbarui about');
-  }
-}
-
-// Edit Specialty Modal
-const specialtyForm = ref({
-  specialty: '',
-});
-function openSpecialtyModal() {
-  specialtyForm.value.specialty = designerData.value?.specialty || '';
-  isSpecialtyModalOpen.value = true;
-}
-async function updateSpecialty() {
-  try {
-    const res = await axios.post('/profile/update-specialty', specialtyForm.value);
-    if (designerData.value) designerData.value.specialty = res.data.specialty;
-    isSpecialtyModalOpen.value = false;
-    alert('Specialty berhasil diperbarui!');
-  } catch (e) {
-    console.error(e);
-    alert('Gagal memperbarui specialty');
-  }
-}
-
-function designerInitials(name: string) {
-  return name.split(' ').map(n => n[0]).join('');
-}
-
-function goToDesigner(id: number) {
-  inertiaRouter.visit(`/designers/${id}`);
-}
-
-onMounted(() => {
-  fetchDesignerData();
-  fetchRekomendasiDesigners();
-});
-watch(() => user.value.role, () => {
-  fetchDesignerData();
-  fetchRekomendasiDesigners();
-});
-</script>
 
 <style scoped>
 /* Custom hover effect for avatar */

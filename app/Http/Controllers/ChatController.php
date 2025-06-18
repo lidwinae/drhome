@@ -28,7 +28,7 @@ class ChatController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-public function send(Request $request)
+    public function send(Request $request)
     {
         $request->validate([
             'recipient_id' => 'required|exists:users,id',

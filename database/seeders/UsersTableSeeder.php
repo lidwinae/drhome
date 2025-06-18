@@ -68,6 +68,18 @@ class UsersTableSeeder extends Seeder
             'background' => null,
         ]);
 
+        User::create([
+            'name' => 'Lidwina',
+            'email' => 'lidwina@gmail.com',
+            'password' => Hash::make('rahasia1'),
+            'role' => 'client',
+            'status' => 'active',
+            'country' => 'Sweden',
+            'origin_city' => 'Stockholm',
+            'avatar' => null,
+            'background' => null,
+        ]);
+
         // Contractors
         $contractors = [
             [
