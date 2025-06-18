@@ -117,6 +117,7 @@ const savePortfolio = async () => {
         // Refresh contractor data
         selectedContractor.value.portfolio = response.data.portfolio;
         editingPortfolio.value = false;
+        fetchContractors();
     } catch (err: any) {
         uploadError.value = err.response?.data?.message || 'Gagal upload portfolio';
     } finally {
