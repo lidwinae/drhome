@@ -13,8 +13,8 @@ public function up(): void
 {
     Schema::create('request_contractors', function (Blueprint $table) {
         $table->uuid('id')->primary();
-        $table->unsignedBigInteger('client_id')->nullable();
-        $table->unsignedBigInteger('contractor_id')->nullable();
+        $table->uuid('client_id')->nullable();
+        $table->uuid('contractor_id')->nullable();
         $table->unsignedBigInteger('purchased_design_id')->nullable();
         $table->string('province', 100);
         $table->string('city', 100);

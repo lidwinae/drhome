@@ -34,6 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->api(append: [
             EnsureFrontendRequestsAreStateful::class,
+            ThrottleRequests::class . ':60,1',
         ]);
 
         $middleware->group('admin', [
@@ -49,6 +50,16 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->group('chat.access', [
             'web',
             ChatAccess::class,
+        ]);
+
+        $middleware->group('admin_api', [
+            'auth:sanctum',
+            EnsureIsAdmin::class,
+        ]);
+
+        $middleware->group('designer_contractor_api', [
+            'auth:sanctum',
+            EnsureIsDesignerOrContractor::class,
         ]);
 
     })

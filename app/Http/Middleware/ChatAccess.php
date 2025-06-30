@@ -12,7 +12,7 @@ class ChatAccess
      */
     public function handle(Request $request, Closure $next)
     {
-        $user1 = (int) $request->route('user1');
+        $user1 = $request->route('user1');
         
         $authId = auth()->id();
 

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('request_designers', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->unsignedBigInteger('client_id')->nullable();
-            $table->unsignedBigInteger('designer_id')->nullable();
+            $table->uuid('client_id')->nullable();
+            $table->uuid('designer_id')->nullable();
             $table->unsignedBigInteger('purchased_design_id')->nullable();
             
             $table->string('land_size', 50);

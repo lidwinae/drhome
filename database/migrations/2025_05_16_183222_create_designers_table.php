@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('designers', function (Blueprint $table) {
-            $table->unsignedBigInteger('user_id')->primary(); // ini sekaligus PK & FK
+            $table->uuid('user_id')->primary(); // ini sekaligus PK & FK
             $table->string('specialty', 50)->nullable();
             $table->text('description')->nullable();
             $table->string('portfolio_path')->nullable();

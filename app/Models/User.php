@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasUuids;
 
     protected $fillable = [
         'name',
@@ -46,6 +47,20 @@ class User extends Authenticatable
         return $this->forceFill($filtered)->save();
     }
 
+        /**
+     * The "type" of the primary key ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
     public function designer()
     {
         return $this->hasOne(Designer::class, 'user_id');
@@ -67,26 +82,31 @@ class User extends Authenticatable
     }
 
     public function sentChats()
-{
-    return $this->hasMany(Chat::class, 'sender_id');
-}
+    {
+        return $this->hasMany(Chat::class, 'sender_id');
+    }
 
-/**
- * Get all chats received by this user
- */
-public function receivedChats()
-{
-    return $this->hasMany(Chat::class, 'recipient_id');
-}
+    /**
+     * Get all chats received by this user
+     */
+    public function receivedChats()
+    {
+        return $this->hasMany(Chat::class, 'recipient_id');
+    }
 
-/**
- * Get all chats (both sent and received)
- */
-public function chats()
-{
-    return Chat::where(function($query) {
-        $query->where('sender_id', $this->id)
-              ->orWhere('recipient_id', $this->id);
-    });
-}
+    public function getRouteKeyName()
+    {
+        return 'id';
+    }
+
+    /**
+     * Get all chats (both sent and received)
+     */
+    public function chats()
+    {
+        return Chat::where(function($query) {
+            $query->where('sender_id', $this->id)
+                ->orWhere('recipient_id', $this->id);
+        });
+    }
 }

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 class AvatarController extends Controller {
     public function updateAvatar(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'avatar' => 'required|image|mimes:jpeg,png,jpg|max:16384'
         ]);
 
@@ -35,7 +35,7 @@ class AvatarController extends Controller {
 
     public function updateBackground(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'background' => 'required|image|mimes:jpeg,png,jpg|max:16384'
         ]);
 

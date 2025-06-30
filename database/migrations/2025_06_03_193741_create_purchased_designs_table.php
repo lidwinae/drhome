@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('purchased_designs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->uuid('user_id');
             $table->unsignedBigInteger('design_id')->nullable();
             $table->string('design_name', 100);
             $table->string('design_country', 50);
