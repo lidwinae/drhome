@@ -56,7 +56,7 @@ function goToDesigner(id: number) {
 }
 
 const isOwnProfile = computed(() => {
-  return authUserId && designer.value && Number(authUserId) === Number(designer.value.id);
+  return authUserId && designer.value && authUserId === designer.value.id;
 });
 </script>
 
